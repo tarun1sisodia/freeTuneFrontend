@@ -25,9 +25,9 @@ class RegisterUserUseCase {
 
   RegisterUserUseCase(this._authRepository);
 
-  Future<Either<ApiException, UserEntity>> call(String email, String password) async {
+  Future<Either<ApiException, UserEntity>> call(String email, String password, {String? username}) async {
     try {
-      final user = await _authRepository.register(email, password);
+      final user = await _authRepository.register(email, password, username: username);
       return Right(user);
     } on ApiException catch (e) {
       return Left(e);
@@ -62,6 +62,40 @@ class LogoutUserUseCase {
   Future<Either<ApiException, void>> call() async {
     try {
       await _authRepository.logout();
+      return const Right(null);
+    } on ApiException catch (e) {
+      return Left(e);
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+}
+
+class ForgotPasswordUseCase {
+  final AuthRepository _authRepository;
+
+  ForgotPasswordUseCase(this._authRepository);
+
+  Future<Either<ApiException, void>> call(String email) async {
+    try {
+      await _authRepository.forgotPassword(email);
+      return const Right(null);
+    } on ApiException catch (e) {
+      return Left(e);
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+}
+
+class ChangePasswordUseCase {
+  final AuthRepository _authRepository;
+
+  ChangePasswordUseCase(this._authRepository);
+
+  Future<Either<ApiException, void>> call(String currentPassword, String newPassword) async {
+    try {
+      await _authRepository.changePassword(currentPassword, newPassword);
       return const Right(null);
     } on ApiException catch (e) {
       return Left(e);

@@ -10,6 +10,8 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
   final RegisterUserUseCase _registerUserUseCase;
   final GetCurrentUserUseCase _getCurrentUserUseCase;
   final LogoutUserUseCase _logoutUserUseCase;
+  final ForgotPasswordUseCase? _forgotPasswordUseCase;
+  final ChangePasswordUseCase? _changePasswordUseCase;
 
   final Rx<UserEntity?> user = Rx<UserEntity?>(null);
   final RxBool isAuthenticated = false.obs;
@@ -19,11 +21,14 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
     required RegisterUserUseCase registerUserUseCase,
     required GetCurrentUserUseCase getCurrentUserUseCase,
     required LogoutUserUseCase logoutUserUseCase,
-  })
-      : _loginUserUseCase = loginUserUseCase,
+    ForgotPasswordUseCase? forgotPasswordUseCase,
+    ChangePasswordUseCase? changePasswordUseCase,
+  })  : _loginUserUseCase = loginUserUseCase,
         _registerUserUseCase = registerUserUseCase,
         _getCurrentUserUseCase = getCurrentUserUseCase,
-        _logoutUserUseCase = logoutUserUseCase;
+        _logoutUserUseCase = logoutUserUseCase,
+        _forgotPasswordUseCase = forgotPasswordUseCase,
+        _changePasswordUseCase = changePasswordUseCase;
 
   @override
   void onInit() {
@@ -35,7 +40,10 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
     showLoading();
     final result = await _getCurrentUserUseCase.call();
     result.fold(
-      (failure) => handleError(failure),
+      (failure) {
+        // Silent error during initial check - user just isn't logged in
+        handleError(failure, silent: true);
+      },
       (currentUser) {
         user.value = currentUser;
         isAuthenticated.value = currentUser != null;
@@ -61,9 +69,9 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
     );
   }
 
-  Future<bool> register(String email, String password) async {
+  Future<bool> register(String email, String password, {String? username}) async {
     showLoading();
-    final result = await _registerUserUseCase.call(email, password);
+    final result = await _registerUserUseCase.call(email, password, username: username);
     hideLoading();
     return result.fold(
       (failure) {
@@ -75,6 +83,42 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
         isAuthenticated.value = true;
         return true;
       },
+    );
+  }
+
+  Future<bool> forgotPassword(String email) async {
+    if (_forgotPasswordUseCase == null) {
+      Get.snackbar('Error', 'Forgot password feature not available');
+      return false;
+    }
+    
+    showLoading();
+    final result = await _forgotPasswordUseCase!.call(email);
+    hideLoading();
+    return result.fold(
+      (failure) {
+        handleError(failure, title: 'Forgot Password Failed');
+        return false;
+      },
+      (_) => true,
+    );
+  }
+
+  Future<bool> changePassword(String currentPassword, String newPassword) async {
+    if (_changePasswordUseCase == null) {
+      Get.snackbar('Error', 'Change password feature not available');
+      return false;
+    }
+    
+    showLoading();
+    final result = await _changePasswordUseCase!.call(currentPassword, newPassword);
+    hideLoading();
+    return result.fold(
+      (failure) {
+        handleError(failure, title: 'Change Password Failed');
+        return false;
+      },
+      (_) => true,
     );
   }
 

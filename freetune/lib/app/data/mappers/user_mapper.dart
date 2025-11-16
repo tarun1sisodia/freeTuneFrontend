@@ -7,7 +7,9 @@ class UserMapper {
       id: model.userId,
       email: model.email,
       username: model.username,
+      fullName: model.fullName,
       profileImageUrl: model.profileImageUrl,
+      emailVerified: model.emailVerified,
     );
   }
 
@@ -16,7 +18,9 @@ class UserMapper {
       userId: entity.id,
       email: entity.email,
       username: entity.username,
+      fullName: entity.fullName,
       profileImageUrl: entity.profileImageUrl,
+      emailVerified: entity.emailVerified,
     );
   }
 }

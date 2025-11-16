@@ -4,7 +4,7 @@ class SongEntity extends Equatable {
   final String id;
   final String title;
   final String artist;
-  final String album;
+  final String? album;
   final String? albumArtUrl;
   final int durationMs;
   final String r2Key;
@@ -12,12 +12,13 @@ class SongEntity extends Equatable {
   final int playCount;
   final DateTime lastUpdated;
   final double popularityScore;
+  final DateTime createdAt;
 
   const SongEntity({
     required this.id,
     required this.title,
     required this.artist,
-    required this.album,
+    this.album,
     this.albumArtUrl,
     required this.durationMs,
     required this.r2Key,
@@ -25,6 +26,7 @@ class SongEntity extends Equatable {
     this.playCount = 0,
     required this.lastUpdated,
     this.popularityScore = 0.0,
+    required this.createdAt,
   });
 
   @override
@@ -40,5 +42,6 @@ class SongEntity extends Equatable {
         playCount,
         lastUpdated,
         popularityScore,
+        createdAt,
       ];
 }

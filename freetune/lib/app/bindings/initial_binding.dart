@@ -22,6 +22,7 @@ import '../data/repositories/analytics_repository.dart';
 
 import '../domain/usecases/auth_usecases.dart';
 import '../domain/usecases/song_usecases.dart';
+import '../presentation/controllers/auth_controller.dart';
 import '../services/analytics/analytics_service.dart';
 import '../services/audio/audio_player_service.dart';
 import '../services/network/network_service.dart';
@@ -62,6 +63,8 @@ class AppBindings implements Bindings {
     Get.lazyPut(() => RegisterUserUseCase(Get.find<AuthRepository>()), fenix: true);
     Get.lazyPut(() => GetCurrentUserUseCase(Get.find<AuthRepository>()), fenix: true);
     Get.lazyPut(() => LogoutUserUseCase(Get.find<AuthRepository>()), fenix: true);
+    Get.lazyPut(() => ForgotPasswordUseCase(Get.find<AuthRepository>()), fenix: true);
+    Get.lazyPut(() => ChangePasswordUseCase(Get.find<AuthRepository>()), fenix: true);
     Get.lazyPut(() => GetSongsUseCase(Get.find<SongRepository>()), fenix: true);
     Get.lazyPut(() => SearchSongsUseCase(Get.find<SongRepository>()), fenix: true);
     Get.lazyPut(() => GetStreamUrlUseCase(Get.find<SongRepository>()), fenix: true);
@@ -73,5 +76,18 @@ class AppBindings implements Bindings {
     Get.put<NetworkService>(NetworkService(), permanent: true);
     Get.put<AnalyticsService>(AnalyticsService(Get.find()), permanent: true);
     Get.put<AudioPlayerService>(AudioPlayerService(Get.find(), Get.find()), permanent: true);
+
+    // Initialize AuthController on app start for splash screen
+    Get.put<AuthController>(
+      AuthController(
+        loginUserUseCase: Get.find<LoginUserUseCase>(),
+        registerUserUseCase: Get.find<RegisterUserUseCase>(),
+        getCurrentUserUseCase: Get.find<GetCurrentUserUseCase>(),
+        logoutUserUseCase: Get.find<LogoutUserUseCase>(),
+        forgotPasswordUseCase: Get.find<ForgotPasswordUseCase>(),
+        changePasswordUseCase: Get.find<ChangePasswordUseCase>(),
+      ),
+      permanent: true,
+    );
   }
 }

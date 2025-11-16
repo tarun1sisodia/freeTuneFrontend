@@ -8,10 +8,15 @@ class AuthApi {
 
   AuthApi(this._dio);
 
-  Future<AuthResponse> register(String email, String password) async {
+  Future<AuthResponse> register(String email, String password, {String? username}) async {
     final response = await _dio.post(
       ApiEndpoints.register,
-      data: {'email': email, 'password': password},
+      data: {
+        'email': email,
+        'password': password,
+        'confirmPassword': password, // Backend requires this for validation
+        if (username != null) 'username': username,
+      },
     );
     return AuthResponse.fromJson(response.data);
   }
@@ -26,6 +31,24 @@ class AuthApi {
 
   Future<UserModel> getCurrentUser() async {
     final response = await _dio.get(ApiEndpoints.me);
-    return UserModel.fromJson(response.data);
+    final data = response.data['data'] ?? response.data;
+    return UserModel.fromJson(data);
+  }
+
+  Future<void> forgotPassword(String email) async {
+    await _dio.post(
+      ApiEndpoints.forgotPassword,
+      data: {'email': email},
+    );
+  }
+
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    await _dio.post(
+      ApiEndpoints.changePassword,
+      data: {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      },
+    );
   }
 }

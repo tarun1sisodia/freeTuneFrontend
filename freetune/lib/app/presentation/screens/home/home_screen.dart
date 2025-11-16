@@ -38,6 +38,12 @@ class HomeScreen extends GetView<AuthController> {
             ),
             ElevatedButton(
               onPressed: () {
+                Get.toNamed(Routes.CHANGE_PASSWORD);
+              },
+              child: const Text('Change Password'),
+            ),
+            ElevatedButton(
+              onPressed: () {
                 Get.toNamed(Routes.PLAYER);
               },
               child: const Text('Go to Player (Placeholder)'),

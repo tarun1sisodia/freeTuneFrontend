@@ -66,12 +66,12 @@ class LoginScreen extends GetView<AuthController> {
                 )),
                 const SizedBox(height: 16.0),
                 TextButton(
-                  onPressed: () {
-                    // Navigate to registration screen
-                    // Get.toNamed(Routes.REGISTER);
-                    Get.snackbar('Feature', 'Registration not yet implemented.');
-                  },
+                  onPressed: () => Get.toNamed(Routes.REGISTER),
                   child: const Text('Don\'t have an account? Register'),
+                ),
+                TextButton(
+                  onPressed: () => Get.toNamed(Routes.FORGOT_PASSWORD),
+                  child: const Text('Forgot Password?'),
                 ),
               ],
             ),

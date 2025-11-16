@@ -18,6 +18,18 @@ class PreferencesStorage {
     await _prefs.remove(CacheKeys.authToken);
   }
 
+  Future<void> saveRefreshToken(String token) async {
+    await _prefs.setString(CacheKeys.refreshToken, token);
+  }
+
+  String? getRefreshToken() {
+    return _prefs.getString(CacheKeys.refreshToken);
+  }
+
+  Future<void> clearRefreshToken() async {
+    await _prefs.remove(CacheKeys.refreshToken);
+  }
+
   // Generic methods for other preferences
   Future<void> saveString(String key, String value) async {
     await _prefs.setString(key, value);

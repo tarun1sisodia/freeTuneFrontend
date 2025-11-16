@@ -18,13 +18,11 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNextScreen() async {
-    // Ensure AuthController is initialized and ready
-    Get.find<AuthController>().onInit(); // Manually call onInit if not already called by GetX
+    // Wait for AuthController to check current user
+    await Future.delayed(const Duration(seconds: 3));
 
-    // Wait for a short duration to show splash screen
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (Get.find<AuthController>().isAuthenticated.value) {
+    final authController = Get.find<AuthController>();
+    if (authController.isAuthenticated.value) {
       Get.offAllNamed(Routes.HOME);
     } else {
       Get.offAllNamed(Routes.LOGIN);
@@ -40,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 20),
-            Text('Loading FreeTune...'),
+            Text('Loading FreeTune... Keep on Loop'),
           ],
         ),
       ),
