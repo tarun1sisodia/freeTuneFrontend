@@ -1,100 +1,81 @@
+import 'package:equatable/equatable.dart';
 import 'package:isar/isar.dart';
 
 part 'song_model.g.dart';
 
 @collection
-class SongModel {
-  Id isarId = Isar.autoIncrement;
-
-  @Index(unique: true, replace: true)
-  String id;
-  String title;
-  String artist;
-  String? album;
-  String? albumArt;
-  int durationMs;
-  String? genre;
-  int playCount;
-  bool isFavorite;
-  DateTime? cachedAt;
-  String? localFilePath;
+class SongModel extends Equatable {
+  Id id = Isar.autoIncrement;
+  final String songId;
+  final String title;
+  final String artist;
+  final String album;
+  final String? albumArtUrl;
+  final int durationMs;
+  final String r2Key;
+  final Map<String, int> fileSizes; // e.g., {'high': 12345, 'medium': 6789}
+  final int playCount;
+  final DateTime lastUpdated;
+  final double popularityScore;
 
   SongModel({
-    required this.id,
+    required this.songId,
     required this.title,
     required this.artist,
-    this.album,
-    this.albumArt,
+    required this.album,
+    this.albumArtUrl,
     required this.durationMs,
-    this.genre,
+    required this.r2Key,
+    required this.fileSizes,
     this.playCount = 0,
-    this.isFavorite = false,
-    this.cachedAt,
-    this.localFilePath,
+    required this.lastUpdated,
+    this.popularityScore = 0.0,
   });
 
   factory SongModel.fromJson(Map<String, dynamic> json) {
     return SongModel(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      artist: json['artist'] as String,
-      album: json['album'] as String?,
-      albumArt: json['album_art'] as String?,
-      durationMs: json['duration_ms'] as int,
-      genre: json['genre'] as String?,
-      playCount: json['play_count'] as int? ?? 0,
-      isFavorite: json['is_favorite'] as bool? ?? false,
-      cachedAt: json['cached_at'] != null
-          ? DateTime.parse(json['cached_at'] as String)
-          : null,
-      localFilePath: json['local_file_path'] as String?,
+      songId: json['id'],
+      title: json['title'],
+      artist: json['artist'],
+      album: json['album'],
+      albumArtUrl: json['albumArtUrl'],
+      durationMs: json['durationMs'],
+      r2Key: json['r2Key'],
+      fileSizes: Map<String, int>.from(json['fileSizes']),
+      playCount: json['playCount'] ?? 0,
+      lastUpdated: DateTime.parse(json['lastUpdated']),
+      popularityScore: json['popularityScore']?.toDouble() ?? 0.0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'id': songId,
       'title': title,
       'artist': artist,
       'album': album,
-      'album_art': albumArt,
-      'duration_ms': durationMs,
-      'genre': genre,
-      'play_count': playCount,
-      'is_favorite': isFavorite,
-      'cached_at': cachedAt?.toIso8601String(),
-      'local_file_path': localFilePath,
+      'albumArtUrl': albumArtUrl,
+      'durationMs': durationMs,
+      'r2Key': r2Key,
+      'fileSizes': fileSizes,
+      'playCount': playCount,
+      'lastUpdated': lastUpdated.toIso8601String(),
+      'popularityScore': popularityScore,
     };
   }
 
-  SongModel copyWith({
-    String? id,
-    String? title,
-    String? artist,
-    String? album,
-    String? albumArt,
-    int? durationMs,
-    String? genre,
-    int? playCount,
-    bool? isFavorite,
-    DateTime? cachedAt,
-    String? localFilePath,
-  }) {
-    return SongModel(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      artist: artist ?? this.artist,
-      album: album ?? this.album,
-      albumArt: albumArt ?? this.albumArt,
-      durationMs: durationMs ?? this.durationMs,
-      genre: genre ?? this.genre,
-      playCount: playCount ?? this.playCount,
-      isFavorite: isFavorite ?? this.isFavorite,
-      cachedAt: cachedAt ?? this.cachedAt,
-      localFilePath: localFilePath ?? this.localFilePath,
-    );
-  }
-
-  @ignore
-  Duration get duration => Duration(milliseconds: durationMs);
+  @override
+  List<Object?> get props => [
+        songId,
+        title,
+        artist,
+        album,
+        albumArtUrl,
+        durationMs,
+        r2Key,
+        fileSizes,
+        playCount,
+        lastUpdated,
+        popularityScore,
+      ];
 }

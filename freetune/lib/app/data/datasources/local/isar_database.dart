@@ -18,9 +18,8 @@ class IsarDatabase {
         UserModelSchema,
       ],
       directory: dir.path,
-      inspector: true, // Enable inspector in debug mode
+      inspector: true,
     );
-
     return _isar!;
   }
 

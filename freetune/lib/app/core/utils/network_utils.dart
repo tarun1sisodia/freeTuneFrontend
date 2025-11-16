@@ -7,8 +7,6 @@ class NetworkUtils {
   }
 
   static Future<ConnectivityResult> getConnectivityType() async {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    //Need to fix this.
-    return connectivityResult;
+    return await (Connectivity().checkConnectivity());
   }
 }

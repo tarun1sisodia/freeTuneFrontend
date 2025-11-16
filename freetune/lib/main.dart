@@ -5,8 +5,9 @@ import 'app/bindings/initial_binding.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await InitialBinding().dependencies(); // Initialize core services before app runs
-  
+  await AppBindings()
+      .dependencies(); // Initialize core services before app runs
+
   runApp(const FreeTuneApp());
 }
 

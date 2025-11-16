@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'presentation/screens/auth/login_screen.dart';
-import 'presentation/screens/home/home_screen.dart';
-import 'presentation/controllers/auth_controller.dart';
-import 'config/theme_config.dart';
-import 'config/bindings.dart';
+import 'app/bindings/initial_binding.dart';
+import 'app/config/theme_config.dart';
+import 'app/presentation/controllers/auth_controller.dart';
+import 'app/presentation/screens/auth/login_screen.dart';
+import 'app/presentation/screens/home/home_screen.dart';
 
 class FreeTuneApp extends StatelessWidget {
   const FreeTuneApp({super.key});

@@ -1,111 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../routes/app_routes.dart';
 import '../../controllers/auth_controller.dart';
 import '../../../core/utils/validators.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends GetView<AuthController> {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
-
-  // Find the AuthController instance created in the bindings
-  final AuthController authController = Get.find<AuthController>();
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final success = await authController.login(
-      _emailController.text.trim(),
-      _passwordController.text,
-    );
-
-    if (success) {
-      Get.offAllNamed('/home'); // Navigate and remove all previous routes
-    } 
-    // No 'else' needed because the controller's login method shows a snackbar on failure.
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+    Future<void> handleLogin() async {
+      if (formKey.currentState?.validate() ?? false) {
+        final success = await controller.login(
+          emailController.text.trim(),
+          passwordController.text,
+        );
+        if (success) {
+          Get.offAllNamed(Routes.HOME);
+        }
+      }
+    }
+
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Icon(Icons.music_note, size: 80, color: Colors.blue),
-                  const SizedBox(height: 32),
-                  Text(
-                    'FreeTune',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    textAlign: TextAlign.center,
+      appBar: AppBar(title: const Text('Login')),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextFormField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
                   ),
-                  const SizedBox(height: 48),
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email),
-                    ),
-                    validator: Validators.email,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: Validators.validateEmail,
+                ),
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  controller: passwordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
                   ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                      ),
-                    ),
-                    validator: Validators.required,
+                  obscureText: true,
+                  validator: Validators.validatePassword,
+                ),
+                const SizedBox(height: 24.0),
+                Obx(() => ElevatedButton(
+                  onPressed: controller.isLoading.value ? null : handleLogin,
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
                   ),
-                  const SizedBox(height: 24),
-                  // Use Obx to rebuild only the button when loading state changes
-                  Obx(() => ElevatedButton(
-                        onPressed: authController.isLoading.value ? null : _handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: authController.isLoading.value
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : const Text('Login'),
-                      )),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () { /* TODO: Get.toNamed('/register'); */ },
-                    child: const Text('Don\'t have an account? Register'),
-                  ),
-                ],
-              ),
+                  child: controller.isLoading.value
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Login', style: TextStyle(fontSize: 18)),
+                )),
+                const SizedBox(height: 16.0),
+                TextButton(
+                  onPressed: () {
+                    // Navigate to registration screen
+                    // Get.toNamed(Routes.REGISTER);
+                    Get.snackbar('Feature', 'Registration not yet implemented.');
+                  },
+                  child: const Text('Don\'t have an account? Register'),
+                ),
+              ],
             ),
           ),
         ),

@@ -7,28 +7,23 @@ class FileUtils {
     return directory.path;
   }
 
-  static Future<String> getTempDirectory() async {
-    final directory = await getTemporaryDirectory();
-    return directory.path;
+  static Future<bool> fileExists(String filePath) async {
+    return File(filePath).exists();
   }
 
-  static Future<bool> fileExists(String path) async {
-    return File(path).exists();
-  }
-
-  static Future<File> writeFile(String path, List<int> bytes) async {
-    final file = File(path);
+  static Future<File> writeFile(String filePath, List<int> bytes) async {
+    final file = File(filePath);
     return file.writeAsBytes(bytes);
   }
 
-  static Future<List<int>> readFile(String path) async {
-    final file = File(path);
+  static Future<List<int>> readFile(String filePath) async {
+    final file = File(filePath);
     return file.readAsBytes();
   }
 
-  static Future<void> deleteFile(String path) async {
-    final file = File(path);
-    if (await fileExists(path)) {
+  static Future<void> deleteFile(String filePath) async {
+    final file = File(filePath);
+    if (await fileExists(filePath)) {
       await file.delete();
     }
   }

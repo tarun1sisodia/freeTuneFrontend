@@ -1,63 +1,94 @@
 import 'package:get/get.dart';
-import '../../data/models/user/user_model.dart';
-import '../../data/repositories/auth_repository.dart';
+import '../../core/mixins/error_handler_mixin.dart';
+import '../../core/mixins/loading_mixin.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/auth_usecases.dart';
+import '../../routes/app_routes.dart';
 
-class AuthController extends GetxController {
-  final AuthRepository _authRepository;
-  AuthController(this._authRepository);
+class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin {
+  final LoginUserUseCase _loginUserUseCase;
+  final RegisterUserUseCase _registerUserUseCase;
+  final GetCurrentUserUseCase _getCurrentUserUseCase;
+  final LogoutUserUseCase _logoutUserUseCase;
 
-  // .obs makes these variables reactive
-  final Rx<UserModel?> user = Rx(null);
-  final isLoading = false.obs;
+  final Rx<UserEntity?> user = Rx<UserEntity?>(null);
+  final RxBool isAuthenticated = false.obs;
+
+  AuthController({
+    required LoginUserUseCase loginUserUseCase,
+    required RegisterUserUseCase registerUserUseCase,
+    required GetCurrentUserUseCase getCurrentUserUseCase,
+    required LogoutUserUseCase logoutUserUseCase,
+  })
+      : _loginUserUseCase = loginUserUseCase,
+        _registerUserUseCase = registerUserUseCase,
+        _getCurrentUserUseCase = getCurrentUserUseCase,
+        _logoutUserUseCase = logoutUserUseCase;
 
   @override
-  void onReady() {
-    super.onReady();
+  void onInit() {
+    super.onInit();
     _checkCurrentUser();
   }
 
   Future<void> _checkCurrentUser() async {
-    isLoading.value = true;
-    try {
-      user.value = await _authRepository.getCurrentUser();
-    } catch (e) {
-      // Handle error, maybe log it
-      user.value = null;
-    } finally {
-      isLoading.value = false;
-    }
+    showLoading();
+    final result = await _getCurrentUserUseCase.call();
+    result.fold(
+      (failure) => handleError(failure),
+      (currentUser) {
+        user.value = currentUser;
+        isAuthenticated.value = currentUser != null;
+      },
+    );
+    hideLoading();
   }
 
   Future<bool> login(String email, String password) async {
-    isLoading.value = true;
-    try {
-      final loggedInUser = await _authRepository.login(email, password);
-      user.value = loggedInUser;
-      return true;
-    } catch (e) {
-      Get.snackbar('Login Failed', 'Please check your credentials.');
-      return false;
-    } finally {
-      isLoading.value = false;
-    }
+    showLoading();
+    final result = await _loginUserUseCase.call(email, password);
+    hideLoading();
+    return result.fold(
+      (failure) {
+        handleError(failure, title: 'Login Failed');
+        return false;
+      },
+      (loggedInUser) {
+        user.value = loggedInUser;
+        isAuthenticated.value = true;
+        return true;
+      },
+    );
   }
 
-  Future<bool> register(String email, String password, String name) async {
-    isLoading.value = true;
-    try {
-      final registeredUser = await _authRepository.register(email, password, name);
-      user.value = registeredUser;
-      return true;
-    } catch (e) {
-       Get.snackbar('Registration Failed', e.toString());
-      return false;
-    } finally {
-      isLoading.value = false;
-    }
+  Future<bool> register(String email, String password) async {
+    showLoading();
+    final result = await _registerUserUseCase.call(email, password);
+    hideLoading();
+    return result.fold(
+      (failure) {
+        handleError(failure, title: 'Registration Failed');
+        return false;
+      },
+      (registeredUser) {
+        user.value = registeredUser;
+        isAuthenticated.value = true;
+        return true;
+      },
+    );
   }
 
   Future<void> logout() async {
-    await _authRepository.logout();
-    user.value = null;
+    showLoading();
+    final result = await _logoutUserUseCase.call();
+    hideLoading();
+    result.fold(
+      (failure) => handleError(failure, title: 'Logout Failed'),
+      (_) {
+        user.value = null;
+        isAuthenticated.value = false;
+        Get.offAllNamed(Routes.LOGIN);
+      },
+    );
   }
 }

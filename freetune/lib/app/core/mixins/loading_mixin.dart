@@ -1,23 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-mixin LoadingMixin<T extends StatefulWidget> on State<T> {
-  bool _isLoading = false;
+mixin LoadingMixin on GetxController {
+  final RxBool isLoading = false.obs;
 
-  bool get isLoading => _isLoading;
-
-  void startLoading() {
-    if (mounted) {
-      setState(() {
-        _isLoading = true;
-      });
-    }
-  }
-
-  void stopLoading() {
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
+  void showLoading() => isLoading.value = true;
+  void hideLoading() => isLoading.value = false;
 }

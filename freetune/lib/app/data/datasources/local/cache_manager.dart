@@ -1,73 +1,72 @@
 import 'package:isar/isar.dart';
 import '../../models/song/song_model.dart';
-import 'isar_database.dart';
+import '../../models/playlist/playlist_model.dart';
+import '../../models/user/user_model.dart';
 
 class CacheManager {
-  static const int maxCacheSizeMB = 500;
-  static const int targetCacheSizeMB = 400; // 20% buffer
+  final Isar _isar;
 
-  // Auto-cache top 100 most played songs
-  Future<void> autoCacheTopSongs(List<SongModel> songs) async {
-    final isar = await IsarDatabase.getInstance();
-    final top100 = songs.take(100).toList();
+  CacheManager(this._isar);
 
-    await isar.writeTxn(() async {
-      await isar.songModels.putAll(top100);
+  // Songs
+  Future<void> saveSongs(List<SongModel> songs) async {
+    await _isar.writeTxn(() async {
+      await _isar.songModels.putAll(songs);
+    });
+    await _evictOldSongs();
+  }
+
+  Future<List<SongModel>> getSongs() async {
+    return await _isar.songModels.where().findAll();
+  }
+
+  Future<SongModel?> getSongById(String songId) async {
+    return await _isar.songModels.filter().songIdEqualTo(songId).findFirst();
+  }
+
+  Future<void> deleteSong(String songId) async {
+    await _isar.writeTxn(() async {
+      await _isar.songModels.filter().songIdEqualTo(songId).deleteAll();
     });
   }
 
-  // LRU Eviction Policy
-  Future<void> evictIfNeeded() async {
-    final isar = await IsarDatabase.getInstance();
-    // Use .build().findAll() to retrieve all songModels
-    final cachedSongs = await isar.songModels.where().build().findAll();
+  // Playlists
+  Future<void> savePlaylists(List<PlaylistModel> playlists) async {
+    await _isar.writeTxn(() async {
+      await _isar.playlistModels.putAll(playlists);
+    });
+  }
 
-    // Calculate current cache size (simplified)
-    final currentSizeMB =
-        cachedSongs.length * 3.6; // ~3.6MB per song (medium quality)
+  Future<List<PlaylistModel>> getPlaylists() async {
+    return await _isar.playlistModels.where().findAll();
+  }
 
-    if (currentSizeMB > maxCacheSizeMB) {
-      // Sort by: play_count (desc) → cached_at (desc)
-      cachedSongs.sort((a, b) {
-        final playCountCompare = b.playCount.compareTo(a.playCount);
-        if (playCountCompare != 0) return playCountCompare;
-        if (a.cachedAt == null && b.cachedAt == null) return 0;
-        if (a.cachedAt == null) return 1;
-        if (b.cachedAt == null) return -1;
-        return b.cachedAt!.compareTo(a.cachedAt!);
+  // Users
+  Future<void> saveUser(UserModel user) async {
+    await _isar.writeTxn(() async {
+      await _isar.userModels.put(user);
+    });
+  }
+
+  Future<UserModel?> getUser() async {
+    return await _isar.userModels.where().findFirst();
+  }
+
+  Future<void> clearAllCache() async {
+    await _isar.writeTxn(() async {
+      await _isar.clear();
+    });
+  }
+
+  Future<void> _evictOldSongs() async {
+    // Implement LRU eviction based on CacheConfig.maxCacheSizeMb
+    // This is a simplified example, actual implementation would involve checking file sizes
+    final allSongs = await _isar.songModels.where().findAll();
+    if (allSongs.length > 100) { // Example: keep only 100 songs
+      final songsToDelete = allSongs.sublist(100);
+      await _isar.writeTxn(() async {
+        await _isar.songModels.deleteAll(songsToDelete.map((e) => e.id).toList());
       });
-
-      // Remove oldest/least played songs
-      final toRemove = cachedSongs.length - (targetCacheSizeMB ~/ 3.6).toInt();
-      if (toRemove > 0) {
-        final songsToDelete =
-            cachedSongs.sublist(cachedSongs.length - toRemove);
-
-        await isar.writeTxn(() async {
-          await isar.songModels
-              .deleteAll(songsToDelete.map((s) => s.id as Id).toList());
-        });
-      }
     }
-  }
-
-  // Check if song is cached
-  Future<bool> isCached(Id songId) async {
-    final isar = await IsarDatabase.getInstance();
-    return await isar.songModels.get(songId) != null;
-  }
-
-  // Get cached song
-  Future<SongModel?> getCachedSong(Id songId) async {
-    final isar = await IsarDatabase.getInstance();
-    return await isar.songModels.get(songId);
-  }
-
-  // Cache song
-  Future<void> cacheSong(SongModel song) async {
-    final isar = await IsarDatabase.getInstance();
-    await isar.writeTxn(() async {
-      await isar.songModels.put(song.copyWith(cachedAt: DateTime.now()));
-    });
   }
 }

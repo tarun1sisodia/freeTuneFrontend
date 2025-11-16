@@ -1,30 +1,20 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import '../../exceptions/api_exception.dart';
-import '../../exceptions/network_exception.dart';
-import '../../exceptions/cache_exception.dart';
-import '../logger.dart';
 
-mixin ErrorHandlerMixin<T extends StatefulWidget> on State<T> {
-  void handleError(dynamic error, StackTrace stackTrace) {
-    String errorMessage = 'An unexpected error occurred.';
-
-    if (error is ApiException) {
-      errorMessage = error.message;
-      Logger.error('API Error: ${error.message}', error, stackTrace);
-    } else if (error is NetworkException) {
-      errorMessage = error.message;
-      Logger.error('Network Error: ${error.message}', error, stackTrace);
-    } else if (error is CacheException) {
-      errorMessage = error.message;
-      Logger.error('Cache Error: ${error.message}', error, stackTrace);
-    } else {
-      Logger.error('Unhandled Error: $error', error, stackTrace);
+mixin ErrorHandlerMixin on GetxController {
+  void handleError(dynamic error, {String title = 'Error'}) {
+    String message = 'Something went wrong.';
+    if (error is Exception) {
+      message = error.toString();
+    } else if (error is String) {
+      message = error;
     }
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
-    }
+    Get.snackbar(
+      title,
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
 }

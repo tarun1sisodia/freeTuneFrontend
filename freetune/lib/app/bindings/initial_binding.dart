@@ -1,119 +1,77 @@
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/datasources/remote/api_client.dart';
 import '../data/datasources/local/isar_database.dart';
-import '../data/datasources/local/cache_manager.dart';
+import '../data/datasources/local/preferences_storage.dart';
 
-// APIs
 import '../data/datasources/remote/auth_api.dart';
-import '../data/datasources/remote/playlists_api.dart';
 import '../data/datasources/remote/songs_api.dart';
+import '../data/datasources/remote/playlists_api.dart';
 import '../data/datasources/remote/recommendations_api.dart';
 import '../data/datasources/remote/analytics_api.dart';
 
-// Repositories
+import '../data/datasources/local/cache_manager.dart';
+
 import '../data/repositories/auth_repository.dart';
-import '../data/repositories/playlist_repository.dart';
 import '../data/repositories/song_repository.dart';
+import '../data/repositories/playlist_repository.dart';
 import '../data/repositories/recommendation_repository.dart';
 import '../data/repositories/analytics_repository.dart';
 
-// Services
+import '../domain/usecases/auth_usecases.dart';
+import '../domain/usecases/song_usecases.dart';
+import '../services/analytics/analytics_service.dart';
 import '../services/audio/audio_player_service.dart';
+import '../services/network/network_service.dart';
 
-// Controllers (assuming paths for example purpose)
-import '../presentation/controllers/auth_controller.dart';
-import '../presentation/controllers/audio_player_controller.dart';
-import '../presentation/controllers/home_controller.dart';
-import '../presentation/controllers/songs_controller.dart';
 
-// Bindings for feature screens
-import 'auth_binding.dart';
-import 'home_binding.dart';
-import 'player_binding.dart';
-// (If you have additional bindings for search, playlist, analytics, recommendation, etc import them here.)
-
-class InitialBinding implements Bindings {
+class AppBindings implements Bindings {
   @override
   Future<void> dependencies() async {
-    // Core (Local storage, cache, etc.)
+    // Initialize SharedPreferences first as it's used by other dependencies
+    final prefs = await SharedPreferences.getInstance();
+    Get.put<SharedPreferences>(prefs, permanent: true);
+    Get.put<PreferencesStorage>(PreferencesStorage(Get.find()), permanent: true);
+
+    // Core API Client
     Get.lazyPut<ApiClient>(() => ApiClient(), fenix: true);
+
+    // Isar Database
     final isar = await IsarDatabase.getInstance();
-    Get.put(isar, permanent: true);
-    Get.lazyPut<CacheManager>(() => CacheManager(), fenix: true);
+    Get.put<Isar>(isar, permanent: true);
+    Get.put<CacheManager>(CacheManager(Get.find()), permanent: true);
 
-    //== APIs ==
+    // Remote Data Sources (APIs)
     Get.lazyPut<AuthApi>(() => AuthApi(Get.find<ApiClient>().dio), fenix: true);
-    Get.lazyPut<PlaylistsApi>(() => PlaylistsApi(Get.find<ApiClient>().dio),
-        fenix: true);
-    Get.lazyPut<SongsApi>(() => SongsApi(Get.find<ApiClient>().dio),
-        fenix: true);
-    Get.lazyPut<RecommendationsApi>(
-        () => RecommendationsApi(Get.find<ApiClient>().dio),
-        fenix: true);
-    Get.lazyPut<AnalyticsApi>(() => AnalyticsApi(Get.find<ApiClient>().dio),
-        fenix: true);
+    Get.lazyPut<SongsApi>(() => SongsApi(Get.find<ApiClient>().dio), fenix: true);
+    Get.lazyPut<PlaylistsApi>(() => PlaylistsApi(Get.find<ApiClient>().dio), fenix: true);
+    Get.lazyPut<RecommendationsApi>(() => RecommendationsApi(Get.find<ApiClient>().dio), fenix: true);
+    Get.lazyPut<AnalyticsApi>(() => AnalyticsApi(Get.find<ApiClient>().dio), fenix: true);
 
-    //== Repositories ==
-    Get.lazyPut<AuthRepository>(
-      () => AuthRepository(Get.find<AuthApi>(), Get.find<ApiClient>()),
-      fenix: true,
-    );
-    Get.lazyPut<PlaylistRepository>(
-      () => PlaylistRepository(Get.find<PlaylistsApi>()),
-      fenix: true,
-    );
-    Get.lazyPut<SongRepository>(
-      () => SongRepository(Get.find<SongsApi>(), Get.find<CacheManager>()),
-      fenix: true,
-    );
-    Get.lazyPut<RecommendationRepository>(
-      () => RecommendationRepository(Get.find<RecommendationsApi>()),
-      fenix: true,
-    );
-    Get.lazyPut<AnalyticsRepository>(
-      () => AnalyticsRepository(Get.find<AnalyticsApi>()),
-      fenix: true,
-    );
+    // Repositories
+    Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(Get.find(), Get.find()), fenix: true);
+    Get.lazyPut<SongRepository>(() => SongRepositoryImpl(Get.find(), Get.find()), fenix: true);
+    Get.lazyPut<PlaylistRepository>(() => PlaylistRepositoryImpl(Get.find(), Get.find()), fenix: true);
+    Get.lazyPut<RecommendationRepository>(() => RecommendationRepositoryImpl(Get.find()), fenix: true);
+    Get.lazyPut<AnalyticsRepository>(() => AnalyticsRepositoryImpl(Get.find()), fenix: true);
 
-    //== Services ==
-    Get.lazyPut<AudioPlayerService>(
-      () => AudioPlayerService(
-          Get.find<SongRepository>(), Get.find<AnalyticsRepository>()),
-      fenix: true,
-    );
-    // If you have other core services (e.g., analytics, preferences, etc.), bind similarly.
+    // Use Cases
+    Get.lazyPut(() => LoginUserUseCase(Get.find<AuthRepository>()), fenix: true);
+    Get.lazyPut(() => RegisterUserUseCase(Get.find<AuthRepository>()), fenix: true);
+    Get.lazyPut(() => GetCurrentUserUseCase(Get.find<AuthRepository>()), fenix: true);
+    Get.lazyPut(() => LogoutUserUseCase(Get.find<AuthRepository>()), fenix: true);
+    Get.lazyPut(() => GetSongsUseCase(Get.find<SongRepository>()), fenix: true);
+    Get.lazyPut(() => SearchSongsUseCase(Get.find<SongRepository>()), fenix: true);
+    Get.lazyPut(() => GetStreamUrlUseCase(Get.find<SongRepository>()), fenix: true);
+    Get.lazyPut(() => TrackPlayUseCase(Get.find<SongRepository>()), fenix: true);
+    Get.lazyPut(() => TrackPlaybackUseCase(Get.find<SongRepository>()), fenix: true);
+    Get.lazyPut(() => GetSongDetailsUseCase(Get.find<SongRepository>()), fenix: true);
 
-    //== Controllers ==
-    // Bind AuthController and others as singleton if used across the app
-    Get.lazyPut<AuthController>(
-        () => AuthController(Get.find<AuthRepository>()),
-        fenix: true);
-
-    Get.lazyPut<AudioPlayerController>(
-      () => AudioPlayerController(Get.find<AudioPlayerService>()),
-      fenix: true,
-    );
-
-    // Home and Songs Controllers (adapt arguments as needed)
-    Get.lazyPut<HomeController>(
-      () => HomeController(
-        Get.find<SongRepository>(),
-        Get.find<PlaylistRepository>(),
-        Get.find<RecommendationRepository>(),
-      ),
-      fenix: true,
-    );
-
-    Get.lazyPut<SongsController>(
-      () => SongsController(Get.find<SongRepository>()),
-      fenix: true,
-    );
-
-    // You could also auto-bind other controllers, analytics, recommendation controllers, etc as your app grows.
-
-    //== Bindings for features (only import and call on page routes) ==
-    // (These would be used via GetPage bindings, not here, just imports above for centralized organization.)
-    // AuthBinding(), HomeBinding(), PlayerBinding(), etc.
+    // Services
+    Get.put<NetworkService>(NetworkService(), permanent: true);
+    Get.put<AnalyticsService>(AnalyticsService(Get.find()), permanent: true);
+    Get.put<AudioPlayerService>(AudioPlayerService(Get.find(), Get.find()), permanent: true);
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 // import '../../controllers/audio_player_controller.dart'; // Create this later
 
 class MiniPlayer extends StatelessWidget {

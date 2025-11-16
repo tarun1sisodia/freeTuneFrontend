@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 
 class ThemeConfig {
-  // Add theme related configurations here
   static final ThemeData lightTheme = ThemeData(
-    primarySwatch: Colors.blue,
     brightness: Brightness.light,
-    useMaterial3: true,
+    primarySwatch: Colors.blue,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.blue,
+      foregroundColor: Colors.white,
+    ),
+    // Add more light theme configurations
   );
 
   static final ThemeData darkTheme = ThemeData(
-    primarySwatch: Colors.blueGrey,
     brightness: Brightness.dark,
-    useMaterial3: true,
+    primarySwatch: Colors.blueGrey,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.blueGrey,
+      foregroundColor: Colors.white,
+    ),
+    // Add more dark theme configurations
   );
 }

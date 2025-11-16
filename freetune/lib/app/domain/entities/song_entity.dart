@@ -5,20 +5,40 @@ class SongEntity extends Equatable {
   final String title;
   final String artist;
   final String album;
-  final String? albumArt;
-  final Duration duration;
-  final String audioUrl;
+  final String? albumArtUrl;
+  final int durationMs;
+  final String r2Key;
+  final Map<String, int> fileSizes;
+  final int playCount;
+  final DateTime lastUpdated;
+  final double popularityScore;
 
   const SongEntity({
     required this.id,
     required this.title,
     required this.artist,
     required this.album,
-    this.albumArt,
-    required this.duration,
-    required this.audioUrl,
+    this.albumArtUrl,
+    required this.durationMs,
+    required this.r2Key,
+    required this.fileSizes,
+    this.playCount = 0,
+    required this.lastUpdated,
+    this.popularityScore = 0.0,
   });
 
   @override
-  List<Object?> get props => [id, title, artist, album, albumArt, duration, audioUrl];
+  List<Object?> get props => [
+        id,
+        title,
+        artist,
+        album,
+        albumArtUrl,
+        durationMs,
+        r2Key,
+        fileSizes,
+        playCount,
+        lastUpdated,
+        popularityScore,
+      ];
 }

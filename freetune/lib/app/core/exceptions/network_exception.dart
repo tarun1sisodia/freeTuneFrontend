@@ -4,7 +4,5 @@ class NetworkException implements Exception {
   NetworkException(this.message);
 
   @override
-  String toString() {
-    return 'NetworkException: $message';
-  }
+  String toString() => 'NetworkException: $message';
 }

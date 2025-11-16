@@ -43,6 +43,8 @@ dependencies:
   # Utils
   intl: ^0.18.1
   equatable: ^2.0.5
+  logger: ^2.0.2
+  dartz: ^0.10.1
 
   # Code Generation
   build_runner: ^2.4.7

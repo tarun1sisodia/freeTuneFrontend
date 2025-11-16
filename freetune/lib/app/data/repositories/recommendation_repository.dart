@@ -1,60 +1,26 @@
-import '../datasources/remote/recommendations_api.dart';
-import '../../core/exceptions/api_exception.dart';
 import '../../domain/entities/song_entity.dart';
+import '../datasources/remote/recommendations_api.dart';
 import '../mappers/song_mapper.dart';
 
-class RecommendationRepository {
+abstract class RecommendationRepository {
+  Future<List<SongEntity>> getRecommendations({String? userId});
+  Future<List<SongEntity>> getSimilarSongs(String songId);
+}
+
+class RecommendationRepositoryImpl implements RecommendationRepository {
   final RecommendationsApi _recommendationsApi;
 
-  RecommendationRepository(this._recommendationsApi);
+  RecommendationRepositoryImpl(this._recommendationsApi);
 
-  Future<List<SongEntity>> getRecommendations({
-    String? genre,
-    String? mood,
-    int limit = 20,
-  }) async {
-    try {
-      final songModels = await _recommendationsApi.getRecommendations(
-        genre: genre,
-        mood: mood,
-        limit: limit,
-      );
-      return songModels.map((e) => SongMapper.fromModel(e)).toList();
-    } catch (e) {
-      throw ApiException.fromDioError(e);
-    }
+  @override
+  Future<List<SongEntity>> getRecommendations({String? userId}) async {
+    final songModels = await _recommendationsApi.getRecommendations(userId: userId);
+    return songModels.map((model) => SongMapper.fromModel(model)).toList();
   }
 
-  Future<List<SongEntity>> getSimilarSongs({
-    required String songId,
-    int limit = 20,
-  }) async {
-    try {
-      final songModels = await _recommendationsApi.getSimilarSongs(
-        songId: songId,
-        limit: limit,
-      );
-      return songModels.map((e) => SongMapper.fromModel(e)).toList();
-    } catch (e) {
-      throw ApiException.fromDioError(e);
-    }
-  }
-
-  Future<List<SongEntity>> getTrendingRecommendations({int limit = 20}) async {
-    try {
-      final songModels = await _recommendationsApi.getTrendingRecommendations(limit: limit);
-      return songModels.map((e) => SongMapper.fromModel(e)).toList();
-    } catch (e) {
-      throw ApiException.fromDioError(e);
-    }
-  }
-
-  Future<List<SongEntity>> getUserTopSongsRecommendations({int limit = 20}) async {
-    try {
-      final songModels = await _recommendationsApi.getUserTopSongsRecommendations(limit: limit);
-      return songModels.map((e) => SongMapper.fromModel(e)).toList();
-    } catch (e) {
-      throw ApiException.fromDioError(e);
-    }
+  @override
+  Future<List<SongEntity>> getSimilarSongs(String songId) async {
+    final songModels = await _recommendationsApi.getSimilarSongs(songId);
+    return songModels.map((model) => SongMapper.fromModel(model)).toList();
   }
 }

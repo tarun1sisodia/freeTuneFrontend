@@ -1,179 +1,43 @@
-import '../datasources/remote/playlists_api.dart';
-import '../datasources/local/isar_database.dart';
-import '../models/playlist/playlist_model.dart';
-import '../../core/exceptions/api_exception.dart';
-import '../../core/utils/network_utils.dart';
 import '../../domain/entities/playlist_entity.dart';
+import '../datasources/local/cache_manager.dart';
+import '../datasources/remote/playlists_api.dart';
 import '../mappers/playlist_mapper.dart';
 
-class PlaylistRepository {
+abstract class PlaylistRepository {
+  Future<List<PlaylistEntity>> getPlaylists();
+  Future<PlaylistEntity> createPlaylist(String name, List<String> songIds);
+  // Add other playlist related methods
+}
+
+class PlaylistRepositoryImpl implements PlaylistRepository {
   final PlaylistsApi _playlistsApi;
+  final CacheManager _cacheManager;
 
-  PlaylistRepository(this._playlistsApi);
+  PlaylistRepositoryImpl(this._playlistsApi, this._cacheManager);
 
-  /// Issues reported:
-  /// 1. The method 'findAllSync' isn't defined for the type 'QueryBuilder'.
-  ///    - The correct async method is 'findAll()'.
-  /// 2. The method 'findFirstSync' isn't defined for the type 'QueryBuilder'.
-  ///    - The correct async method is 'findFirst()'.
-
+  @override
   Future<List<PlaylistEntity>> getPlaylists() async {
-    try {
-      final isConnected = await NetworkUtils.isConnected();
-
-      if (!isConnected) {
-        // Return cached playlists if offline
-        final isar = await IsarDatabase.getInstance();
-        final cachedModels = await isar.playlistModels.where().findAll();
-        return cachedModels.map((e) => PlaylistMapper.fromModel(e)).toList();
-      }
-
-      final playlists = await _playlistsApi.getPlaylists();
-
-      // Cache playlists
-      final isar = await IsarDatabase.getInstance();
-      await isar.writeTxn(() async {
-        await isar.playlistModels.putAll(playlists);
-      });
-
-      return playlists.map((e) => PlaylistMapper.fromModel(e)).toList();
-    } catch (e) {
-      throw ApiException.fromDioError(e);
+    // Try to get from cache first
+    final cachedPlaylists = await _cacheManager.getPlaylists();
+    if (cachedPlaylists.isNotEmpty) {
+      return cachedPlaylists
+          .map((model) => PlaylistMapper.fromModel(model))
+          .toList();
     }
+
+    // If not in cache, fetch from API
+    final apiPlaylists = await _playlistsApi.getPlaylists();
+    await _cacheManager.savePlaylists(apiPlaylists); // Save to cache
+    return apiPlaylists
+        .map((model) => PlaylistMapper.fromModel(model))
+        .toList();
   }
 
-  Future<PlaylistEntity> createPlaylist({
-    required String name,
-    String? description,
-    bool isPublic = false,
-  }) async {
-    try {
-      final playlistModel = await _playlistsApi.createPlaylist(
-        name: name,
-        description: description,
-        isPublic: isPublic,
-      );
-
-      // Cache the new playlist
-      final isar = await IsarDatabase.getInstance();
-      await isar.writeTxn(() async {
-        await isar.playlistModels.put(playlistModel);
-      });
-
-      return PlaylistMapper.fromModel(playlistModel);
-    } catch (e) {
-      throw ApiException.fromDioError(e);
-    }
-  }
-
-  Future<PlaylistEntity> getPlaylistById(String id) async {
-    try {
-      final isConnected = await NetworkUtils.isConnected();
-
-      if (!isConnected) {
-        // Return cached playlist if offline
-        final isar = await IsarDatabase.getInstance();
-        final cached = await isar.playlistModels.filter().idEqualTo(id).findFirst();
-        if (cached != null) return PlaylistMapper.fromModel(cached);
-      }
-
-      final playlistModel = await _playlistsApi.getPlaylistById(id);
-
-      // Cache playlist
-      final isar = await IsarDatabase.getInstance();
-      await isar.writeTxn(() async {
-        await isar.playlistModels.put(playlistModel);
-      });
-
-      return PlaylistMapper.fromModel(playlistModel);
-    } catch (e) {
-      throw ApiException.fromDioError(e);
-    }
-  }
-
-  Future<PlaylistEntity> updatePlaylist({
-    required String id,
-    String? name,
-    String? description,
-    bool? isPublic,
-  }) async {
-    try {
-      final playlistModel = await _playlistsApi.updatePlaylist(
-        id: id,
-        name: name,
-        description: description,
-        isPublic: isPublic,
-      );
-
-      // Update cache
-      final isar = await IsarDatabase.getInstance();
-      await isar.writeTxn(() async {
-        await isar.playlistModels.put(playlistModel);
-      });
-
-      return PlaylistMapper.fromModel(playlistModel);
-    } catch (e) {
-      throw ApiException.fromDioError(e);
-    }
-  }
-
-  Future<void> deletePlaylist(String id) async {
-    try {
-      await _playlistsApi.deletePlaylist(id);
-
-      // Remove from cache
-      final isar = await IsarDatabase.getInstance();
-      await isar.writeTxn(() async {
-        // Fix: Use the async findFirst() method
-        final toDelete = await isar.playlistModels.filter().idEqualTo(id).findFirst();
-        if (toDelete != null) {
-          await isar.playlistModels.delete(toDelete.isarId);
-        }
-      });
-    } catch (e) {
-      throw ApiException.fromDioError(e);
-    }
-  }
-
-  Future<void> addSongToPlaylist({
-    required String playlistId,
-    required String songId,
-  }) async {
-    try {
-      await _playlistsApi.addSongToPlaylist(
-        playlistId: playlistId,
-        songId: songId,
-      );
-
-      // Refresh playlist in cache
-      final playlistModel = await _playlistsApi.getPlaylistById(playlistId);
-      final isar = await IsarDatabase.getInstance();
-      await isar.writeTxn(() async {
-        await isar.playlistModels.put(playlistModel);
-      });
-    } catch (e) {
-      throw ApiException.fromDioError(e);
-    }
-  }
-
-  Future<void> removeSongFromPlaylist({
-    required String playlistId,
-    required String songId,
-  }) async {
-    try {
-      await _playlistsApi.removeSongFromPlaylist(
-        playlistId: playlistId,
-        songId: songId,
-      );
-
-      // Refresh playlist in cache
-      final playlistModel = await _playlistsApi.getPlaylistById(playlistId);
-      final isar = await IsarDatabase.getInstance();
-      await isar.writeTxn(() async {
-        await isar.playlistModels.put(playlistModel);
-      });
-    } catch (e) {
-      throw ApiException.fromDioError(e);
-    }
+  @override
+  Future<PlaylistEntity> createPlaylist(
+      String name, List<String> songIds) async {
+    final newPlaylistModel = await _playlistsApi.createPlaylist(name, songIds);
+    // Optionally update cache after creation
+    return PlaylistMapper.fromModel(newPlaylistModel);
   }
 }

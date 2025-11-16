@@ -1,48 +1,33 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/constants/cache_keys.dart';
 
 class PreferencesStorage {
-  static const String _themeKey = 'theme_mode';
-  static const String _audioQualityKey = 'audio_quality';
-  static const String _autoPlayKey = 'auto_play';
-  static const String _downloadQualityKey = 'download_quality';
+  final SharedPreferences _prefs;
 
-  Future<void> setThemeMode(String mode) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeKey, mode);
+  PreferencesStorage(this._prefs);
+
+  Future<void> saveAuthToken(String token) async {
+    await _prefs.setString(CacheKeys.authToken, token);
   }
 
-  Future<String?> getThemeMode() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_themeKey);
+  String? getAuthToken() {
+    return _prefs.getString(CacheKeys.authToken);
   }
 
-  Future<void> setAudioQuality(String quality) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_audioQualityKey, quality);
+  Future<void> clearAuthToken() async {
+    await _prefs.remove(CacheKeys.authToken);
   }
 
-  Future<String?> getAudioQuality() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_audioQualityKey) ?? 'medium';
+  // Generic methods for other preferences
+  Future<void> saveString(String key, String value) async {
+    await _prefs.setString(key, value);
   }
 
-  Future<void> setAutoPlay(bool enabled) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_autoPlayKey, enabled);
+  String? getString(String key) {
+    return _prefs.getString(key);
   }
 
-  Future<bool> getAutoPlay() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_autoPlayKey) ?? true;
-  }
-
-  Future<void> setDownloadQuality(String quality) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_downloadQualityKey, quality);
-  }
-
-  Future<String?> getDownloadQuality() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_downloadQualityKey) ?? 'medium';
+  Future<void> remove(String key) async {
+    await _prefs.remove(key);
   }
 }

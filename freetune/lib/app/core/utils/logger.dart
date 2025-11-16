@@ -1,16 +1,38 @@
-class Logger {
-  static void log(String message) {
-    // Simple logger for now, can integrate a more robust logging solution
-    print('[FreeTune LOG]: $message');
+import 'package:logger/logger.dart';
+
+class AppLogger {
+  static final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 2,
+      errorMethodCount: 8,
+      lineLength: 120,
+      colors: true,
+      printEmojis: true,
+      printTime: false,
+    ),
+  );
+
+  static void d(dynamic message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.d(message, error: error, stackTrace: stackTrace);
   }
 
-  static void error(String message, [dynamic error, StackTrace? stackTrace]) {
-    print('[FreeTune ERROR]: $message');
-    if (error != null) {
-      print('Error: $error');
-    }
-    if (stackTrace != null) {
-      print('StackTrace: $stackTrace');
-    }
+  static void i(dynamic message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.i(message, error: error, stackTrace: stackTrace);
+  }
+
+  static void w(dynamic message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.w(message, error: error, stackTrace: stackTrace);
+  }
+
+  static void e(dynamic message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.e(message, error: error, stackTrace: stackTrace);
+  }
+
+  static void v(dynamic message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.v(message, error: error, stackTrace: stackTrace);
+  }
+
+  static void wtf(dynamic message, [dynamic error, StackTrace? stackTrace]) {
+    _logger.wtf(message, error: error, stackTrace: stackTrace);
   }
 }

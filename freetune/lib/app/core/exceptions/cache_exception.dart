@@ -4,7 +4,5 @@ class CacheException implements Exception {
   CacheException(this.message);
 
   @override
-  String toString() {
-    return 'CacheException: $message';
-  }
+  String toString() => 'CacheException: $message';
 }
