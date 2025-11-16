@@ -1,10 +1,11 @@
-import 'package:equatable/equatable.dart';
 import 'package:isar/isar.dart';
+
+import 'file_size_model.dart';
 
 part 'song_model.g.dart';
 
 @collection
-class SongModel extends Equatable {
+class SongModel {
   Id id = Isar.autoIncrement;
   final String songId;
   final String title;
@@ -13,7 +14,7 @@ class SongModel extends Equatable {
   final String? albumArtUrl;
   final int durationMs;
   final String r2Key;
-  final Map<String, int> fileSizes; // e.g., {'high': 12345, 'medium': 6789}
+  final List<FileSize> fileSizes; // e.g., {'high': 12345, 'medium': 6789}
   final int playCount;
   final DateTime lastUpdated;
   final double popularityScore;
@@ -41,7 +42,7 @@ class SongModel extends Equatable {
       albumArtUrl: json['albumArtUrl'],
       durationMs: json['durationMs'],
       r2Key: json['r2Key'],
-      fileSizes: Map<String, int>.from(json['fileSizes']),
+      fileSizes: (Map<String, int>.from(json['fileSizes'])).entries.map((e) => FileSize()..quality = e.key..size = e.value).toList(),
       playCount: json['playCount'] ?? 0,
       lastUpdated: DateTime.parse(json['lastUpdated']),
       popularityScore: json['popularityScore']?.toDouble() ?? 0.0,
@@ -57,25 +58,10 @@ class SongModel extends Equatable {
       'albumArtUrl': albumArtUrl,
       'durationMs': durationMs,
       'r2Key': r2Key,
-      'fileSizes': fileSizes,
+      'fileSizes': { for (var v in fileSizes) v.quality : v.size },
       'playCount': playCount,
       'lastUpdated': lastUpdated.toIso8601String(),
       'popularityScore': popularityScore,
     };
   }
-
-  @override
-  List<Object?> get props => [
-        songId,
-        title,
-        artist,
-        album,
-        albumArtUrl,
-        durationMs,
-        r2Key,
-        fileSizes,
-        playCount,
-        lastUpdated,
-        popularityScore,
-      ];
 }

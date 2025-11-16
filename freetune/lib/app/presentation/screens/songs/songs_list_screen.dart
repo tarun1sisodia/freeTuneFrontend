@@ -10,36 +10,40 @@ class SongsListScreen extends GetView<SongController> {
     return Scaffold(
       appBar: AppBar(title: const Text('Songs')),
       body: Obx(() {
-        if (controller.isLoadingSongs.value && controller.songs.value == null) {
+        if (controller.isLoadingSongs.value && controller.songs.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
         
-        final response = controller.songs.value;
-        if (response == null || response.data.isEmpty) {
+        if (controller.songs.isEmpty) {
           return const Center(child: Text('No songs found.'));
         }
         
-        return ListView.builder(
-          itemCount: response.data.length,
-          itemBuilder: (context, index) {
-            final song = response.data[index];
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundImage: song.albumArt != null ? NetworkImage(song.albumArt!) : null,
-                child: song.albumArt == null ? const Icon(Icons.music_note) : null,
-              ),
-              title: Text(song.title),
-              subtitle: Text(song.artist),
-              trailing: IconButton(
-                icon: Icon(
-                  song.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: song.isFavorite ? Colors.red : null,
-                ),
-                onPressed: () { /* TODO: controller.toggleFavorite(song.id); */ },
-              ),
-              onTap: () { /* TODO: Get.find<AudioPlayerController>().play(song); */ },
-            );
+        return NotificationListener<ScrollNotification>(
+          onNotification: (ScrollNotification scrollInfo) {
+            if (!controller.isLoadingMore.value &&
+                scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+              controller.loadMoreSongs();
+            }
+            return false;
           },
+          child: ListView.builder(
+            itemCount: controller.songs.length + (controller.isLoadingMore.value ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index == controller.songs.length) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final song = controller.songs[index];
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: song.albumArtUrl != null ? NetworkImage(song.albumArtUrl!) : null,
+                  child: song.albumArtUrl == null ? const Icon(Icons.music_note) : null,
+                ),
+                title: Text(song.title),
+                subtitle: Text(song.artist),
+                onTap: () { /* TODO: Get.find<AudioPlayerController>().play(song); */ },
+              );
+            },
+          ),
         );
       }),
     );

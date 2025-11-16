@@ -1,12 +1,12 @@
 import 'package:get/get.dart';
-import '../../data/models/playlist/playlist_model.dart';
+import '../../domain/entities/playlist_entity.dart';
 import '../../data/repositories/playlist_repository.dart';
 
 class PlaylistController extends GetxController {
   final PlaylistRepository _playlistRepository;
   PlaylistController(this._playlistRepository);
 
-  final playlists = <PlaylistModel>[].obs;
+  final playlists = <PlaylistEntity>[].obs;
   final isLoading = false.obs;
 
   @override
@@ -28,18 +28,17 @@ class PlaylistController extends GetxController {
 
   Future<void> createPlaylist({
     required String name,
-    String? description,
-    bool isPublic = false,
+    required List<String> songIds,
   }) async {
     try {
-      await _playlistRepository.createPlaylist(
-          name: name, description: description, isPublic: isPublic);
+      await _playlistRepository.createPlaylist(name, songIds);
       fetchPlaylists(); // Refresh the list after creating
     } catch (e) {
       Get.snackbar('Error', 'Could not create playlist.');
     }
   }
 
+  /*
   Future<void> deletePlaylist(String id) async {
     try {
       await _playlistRepository.deletePlaylist(id);
@@ -48,6 +47,7 @@ class PlaylistController extends GetxController {
       Get.snackbar('Error', 'Could not delete playlist.');
     }
   }
+  */
 
   // Other methods like add/remove song would follow the same pattern
 }

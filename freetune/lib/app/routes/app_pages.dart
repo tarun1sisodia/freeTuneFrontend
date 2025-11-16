@@ -27,12 +27,12 @@ class AppPages {
     GetPage(
       name: Routes.HOME,
       page: () => const HomeScreen(),
-      binding: HomeBinding(),
+      // binding: HomeBinding(),
     ),
     GetPage(
       name: Routes.PLAYER,
       page: () => const PlayerScreen(),
-      binding: PlayerBinding(),
+      // binding: PlayerBinding(),
       transition: Transition.downToUp,
     ),
     GetPage(

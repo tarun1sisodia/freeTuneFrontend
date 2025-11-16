@@ -1,10 +1,9 @@
-import 'package:equatable/equatable.dart';
 import 'package:isar/isar.dart';
 
 part 'user_model.g.dart';
 
 @collection
-class UserModel extends Equatable {
+class UserModel {
   Id id = Isar.autoIncrement;
   final String userId;
   final String email;
@@ -35,7 +34,4 @@ class UserModel extends Equatable {
       'profileImageUrl': profileImageUrl,
     };
   }
-
-  @override
-  List<Object?> get props => [userId, email, username, profileImageUrl];
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../controllers/auth_controller.dart';
 import '../../../routes/app_routes.dart';
+import '../../controllers/auth_controller.dart';
 
 class HomeScreen extends GetView<AuthController> {
   const HomeScreen({super.key});

@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
-import '../../data/models/common/paginated_response.dart';
-import '../../data/models/song/song_model.dart';
+import '../../domain/entities/song_entity.dart';
 import '../../data/repositories/song_repository.dart';
 
 class SongController extends GetxController {
@@ -8,16 +7,22 @@ class SongController extends GetxController {
   SongController(this._songRepository);
 
   // Observable lists for different song categories
-  final songs = Rx<PaginatedResponse<SongModel>?>(null);
-  final popularSongs = <SongModel>[].obs;
-  final recentlyPlayed = <SongModel>[].obs;
-  final favorites = <SongModel>[].obs;
-  final searchResults = <SongModel>[].obs;
+  final songs = <SongEntity>[].obs;
+  final popularSongs = <SongEntity>[].obs;
+  final recentlyPlayed = <SongEntity>[].obs;
+  final favorites = <SongEntity>[].obs;
+  final searchResults = <SongEntity>[].obs;
 
   // Loading states for each section
   final isLoadingSongs = false.obs;
   final isLoadingPopular = false.obs;
   final isSearching = false.obs;
+  final isLoadingMore = false.obs;
+
+  // Pagination state
+  int _currentPage = 1;
+  bool _isLastPage = false;
+  final int _limit = 20;
 
   @override
   void onInit() {
@@ -27,16 +32,25 @@ class SongController extends GetxController {
 
   void fetchInitialData() {
     fetchSongs();
-    fetchPopularSongs();
+    // fetchPopularSongs(); // Uncomment when ready
     // fetchRecentlyPlayed(); // Uncomment when ready
     // fetchFavorites(); // Uncomment when ready
   }
 
   Future<void> fetchSongs({bool refresh = false}) async {
+    if (refresh) {
+      _currentPage = 1;
+      _isLastPage = false;
+      songs.clear();
+    }
     isLoadingSongs.value = true;
     try {
-      final response = await _songRepository.getSongs();
-      songs.value = response;
+      final response = await _songRepository.getSongs(page: _currentPage, limit: _limit);
+      if (response.isEmpty) {
+        _isLastPage = true;
+      } else {
+        songs.addAll(response);
+      }
     } catch (e) {
       Get.snackbar('Error', 'Could not load songs.');
     } finally {
@@ -45,31 +59,37 @@ class SongController extends GetxController {
   }
 
   Future<void> loadMoreSongs() async {
-    final current = songs.value;
-    if (current == null || !current.hasMore) return;
+    if (isLoadingMore.value || _isLastPage) return;
 
-    // A specific loading state for 'load more' can be added if needed
+    isLoadingMore.value = true;
+    _currentPage++;
     try {
-      final nextPage = current.page + 1;
-      final response = await _songRepository.getSongs(page: nextPage);
-      current.data.addAll(response.data);
-      // current.hasMore = response.hasMore;
-      songs.refresh(); // Tell listeners the list object has changed internally
+      final response = await _songRepository.getSongs(page: _currentPage, limit: _limit);
+      if (response.isEmpty) {
+        _isLastPage = true;
+      } else {
+        songs.addAll(response);
+      }
     } catch (e) {
       Get.snackbar('Error', 'Could not load more songs.');
+      _currentPage--;
+    } finally {
+      isLoadingMore.value = false;
     }
   }
 
+  /*
   Future<void> fetchPopularSongs() async {
     isLoadingPopular.value = true;
     try {
-      popularSongs.value = await _songRepository.getPopularSongs();
+      // popularSongs.value = await _songRepository.getPopularSongs();
     } catch (e) {
       Get.snackbar('Error', 'Could not load popular songs.');
     } finally {
       isLoadingPopular.value = false;
     }
   }
+  */
 
   Future<void> search(String query) async {
     if (query.isEmpty) {
@@ -78,8 +98,8 @@ class SongController extends GetxController {
     }
     isSearching.value = true;
     try {
-      final response = await _songRepository.searchSongs(query: query);
-      searchResults.value = response.data;
+      final response = await _songRepository.searchSongs(query);
+      searchResults.value = response;
     } catch (e) {
       Get.snackbar('Error', 'Search failed.');
     } finally {
