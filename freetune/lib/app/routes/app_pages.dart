@@ -2,11 +2,6 @@ import 'package:get/get.dart';
 import 'app_routes.dart';
 import '../presentation/screens/auth/login_screen.dart';
 import '../presentation/screens/home/home_screen.dart';
-import '../presentation/screens/player/player_screen.dart';
-import '../presentation/screens/splash/splash_screen.dart';
-import '../bindings/auth_binding.dart';
-import '../bindings/home_binding.dart';
-import '../bindings/player_binding.dart';
 
 class AppPages {
   static const INITIAL = Routes.SPLASH;
@@ -34,6 +29,4 @@ class AppPages {
     ),
     // ... other pages
   ];
-  
-  static Bindings? PlayerBinding() {}
 }

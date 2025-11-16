@@ -11,6 +11,12 @@ class PlaylistRepository {
 
   PlaylistRepository(this._playlistsApi);
 
+  /// Issues reported:
+  /// 1. The method 'findAllSync' isn't defined for the type 'QueryBuilder'.
+  ///    - The correct async method is 'findAll()'.
+  /// 2. The method 'findFirstSync' isn't defined for the type 'QueryBuilder'.
+  ///    - The correct async method is 'findFirst()'.
+
   Future<List<PlaylistEntity>> getPlaylists() async {
     try {
       final isConnected = await NetworkUtils.isConnected();
@@ -118,7 +124,11 @@ class PlaylistRepository {
       // Remove from cache
       final isar = await IsarDatabase.getInstance();
       await isar.writeTxn(() async {
-        await isar.playlistModels.filter().idEqualTo(id).deleteFirst();
+        // Fix: Use the async findFirst() method
+        final toDelete = await isar.playlistModels.filter().idEqualTo(id).findFirst();
+        if (toDelete != null) {
+          await isar.playlistModels.delete(toDelete.isarId);
+        }
       });
     } catch (e) {
       throw ApiException.fromDioError(e);

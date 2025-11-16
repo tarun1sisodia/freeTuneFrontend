@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../exceptions/api_exception.dart';
-import '../exceptions/network_exception.dart';
-import '../exceptions/cache_exception.dart';
-import '../utils/logger.dart';
+import '../../exceptions/api_exception.dart';
+import '../../exceptions/network_exception.dart';
+import '../../exceptions/cache_exception.dart';
+import '../logger.dart';
 
 mixin ErrorHandlerMixin<T extends StatefulWidget> on State<T> {
   void handleError(dynamic error, StackTrace stackTrace) {

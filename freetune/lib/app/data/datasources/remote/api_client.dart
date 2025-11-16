@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:freetune/app/core/constants/api_endpoints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../config/api_config.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -64,7 +65,7 @@ class ApiClient {
 
     try {
       final response = await _dio.post(
-        '/auth/refresh-token',
+        ApiEndpoints.refreshToken,
         data: {'refresh_token': refreshToken},
       );
 

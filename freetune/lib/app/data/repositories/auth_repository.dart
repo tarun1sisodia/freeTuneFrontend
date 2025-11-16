@@ -10,7 +10,7 @@ class AuthRepository {
   final ApiClient _apiClient;
 
   AuthRepository(this._authApi, this._apiClient);
-
+// login 
   Future<UserEntity> login(String email, String password) async {
     try {
       final response = await _authApi.login(email: email, password: password);
@@ -20,7 +20,7 @@ class AuthRepository {
       throw ApiException.fromDioError(e);
     }
   }
-
+// Register
   Future<UserEntity> register(String email, String password, String name) async {
     try {
       final response = await _authApi.register(
