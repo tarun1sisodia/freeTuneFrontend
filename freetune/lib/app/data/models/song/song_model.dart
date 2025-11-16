@@ -10,20 +10,21 @@ class SongModel {
   final String songId;
   final String title;
   final String artist;
-  final String album;
+  final String? album;
   final String? albumArtUrl;
   final int durationMs;
   final String r2Key;
-  final List<FileSize> fileSizes; // e.g., {'high': 12345, 'medium': 6789}
+  final List<FileSize> fileSizes;
   final int playCount;
   final DateTime lastUpdated;
   final double popularityScore;
+  final DateTime createdAt;
 
   SongModel({
     required this.songId,
     required this.title,
     required this.artist,
-    required this.album,
+    this.album,
     this.albumArtUrl,
     required this.durationMs,
     required this.r2Key,
@@ -31,6 +32,7 @@ class SongModel {
     this.playCount = 0,
     required this.lastUpdated,
     this.popularityScore = 0.0,
+    required this.createdAt,
   });
 
   factory SongModel.fromJson(Map<String, dynamic> json) {
@@ -42,10 +44,11 @@ class SongModel {
       albumArtUrl: json['albumArtUrl'],
       durationMs: json['durationMs'],
       r2Key: json['r2Key'],
-      fileSizes: (Map<String, int>.from(json['fileSizes'])).entries.map((e) => FileSize()..quality = e.key..size = e.value).toList(),
+      fileSizes: (json['fileSizes'] as Map<String, dynamic>).entries.map((e) => FileSize()..quality = e.key..size = (e.value as num).toInt()).toList(),
       playCount: json['playCount'] ?? 0,
       lastUpdated: DateTime.parse(json['lastUpdated']),
       popularityScore: json['popularityScore']?.toDouble() ?? 0.0,
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
     );
   }
 
@@ -62,6 +65,7 @@ class SongModel {
       'playCount': playCount,
       'lastUpdated': lastUpdated.toIso8601String(),
       'popularityScore': popularityScore,
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 }
