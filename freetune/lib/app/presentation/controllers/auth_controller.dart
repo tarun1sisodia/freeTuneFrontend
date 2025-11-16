@@ -15,6 +15,7 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
 
   final Rx<UserEntity?> user = Rx<UserEntity?>(null);
   final RxBool isAuthenticated = false.obs;
+  final RxBool isInitialized = false.obs;
 
   AuthController({
     required LoginUserUseCase loginUserUseCase,
@@ -33,23 +34,34 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
   @override
   void onInit() {
     super.onInit();
-    _checkCurrentUser();
+    // Don't check user automatically - let splash screen call it
   }
 
-  Future<void> _checkCurrentUser() async {
+  Future<void> checkCurrentUser() async {
+    if (isInitialized.value) return;
+    
     showLoading();
-    final result = await _getCurrentUserUseCase.call();
-    result.fold(
-      (failure) {
-        // Silent error during initial check - user just isn't logged in
-        handleError(failure, silent: true);
-      },
-      (currentUser) {
-        user.value = currentUser;
-        isAuthenticated.value = currentUser != null;
-      },
-    );
-    hideLoading();
+    try {
+      final result = await _getCurrentUserUseCase.call();
+      result.fold(
+        (failure) {
+          // User not logged in - this is normal, don't show error
+          user.value = null;
+          isAuthenticated.value = false;
+        },
+        (currentUser) {
+          user.value = currentUser;
+          isAuthenticated.value = currentUser != null;
+        },
+      );
+    } catch (e) {
+      // Silently handle any errors during initial check
+      user.value = null;
+      isAuthenticated.value = false;
+    } finally {
+      isInitialized.value = true;
+      hideLoading();
+    }
   }
 
   Future<bool> login(String email, String password) async {
@@ -88,7 +100,7 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
 
   Future<bool> forgotPassword(String email) async {
     if (_forgotPasswordUseCase == null) {
-      Get.snackbar('Error', 'Forgot password feature not available');
+      handleError('Forgot password feature not available');
       return false;
     }
     
@@ -106,7 +118,7 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
 
   Future<bool> changePassword(String currentPassword, String newPassword) async {
     if (_changePasswordUseCase == null) {
-      Get.snackbar('Error', 'Change password feature not available');
+      handleError('Change password feature not available');
       return false;
     }
     
