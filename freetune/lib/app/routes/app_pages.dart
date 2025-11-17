@@ -12,6 +12,7 @@ import '../presentation/screens/profile/profile_screen.dart';
 
 import '../bindings/auth_binding.dart';
 import '../bindings/initial_binding.dart';
+import '../bindings/player_binding.dart';
 
 class AppPages {
   static const INITIAL = Routes.SPLASH;
@@ -49,6 +50,7 @@ class AppPages {
     GetPage(
       name: Routes.PLAYER,
       page: () => const PlayerScreen(),
+      binding: PlayerBinding(),
       transition: Transition.downToUp,
     ),
     GetPage(
