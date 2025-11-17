@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../../../domain/entities/song_entity.dart';
 import '../../../core/utils/formatters.dart';
 
@@ -12,13 +11,13 @@ class SongTile extends StatelessWidget {
   final bool showAlbumArt;
 
   const SongTile({
-    Key? key,
+    super.key,
     required this.song,
     this.onTap,
     this.onFavorite,
     this.onMore,
     this.showAlbumArt = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
