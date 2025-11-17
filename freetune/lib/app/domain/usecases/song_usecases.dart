@@ -16,7 +16,7 @@ class GetSongsUseCase {
     } on ApiException catch (e) {
       return Left(e);
     } catch (e) {
-      return Left(ApiException(e.toString()));
+      return Left(ApiException(message: e.toString()));
     }
   }
 }
@@ -33,7 +33,7 @@ class SearchSongsUseCase {
     } on ApiException catch (e) {
       return Left(e);
     } catch (e) {
-      return Left(ApiException(e.toString()));
+      return Left(ApiException(message: e.toString()));
     }
   }
 }
@@ -43,14 +43,14 @@ class GetStreamUrlUseCase {
 
   GetStreamUrlUseCase(this._songRepository);
 
-  Future<Either<ApiException, StreamUrlResponse>> call(String songId, String quality) async {
+  Future<Either<ApiException, StreamUrlResponse>> call(String songId, {String quality = 'medium'}) async {
     try {
-      final streamUrlResponse = await _songRepository.getStreamUrl(songId, quality);
+      final streamUrlResponse = await _songRepository.getStreamUrl(songId, quality: quality);
       return Right(streamUrlResponse);
     } on ApiException catch (e) {
       return Left(e);
     } catch (e) {
-      return Left(ApiException(e.toString()));
+      return Left(ApiException(message: e.toString()));
     }
   }
 }
@@ -60,14 +60,14 @@ class TrackPlayUseCase {
 
   TrackPlayUseCase(this._songRepository);
 
-  Future<Either<ApiException, void>> call(String songId) async {
+  Future<Either<ApiException, void>> call(String songId, {int position = 0}) async {
     try {
-      await _songRepository.trackPlay(songId);
+      await _songRepository.trackPlay(songId, position: position);
       return const Right(null);
     } on ApiException catch (e) {
       return Left(e);
     } catch (e) {
-      return Left(ApiException(e.toString()));
+      return Left(ApiException(message: e.toString()));
     }
   }
 }
@@ -84,7 +84,7 @@ class TrackPlaybackUseCase {
     } on ApiException catch (e) {
       return Left(e);
     } catch (e) {
-      return Left(ApiException(e.toString()));
+      return Left(ApiException(message: e.toString()));
     }
   }
 }
@@ -94,14 +94,14 @@ class GetSongDetailsUseCase {
 
   GetSongDetailsUseCase(this._songRepository);
 
-  Future<Either<ApiException, SongEntity?>> call(String songId) async {
+  Future<Either<ApiException, SongEntity>> call(String songId, {bool forceRefresh = false}) async {
     try {
-      final song = await _songRepository.getSongDetails(songId);
+      final song = await _songRepository.getSongById(songId, forceRefresh: forceRefresh);
       return Right(song);
     } on ApiException catch (e) {
       return Left(e);
     } catch (e) {
-      return Left(ApiException(e.toString()));
+      return Left(ApiException(message: e.toString()));
     }
   }
 }

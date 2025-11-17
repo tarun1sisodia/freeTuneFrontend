@@ -7,6 +7,7 @@ part 'song_model.g.dart';
 @collection
 class SongModel {
   Id id = Isar.autoIncrement;
+  
   final String songId;
   final String title;
   final String artist;
@@ -15,10 +16,15 @@ class SongModel {
   final int durationMs;
   final String r2Key;
   final List<FileSize> fileSizes;
-  final int playCount;
+  int playCount;
   final DateTime lastUpdated;
   final double popularityScore;
   final DateTime createdAt;
+  
+  // Cache-specific fields
+  DateTime? updatedAt;
+  bool? isFavorite;
+  bool? isPopular;
 
   SongModel({
     required this.songId,
@@ -33,6 +39,9 @@ class SongModel {
     required this.lastUpdated,
     this.popularityScore = 0.0,
     required this.createdAt,
+    this.updatedAt,
+    this.isFavorite,
+    this.isPopular,
   });
 
   factory SongModel.fromJson(Map<String, dynamic> json) {
@@ -44,11 +53,23 @@ class SongModel {
       albumArtUrl: json['albumArtUrl'],
       durationMs: json['durationMs'],
       r2Key: json['r2Key'],
-      fileSizes: (json['fileSizes'] as Map<String, dynamic>).entries.map((e) => FileSize()..quality = e.key..size = (e.value as num).toInt()).toList(),
+      fileSizes: (json['fileSizes'] as Map<String, dynamic>)
+          .entries
+          .map((e) => FileSize()
+            ..quality = e.key
+            ..size = (e.value as num).toInt())
+          .toList(),
       playCount: json['playCount'] ?? 0,
       lastUpdated: DateTime.parse(json['lastUpdated']),
       popularityScore: json['popularityScore']?.toDouble() ?? 0.0,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
+      createdAt: json['createdAt'] != null 
+          ? DateTime.parse(json['createdAt']) 
+          : DateTime.now(),
+      updatedAt: json['updatedAt'] != null 
+          ? DateTime.parse(json['updatedAt']) 
+          : null,
+      isFavorite: json['isFavorite'],
+      isPopular: json['isPopular'],
     );
   }
 
@@ -61,11 +82,14 @@ class SongModel {
       'albumArtUrl': albumArtUrl,
       'durationMs': durationMs,
       'r2Key': r2Key,
-      'fileSizes': { for (var v in fileSizes) v.quality : v.size },
+      'fileSizes': {for (var v in fileSizes) v.quality: v.size},
       'playCount': playCount,
       'lastUpdated': lastUpdated.toIso8601String(),
       'popularityScore': popularityScore,
       'createdAt': createdAt.toIso8601String(),
+      if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
+      if (isFavorite != null) 'isFavorite': isFavorite,
+      if (isPopular != null) 'isPopular': isPopular,
     };
   }
 }

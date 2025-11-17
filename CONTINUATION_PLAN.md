@@ -3,6 +3,7 @@
 ## 📍 Current State Analysis
 
 ### ✅ Already Completed (Working)
+
 1. **Authentication System** - Login/Register tested and working
 2. **Project Structure** - Clean Architecture with GetX
 3. **Core Infrastructure**:
@@ -20,6 +21,7 @@
    - ✅ Core utilities (Logger, Validators, Formatters, Exceptions)
 
 ### 🟡 Partially Complete (Needs Work)
+
 1. **Data Layer**:
    - 🟡 Songs API - basic endpoints exist, need completion
    - 🟡 Playlists API - structure exists, needs implementation
@@ -39,6 +41,7 @@
    - 🟡 PlaylistsScreen - exists, needs implementation
 
 ### ❌ Missing/To Do
+
 1. **Core Features**:
    - ❌ Complete audio playback integration
    - ❌ Queue management
@@ -63,16 +66,20 @@
 ## 🎯 Implementation Roadmap
 
 ### Phase 1: Complete Data Layer (2-3 days)
+
 **Goal**: Ensure all data flows properly from backend to app with caching
 
 #### Day 1: API Services Completion
+
 1. **Complete Songs API** (3 hours)
+
    - [ ] Add all missing endpoints (getSongById, getPopularSongs, etc.)
    - [ ] Add favorites endpoints
    - [ ] Add upload/update/delete endpoints
    - [ ] Test all endpoints with backend
 
 2. **Complete Playlists API** (2 hours)
+
    - [ ] Implement getUserPlaylists()
    - [ ] Implement getPlaylistById()
    - [ ] Implement createPlaylist()
@@ -82,6 +89,7 @@
    - [ ] Implement removeSongFromPlaylist()
 
 3. **Complete Recommendations API** (1 hour)
+
    - [ ] Implement getRecommendations()
    - [ ] Implement getSimilarSongs()
    - [ ] Implement getMoodPlaylist()
@@ -93,7 +101,9 @@
    - [ ] Implement getTopSongs()
 
 #### Day 2: Repository Integration
+
 1. **Song Repository with Caching** (3 hours)
+
    - [ ] Implement cache-first strategy
    - [ ] Add offline fallback
    - [ ] Implement getSongs() with cache
@@ -104,6 +114,7 @@
    - [ ] Add background sync
 
 2. **Playlist Repository** (2 hours)
+
    - [ ] Implement all CRUD operations
    - [ ] Add cache integration
    - [ ] Test with backend
@@ -113,7 +124,9 @@
    - [ ] Add TTL strategy
 
 #### Day 3: Testing Data Flow
+
 1. **Integration Testing** (2 hours)
+
    - [ ] Test API → Repository → Cache flow
    - [ ] Test offline mode
    - [ ] Test cache invalidation
@@ -127,10 +140,13 @@
 ---
 
 ### Phase 2: Audio Player Integration (3-4 days)
+
 **Goal**: Get audio playback working end-to-end
 
 #### Day 4: Core Audio Service
+
 1. **AudioPlayerService Implementation** (4 hours)
+
    - [ ] Initialize just_audio player
    - [ ] Implement playSong()
    - [ ] Implement pause/resume/stop
@@ -149,7 +165,9 @@
    - [ ] Implement repeat modes
 
 #### Day 5: Advanced Audio Features
+
 1. **Audio Caching** (3 hours)
+
    - [ ] Implement AudioCacheService
    - [ ] Add cacheSong() functionality
    - [ ] Add getCachedPath()
@@ -157,6 +175,7 @@
    - [ ] Test cache strategy
 
 2. **Prefetching** (2 hours)
+
    - [ ] Implement PrefetchService
    - [ ] Prefetch next songs in queue
    - [ ] Network-aware prefetching
@@ -169,7 +188,9 @@
    - [ ] Add listeners for network changes
 
 #### Day 6-7: Audio Player Controller & UI
+
 1. **AudioPlayerController** (3 hours)
+
    - [ ] Integrate AudioPlayerService
    - [ ] Manage playback state
    - [ ] Handle queue updates
@@ -177,6 +198,7 @@
    - [ ] Add error handling
 
 2. **Player Screen UI** (4 hours)
+
    - [ ] Build full player UI
    - [ ] Add progress bar with gestures
    - [ ] Add player controls
@@ -195,10 +217,13 @@
 ---
 
 ### Phase 3: Home Screen & Content Display (2-3 days)
+
 **Goal**: Display songs, playlists, and recommendations
 
 #### Day 8: UI Components
+
 1. **Reusable Widgets** (3 hours)
+
    - [ ] Create SongCard (horizontal)
    - [ ] Create SongTile (list item)
    - [ ] Create SongGridItem
@@ -217,7 +242,9 @@
    - [ ] ConfirmDialog
 
 #### Day 9: Home Screen Implementation
+
 1. **SongsController Integration** (2 hours)
+
    - [ ] Fetch songs from repository
    - [ ] Handle pagination
    - [ ] Manage loading states
@@ -236,7 +263,9 @@
    - [ ] Test with real data
 
 #### Day 10: Playlists Implementation
+
 1. **PlaylistController** (2 hours)
+
    - [ ] Fetch user playlists
    - [ ] Create playlist functionality
    - [ ] Update playlist
@@ -253,15 +282,19 @@
 ---
 
 ### Phase 4: Search & Discovery (2 days)
+
 **Goal**: Implement search and recommendations
 
 #### Day 11: Search Implementation
+
 1. **Search API Integration** (1 hour)
+
    - [ ] Connect to search endpoint
    - [ ] Add debounce
    - [ ] Handle pagination
 
 2. **SearchController** (2 hours)
+
    - [ ] Implement search logic
    - [ ] Add recent searches
    - [ ] Add search filters
@@ -275,7 +308,9 @@
    - [ ] Show loading/empty states
 
 #### Day 12: Recommendations
+
 1. **RecommendationsController** (2 hours)
+
    - [ ] Fetch personalized recommendations
    - [ ] Get similar songs
    - [ ] Get mood-based playlists
@@ -289,10 +324,13 @@
 ---
 
 ### Phase 5: Advanced Features (3-4 days)
+
 **Goal**: Add offline support, background playback, downloads
 
 #### Day 13-14: Offline Support
+
 1. **Download Manager** (4 hours)
+
    - [ ] Implement download queue
    - [ ] Track download progress
    - [ ] Handle download errors
@@ -306,7 +344,9 @@
    - [ ] Sync when online
 
 #### Day 15-16: Background Playback
+
 1. **Audio Service** (4 hours)
+
    - [ ] Configure audio_service
    - [ ] Handle background tasks
    - [ ] Add notification controls
@@ -322,16 +362,20 @@
 ---
 
 ### Phase 6: Polish & Optimization (2-3 days)
+
 **Goal**: Improve UX, performance, and stability
 
 #### Day 17: UI/UX Polish
+
 1. **Animations** (3 hours)
+
    - [ ] Add page transitions
    - [ ] Add hero animations
    - [ ] Add micro-interactions
    - [ ] Smooth scroll animations
 
 2. **Dark Theme** (2 hours)
+
    - [ ] Implement dark theme
    - [ ] Add theme switcher
    - [ ] Test all screens
@@ -342,7 +386,9 @@
    - [ ] Handle landscape mode
 
 #### Day 18: Performance Optimization
+
 1. **Optimization** (4 hours)
+
    - [ ] Implement lazy loading
    - [ ] Optimize image loading
    - [ ] Reduce memory usage
@@ -356,6 +402,7 @@
    - [ ] Test edge cases
 
 #### Day 19: Testing
+
 1. **Testing** (full day)
    - [ ] Unit tests for repositories
    - [ ] Unit tests for services
@@ -371,9 +418,11 @@
 ### Today's Priority Tasks
 
 #### 1. Complete Songs API (2-3 hours)
+
 **File**: `/lib/app/data/datasources/remote/songs_api.dart`
 
 Add these endpoints:
+
 ```dart
 // Get single song
 Future<SongModel> getSongById(String id)
@@ -393,16 +442,18 @@ Future<SongModel> uploadSong(FormData formData)
 ```
 
 #### 2. Complete Song Repository with Caching (2-3 hours)
+
 **File**: `/lib/app/data/repositories/song_repository.dart`
 
 Implement cache-first strategy:
+
 ```dart
 Future<List<SongModel>> getSongs({bool forceRefresh = false}) async {
   if (!forceRefresh) {
     final cached = await _cacheManager.getCachedSongs();
     if (cached.isNotEmpty) return cached;
   }
-  
+
   final songs = await _songsApi.getSongs();
   await _cacheManager.cacheSongs(songs);
   return songs;
@@ -410,9 +461,11 @@ Future<List<SongModel>> getSongs({bool forceRefresh = false}) async {
 ```
 
 #### 3. Update SongsController (1 hour)
+
 **File**: `/lib/app/presentation/controllers/songs_controller.dart`
 
 Connect to repository and manage state:
+
 ```dart
 void fetchSongs() async {
   try {
@@ -428,6 +481,7 @@ void fetchSongs() async {
 ```
 
 #### 4. Build Basic Home Screen UI (2 hours)
+
 **File**: `/lib/app/presentation/screens/home/home_screen.dart`
 
 Display songs list with loading states
@@ -438,42 +492,43 @@ Display songs list with loading states
 
 ### Current Status: ~30% Complete
 
-| Phase | Task | Status | Priority |
-|-------|------|--------|----------|
-| **Phase 1: Data Layer** | ||||
-| | Complete Songs API | 🟡 60% | 🔴 HIGH |
-| | Complete Playlists API | 🔴 20% | 🟡 MEDIUM |
-| | Complete Recommendations API | 🔴 10% | 🟡 MEDIUM |
-| | Song Repository with Cache | 🟡 40% | 🔴 HIGH |
-| | Playlist Repository | 🔴 10% | 🟡 MEDIUM |
-| **Phase 2: Audio** | ||||
-| | AudioPlayerService | 🔴 20% | 🔴 HIGH |
-| | Queue Management | 🔴 0% | 🔴 HIGH |
-| | Audio Caching | 🔴 0% | 🟡 MEDIUM |
-| | AudioPlayerController | 🟡 30% | 🔴 HIGH |
-| | Player Screen UI | 🟡 40% | 🔴 HIGH |
-| **Phase 3: Content** | ||||
-| | UI Components | 🔴 15% | 🔴 HIGH |
-| | SongsController | 🟡 40% | 🔴 HIGH |
-| | HomeScreen | 🟡 30% | 🔴 HIGH |
-| | PlaylistsScreen | 🔴 20% | 🟡 MEDIUM |
-| **Phase 4: Search** | ||||
-| | Search Implementation | 🔴 0% | 🟡 MEDIUM |
-| | Recommendations | 🔴 5% | 🟡 MEDIUM |
-| **Phase 5: Advanced** | ||||
-| | Offline Support | 🔴 0% | 🟢 LOW |
-| | Background Playback | 🔴 0% | 🟡 MEDIUM |
-| | Downloads | 🔴 0% | 🟢 LOW |
-| **Phase 6: Polish** | ||||
-| | UI/UX Polish | 🔴 0% | 🟢 LOW |
-| | Performance | 🔴 0% | 🟢 LOW |
-| | Testing | 🔴 0% | 🟡 MEDIUM |
+| Phase                   | Task                         | Status | Priority  |
+| ----------------------- | ---------------------------- | ------ | --------- | --- |
+| **Phase 1: Data Layer** |                              |        |           |     |
+|                         | Complete Songs API           | 🟡 60% | 🔴 HIGH   |
+|                         | Complete Playlists API       | 🔴 20% | 🟡 MEDIUM |
+|                         | Complete Recommendations API | 🔴 10% | 🟡 MEDIUM |
+|                         | Song Repository with Cache   | 🟡 40% | 🔴 HIGH   |
+|                         | Playlist Repository          | 🔴 10% | 🟡 MEDIUM |
+| **Phase 2: Audio**      |                              |        |           |     |
+|                         | AudioPlayerService           | 🔴 20% | 🔴 HIGH   |
+|                         | Queue Management             | 🔴 0%  | 🔴 HIGH   |
+|                         | Audio Caching                | 🔴 0%  | 🟡 MEDIUM |
+|                         | AudioPlayerController        | 🟡 30% | 🔴 HIGH   |
+|                         | Player Screen UI             | 🟡 40% | 🔴 HIGH   |
+| **Phase 3: Content**    |                              |        |           |     |
+|                         | UI Components                | 🔴 15% | 🔴 HIGH   |
+|                         | SongsController              | 🟡 40% | 🔴 HIGH   |
+|                         | HomeScreen                   | 🟡 30% | 🔴 HIGH   |
+|                         | PlaylistsScreen              | 🔴 20% | 🟡 MEDIUM |
+| **Phase 4: Search**     |                              |        |           |     |
+|                         | Search Implementation        | 🔴 0%  | 🟡 MEDIUM |
+|                         | Recommendations              | 🔴 5%  | 🟡 MEDIUM |
+| **Phase 5: Advanced**   |                              |        |           |     |
+|                         | Offline Support              | 🔴 0%  | 🟢 LOW    |
+|                         | Background Playback          | 🔴 0%  | 🟡 MEDIUM |
+|                         | Downloads                    | 🔴 0%  | 🟢 LOW    |
+| **Phase 6: Polish**     |                              |        |           |     |
+|                         | UI/UX Polish                 | 🔴 0%  | 🟢 LOW    |
+|                         | Performance                  | 🔴 0%  | 🟢 LOW    |
+|                         | Testing                      | 🔴 0%  | 🟡 MEDIUM |
 
 ---
 
 ## 🎯 MVP Definition (Target: 2-3 Weeks)
 
 ### Must Have for MVP
+
 - ✅ Login/Register (Done)
 - ⏳ Browse songs
 - ⏳ Play songs
@@ -482,6 +537,7 @@ Display songs list with loading states
 - ⏳ Basic caching
 
 ### Nice to Have (Post-MVP)
+
 - Offline downloads
 - Background playback notifications
 - Recommendations
@@ -493,17 +549,20 @@ Display songs list with loading states
 ## 🚀 Quick Start Commands
 
 ### Run Build Runner
+
 ```bash
 cd /home/gargi/Cursor/freeTune/freeTuneFrontend/freetune
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
 ### Run App
+
 ```bash
 flutter run
 ```
 
 ### Test Backend Connection
+
 ```bash
 curl http://localhost:3000/api/v1/healthcheck
 ```
@@ -513,26 +572,31 @@ curl http://localhost:3000/api/v1/healthcheck
 ## 📁 Key Files Reference
 
 ### Data Layer
+
 - **Models**: `/lib/app/data/models/`
 - **APIs**: `/lib/app/data/datasources/remote/`
 - **Cache**: `/lib/app/data/datasources/local/`
 - **Repositories**: `/lib/app/data/repositories/`
 
 ### Domain Layer
+
 - **Entities**: `/lib/app/domain/entities/`
 - **Use Cases**: `/lib/app/domain/usecases/`
 
 ### Presentation Layer
+
 - **Controllers**: `/lib/app/presentation/controllers/`
 - **Screens**: `/lib/app/presentation/screens/`
 - **Widgets**: `/lib/app/presentation/widgets/`
 
 ### Services
+
 - **Audio**: `/lib/app/services/audio/`
 - **Network**: `/lib/app/services/network/`
 - **Analytics**: `/lib/app/services/analytics/`
 
 ### Core
+
 - **Config**: `/lib/app/config/`
 - **Constants**: `/lib/app/core/constants/`
 - **Utils**: `/lib/app/core/utils/`
@@ -543,17 +607,20 @@ curl http://localhost:3000/api/v1/healthcheck
 ## 🎉 Success Metrics
 
 ### Week 1 Goal
+
 - ✅ Data layer 100% complete
 - ✅ Songs display on home screen
 - ✅ Basic audio playback working
 
 ### Week 2 Goal
+
 - ✅ Full player with queue
 - ✅ Playlists working
 - ✅ Search working
 - ✅ Caching working
 
 ### Week 3 Goal
+
 - ✅ All features integrated
 - ✅ UI polished
 - ✅ Basic tests passing

@@ -17,6 +17,8 @@ class SongMapper {
       lastUpdated: model.lastUpdated,
       popularityScore: model.popularityScore,
       createdAt: model.createdAt,
+      isFavorite: model.isFavorite,
+      isPopular: model.isPopular,
     );
   }
 
@@ -38,6 +40,8 @@ class SongMapper {
       lastUpdated: entity.lastUpdated,
       popularityScore: entity.popularityScore,
       createdAt: entity.createdAt,
+      isFavorite: entity.isFavorite,
+      isPopular: entity.isPopular,
     );
   }
 }

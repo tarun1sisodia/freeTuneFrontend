@@ -57,7 +57,7 @@ class AudioPlayerService extends GetxService {
     currentSong.value = song;
     try {
       final streamUrlResponse = await _songRepository.getStreamUrl(
-          song.id, 'high'); // Default to high quality
+          song.id, quality: 'high'); // Default to high quality
       await _player.setUrl(streamUrlResponse.url);
       await _player.play();
       _analyticsRepository.trackListening(songId: song.id, action: 'play');

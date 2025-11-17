@@ -48,35 +48,50 @@ const SongModelSchema = CollectionSchema(
       type: IsarType.objectList,
       target: r'FileSize',
     ),
-    r'lastUpdated': PropertySchema(
+    r'isFavorite': PropertySchema(
       id: 6,
+      name: r'isFavorite',
+      type: IsarType.bool,
+    ),
+    r'isPopular': PropertySchema(
+      id: 7,
+      name: r'isPopular',
+      type: IsarType.bool,
+    ),
+    r'lastUpdated': PropertySchema(
+      id: 8,
       name: r'lastUpdated',
       type: IsarType.dateTime,
     ),
     r'playCount': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'playCount',
       type: IsarType.long,
     ),
     r'popularityScore': PropertySchema(
-      id: 8,
+      id: 10,
       name: r'popularityScore',
       type: IsarType.double,
     ),
     r'r2Key': PropertySchema(
-      id: 9,
+      id: 11,
       name: r'r2Key',
       type: IsarType.string,
     ),
     r'songId': PropertySchema(
-      id: 10,
+      id: 12,
       name: r'songId',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 11,
+      id: 13,
       name: r'title',
       type: IsarType.string,
+    ),
+    r'updatedAt': PropertySchema(
+      id: 14,
+      name: r'updatedAt',
+      type: IsarType.dateTime,
     )
   },
   estimateSize: _songModelEstimateSize,
@@ -143,12 +158,15 @@ void _songModelSerialize(
     FileSizeSchema.serialize,
     object.fileSizes,
   );
-  writer.writeDateTime(offsets[6], object.lastUpdated);
-  writer.writeLong(offsets[7], object.playCount);
-  writer.writeDouble(offsets[8], object.popularityScore);
-  writer.writeString(offsets[9], object.r2Key);
-  writer.writeString(offsets[10], object.songId);
-  writer.writeString(offsets[11], object.title);
+  writer.writeBool(offsets[6], object.isFavorite);
+  writer.writeBool(offsets[7], object.isPopular);
+  writer.writeDateTime(offsets[8], object.lastUpdated);
+  writer.writeLong(offsets[9], object.playCount);
+  writer.writeDouble(offsets[10], object.popularityScore);
+  writer.writeString(offsets[11], object.r2Key);
+  writer.writeString(offsets[12], object.songId);
+  writer.writeString(offsets[13], object.title);
+  writer.writeDateTime(offsets[14], object.updatedAt);
 }
 
 SongModel _songModelDeserialize(
@@ -170,12 +188,15 @@ SongModel _songModelDeserialize(
           FileSize(),
         ) ??
         [],
-    lastUpdated: reader.readDateTime(offsets[6]),
-    playCount: reader.readLongOrNull(offsets[7]) ?? 0,
-    popularityScore: reader.readDoubleOrNull(offsets[8]) ?? 0.0,
-    r2Key: reader.readString(offsets[9]),
-    songId: reader.readString(offsets[10]),
-    title: reader.readString(offsets[11]),
+    isFavorite: reader.readBoolOrNull(offsets[6]),
+    isPopular: reader.readBoolOrNull(offsets[7]),
+    lastUpdated: reader.readDateTime(offsets[8]),
+    playCount: reader.readLongOrNull(offsets[9]) ?? 0,
+    popularityScore: reader.readDoubleOrNull(offsets[10]) ?? 0.0,
+    r2Key: reader.readString(offsets[11]),
+    songId: reader.readString(offsets[12]),
+    title: reader.readString(offsets[13]),
+    updatedAt: reader.readDateTimeOrNull(offsets[14]),
   );
   object.id = id;
   return object;
@@ -207,17 +228,23 @@ P _songModelDeserializeProp<P>(
           ) ??
           []) as P;
     case 6:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 7:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 8:
-      return (reader.readDoubleOrNull(offset) ?? 0.0) as P;
+      return (reader.readDateTime(offset)) as P;
     case 9:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 10:
-      return (reader.readString(offset)) as P;
+      return (reader.readDoubleOrNull(offset) ?? 0.0) as P;
     case 11:
       return (reader.readString(offset)) as P;
+    case 12:
+      return (reader.readString(offset)) as P;
+    case 13:
+      return (reader.readString(offset)) as P;
+    case 14:
+      return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -991,6 +1018,60 @@ extension SongModelQueryFilter
     });
   }
 
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> isFavoriteIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'isFavorite',
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition>
+      isFavoriteIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'isFavorite',
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> isFavoriteEqualTo(
+      bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isFavorite',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> isPopularIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'isPopular',
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition>
+      isPopularIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'isPopular',
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> isPopularEqualTo(
+      bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isPopular',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<SongModel, SongModel, QAfterFilterCondition> lastUpdatedEqualTo(
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
@@ -1554,6 +1635,77 @@ extension SongModelQueryFilter
       ));
     });
   }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> updatedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'updatedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition>
+      updatedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'updatedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> updatedAtEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'updatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition>
+      updatedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'updatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> updatedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'updatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> updatedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'updatedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension SongModelQueryObject
@@ -1630,6 +1782,30 @@ extension SongModelQuerySortBy on QueryBuilder<SongModel, SongModel, QSortBy> {
     });
   }
 
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByIsFavorite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByIsFavoriteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByIsPopular() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPopular', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByIsPopularDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPopular', Sort.desc);
+    });
+  }
+
   QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByLastUpdated() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastUpdated', Sort.asc);
@@ -1699,6 +1875,18 @@ extension SongModelQuerySortBy on QueryBuilder<SongModel, SongModel, QSortBy> {
   QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByUpdatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByUpdatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 }
@@ -1777,6 +1965,30 @@ extension SongModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> thenByIsFavorite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> thenByIsFavoriteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> thenByIsPopular() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPopular', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> thenByIsPopularDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPopular', Sort.desc);
+    });
+  }
+
   QueryBuilder<SongModel, SongModel, QAfterSortBy> thenByLastUpdated() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastUpdated', Sort.asc);
@@ -1848,6 +2060,18 @@ extension SongModelQuerySortThenBy
       return query.addSortBy(r'title', Sort.desc);
     });
   }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> thenByUpdatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> thenByUpdatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.desc);
+    });
+  }
 }
 
 extension SongModelQueryWhereDistinct
@@ -1882,6 +2106,18 @@ extension SongModelQueryWhereDistinct
   QueryBuilder<SongModel, SongModel, QDistinct> distinctByDurationMs() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'durationMs');
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QDistinct> distinctByIsFavorite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isFavorite');
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QDistinct> distinctByIsPopular() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isPopular');
     });
   }
 
@@ -1921,6 +2157,12 @@ extension SongModelQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QDistinct> distinctByUpdatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'updatedAt');
     });
   }
 }
@@ -1970,6 +2212,18 @@ extension SongModelQueryProperty
     });
   }
 
+  QueryBuilder<SongModel, bool?, QQueryOperations> isFavoriteProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isFavorite');
+    });
+  }
+
+  QueryBuilder<SongModel, bool?, QQueryOperations> isPopularProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isPopular');
+    });
+  }
+
   QueryBuilder<SongModel, DateTime, QQueryOperations> lastUpdatedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lastUpdated');
@@ -2003,6 +2257,12 @@ extension SongModelQueryProperty
   QueryBuilder<SongModel, String, QQueryOperations> titleProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'title');
+    });
+  }
+
+  QueryBuilder<SongModel, DateTime?, QQueryOperations> updatedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'updatedAt');
     });
   }
 }

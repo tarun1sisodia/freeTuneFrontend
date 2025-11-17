@@ -13,6 +13,8 @@ class SongEntity extends Equatable {
   final DateTime lastUpdated;
   final double popularityScore;
   final DateTime createdAt;
+  final bool? isFavorite;
+  final bool? isPopular;
 
   const SongEntity({
     required this.id,
@@ -27,7 +29,47 @@ class SongEntity extends Equatable {
     required this.lastUpdated,
     this.popularityScore = 0.0,
     required this.createdAt,
+    this.isFavorite,
+    this.isPopular,
   });
+
+  /// Convenience getter for songId (alias for id)
+  String get songId => id;
+
+  /// Create a copy with optional field updates
+  SongEntity copyWith({
+    String? id,
+    String? title,
+    String? artist,
+    String? album,
+    String? albumArtUrl,
+    int? durationMs,
+    String? r2Key,
+    Map<String, int>? fileSizes,
+    int? playCount,
+    DateTime? lastUpdated,
+    double? popularityScore,
+    DateTime? createdAt,
+    bool? isFavorite,
+    bool? isPopular,
+  }) {
+    return SongEntity(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      artist: artist ?? this.artist,
+      album: album ?? this.album,
+      albumArtUrl: albumArtUrl ?? this.albumArtUrl,
+      durationMs: durationMs ?? this.durationMs,
+      r2Key: r2Key ?? this.r2Key,
+      fileSizes: fileSizes ?? this.fileSizes,
+      playCount: playCount ?? this.playCount,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+      popularityScore: popularityScore ?? this.popularityScore,
+      createdAt: createdAt ?? this.createdAt,
+      isFavorite: isFavorite ?? this.isFavorite,
+      isPopular: isPopular ?? this.isPopular,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -43,5 +85,7 @@ class SongEntity extends Equatable {
         lastUpdated,
         popularityScore,
         createdAt,
+        isFavorite,
+        isPopular,
       ];
 }

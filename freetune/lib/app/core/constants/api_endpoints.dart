@@ -39,8 +39,8 @@ class ApiEndpoints {
   static const String getPlaylist = '/playlists/{id}';
   static const String updatePlaylist = '/playlists/{id}';
   static const String deletePlaylist = '/playlists/{id}';
-  static const String addSongToPlaylist = '/playlists/{id}/songs';
-  static const String removeSongFromPlaylist =
+  static const String addToPlaylist = '/playlists/{playlistId}/songs/{songId}';
+  static const String removeFromPlaylist =
       '/playlists/{playlistId}/songs/{songId}';
 
   // Recommendations
