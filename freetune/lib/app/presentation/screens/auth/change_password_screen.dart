@@ -45,13 +45,7 @@ class ChangePasswordScreen extends GetView<AuthController> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Change Password'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Change Password')),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -60,22 +54,21 @@ class ChangePasswordScreen extends GetView<AuthController> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.vpn_key,
-                  size: 80,
-                  color: Colors.blue,
+                  size: 100,
+                  color: context.theme.colorScheme.primary,
                 ),
                 const SizedBox(height: 24.0),
-                const Text(
-                  'Change Your Password',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                Text(
+                  'Update Your Password',
+                  style: context.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 32.0),
                 TextFormField(
                   controller: currentPasswordController,
                   decoration: const InputDecoration(
                     labelText: 'Current Password',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
                   ),
                   obscureText: true,
@@ -91,7 +84,6 @@ class ChangePasswordScreen extends GetView<AuthController> {
                   controller: newPasswordController,
                   decoration: const InputDecoration(
                     labelText: 'New Password',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock_outline),
                   ),
                   obscureText: true,
@@ -102,7 +94,6 @@ class ChangePasswordScreen extends GetView<AuthController> {
                   controller: confirmPasswordController,
                   decoration: const InputDecoration(
                     labelText: 'Confirm New Password',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock_outline),
                   ),
                   obscureText: true,

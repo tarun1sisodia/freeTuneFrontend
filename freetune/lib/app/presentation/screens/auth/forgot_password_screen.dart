@@ -28,13 +28,7 @@ class ForgotPasswordScreen extends GetView<AuthController> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Forgot Password'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Forgot Password')),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -43,28 +37,27 @@ class ForgotPasswordScreen extends GetView<AuthController> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.lock_reset,
-                  size: 80,
-                  color: Colors.blue,
+                  size: 100,
+                  color: context.theme.colorScheme.primary,
                 ),
                 const SizedBox(height: 24.0),
-                const Text(
-                  'Reset Password',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                Text(
+                  'Reset Your Password',
+                  style: context.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
-                const Text(
+                Text(
                   'Enter your email address and we\'ll send you a link to reset your password.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  style: context.textTheme.bodyLarge?.copyWith(color: context.theme.colorScheme.onSurface.withOpacity(0.7)),
                 ),
                 const SizedBox(height: 32.0),
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
                   ),
                   keyboardType: TextInputType.emailAddress,

@@ -41,13 +41,7 @@ class RegisterScreen extends GetView<AuthController> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Register')),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -56,16 +50,26 @@ class RegisterScreen extends GetView<AuthController> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Create Account',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                Icon(
+                  Icons.person_add,
+                  size: 100,
+                  color: context.theme.colorScheme.primary,
+                ),
+                const SizedBox(height: 32.0),
+                Text(
+                  'Create Your Account',
+                  style: context.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  'Join FreeTune and start listening!',
+                  style: context.textTheme.bodyLarge?.copyWith(color: context.theme.colorScheme.onSurface.withOpacity(0.7)),
                 ),
                 const SizedBox(height: 32.0),
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
                   ),
                   keyboardType: TextInputType.emailAddress,
@@ -76,7 +80,6 @@ class RegisterScreen extends GetView<AuthController> {
                   controller: usernameController,
                   decoration: const InputDecoration(
                     labelText: 'Username (Optional)',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
                   ),
                 ),
@@ -85,7 +88,6 @@ class RegisterScreen extends GetView<AuthController> {
                   controller: passwordController,
                   decoration: const InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
                   ),
                   obscureText: true,
@@ -96,7 +98,6 @@ class RegisterScreen extends GetView<AuthController> {
                   controller: confirmPasswordController,
                   decoration: const InputDecoration(
                     labelText: 'Confirm Password',
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock_outline),
                   ),
                   obscureText: true,
@@ -118,9 +119,18 @@ class RegisterScreen extends GetView<AuthController> {
                       : const Text('Register', style: TextStyle(fontSize: 18)),
                 )),
                 const SizedBox(height: 16.0),
-                TextButton(
-                  onPressed: () => Get.back(),
-                  child: const Text('Already have an account? Login'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Already have an account?',
+                      style: context.textTheme.bodyMedium,
+                    ),
+                    TextButton(
+                      onPressed: () => Get.back(),
+                      child: const Text('Login'),
+                    ),
+                  ],
                 ),
               ],
             ),

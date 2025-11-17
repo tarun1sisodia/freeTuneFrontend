@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
-// import '../../controllers/audio_player_controller.dart'; // Create this later
+import 'package:get/get.dart';
+import '../../controllers/audio_player_controller.dart';
+import '../album_art.dart';
+import '../../../routes/app_routes.dart';
 
-class MiniPlayer extends StatelessWidget {
+class MiniPlayer extends GetView<AudioPlayerController> {
   const MiniPlayer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Connect to audio player controller
-    return const SizedBox.shrink();
-
-    // Uncomment when audio player controller is implemented:
-    /*
-    final audioController = Get.find<AudioPlayerController>();
-
     return Obx(() {
-        if (audioController.currentSong.value == null) {
-          return const SizedBox.shrink();
-        }
-        final song = audioController.currentSong.value!;
+      if (controller.currentSong.value == null) {
+        return const SizedBox.shrink();
+      }
+      final song = controller.currentSong.value!;
 
-        return Container(
+      return GestureDetector(
+        onTap: () => Get.toNamed(Routes.PLAYER),
+        child: Container(
           height: 70,
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
@@ -33,20 +31,10 @@ class MiniPlayer extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  image: song.albumArt != null
-                      ? DecorationImage(
-                          image: NetworkImage(song.albumArt!),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
-                child: song.albumArt == null
-                    ? const Icon(Icons.music_note)
-                    : null,
+              AlbumArt(
+                imageUrl: song.albumArtUrl,
+                size: 70,
+                borderRadius: BorderRadius.zero,
               ),
               Expanded(
                 child: Padding(
@@ -55,29 +43,33 @@ class MiniPlayer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(song.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), maxLines: 1, overflow: TextOverflow.ellipsis),
-                      Text(song.artist, style: TextStyle(fontSize: 12, color: Colors.grey[600]), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(song.title, style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(song.artist, style: context.textTheme.bodySmall?.copyWith(color: context.theme.colorScheme.onSurface.withOpacity(0.7)), maxLines: 1, overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),
               ),
               IconButton(
                 icon: Icon(
-                  audioController.isPlaying.value ? Icons.pause : Icons.play_arrow,
+                  controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
+                  color: context.theme.colorScheme.primary,
                 ),
                 onPressed: () {
-                  if (audioController.isPlaying.value) {
-                    audioController.pause();
+                  if (controller.isPlaying.value) {
+                    controller.pause();
                   } else {
-                    audioController.resume();
+                    controller.resume();
                   }
                 },
               ),
+              IconButton(
+                icon: Icon(Icons.skip_next, color: context.theme.colorScheme.onSurface),
+                onPressed: () => controller.playNext(),
+              ),
             ],
           ),
-        );
-      }
-    );
-    */
+        ),
+      );
+    });
   }
 }

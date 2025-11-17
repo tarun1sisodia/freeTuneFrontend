@@ -1,17 +1,16 @@
 import 'package:get/get.dart';
-import 'app_routes.dart';
-import '../presentation/screens/auth/login_screen.dart';
-import '../presentation/screens/auth/register_screen.dart';
-import '../presentation/screens/auth/forgot_password_screen.dart';
-import '../presentation/screens/auth/change_password_screen.dart';
-import '../presentation/screens/home/home_screen.dart';
-import '../presentation/screens/player/player_screen.dart';
-import '../presentation/screens/splash/splash_screen.dart';
-import '../presentation/screens/playlists/playlists_screen.dart';
-import '../presentation/screens/profile/profile_screen.dart';
-
 import '../bindings/auth_binding.dart';
 import '../bindings/initial_binding.dart';
+import '../presentation/screens/auth/change_password_screen.dart';
+import '../presentation/screens/auth/forgot_password_screen.dart';
+import '../presentation/screens/auth/login_screen.dart';
+import '../presentation/screens/auth/register_screen.dart';
+import '../presentation/screens/main_screen.dart';
+import '../presentation/screens/player/player_screen.dart';
+import '../presentation/screens/playlists/playlists_screen.dart';
+import '../presentation/screens/profile/profile_screen.dart';
+import '../presentation/screens/splash/splash_screen.dart';
+import 'app_routes.dart';
 
 class AppPages {
   static const INITIAL = Routes.SPLASH;
@@ -44,7 +43,11 @@ class AppPages {
     ),
     GetPage(
       name: Routes.HOME,
-      page: () => const HomeScreen(),
+      page: () => const MainScreen(), // Use MainScreen as the primary authenticated screen
+      bindings: const [
+        // Bindings for controllers used in MainScreen and its children
+        // AuthBinding is already permanent, SongController and PlaylistController are put in MainScreen initState
+      ],
     ),
     GetPage(
       name: Routes.PLAYER,

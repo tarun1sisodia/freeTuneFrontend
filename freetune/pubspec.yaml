@@ -17,7 +17,7 @@ dependencies:
   isar_flutter_libs: ^3.1.0+1
 
   # Audio Player
-  just_audio: ^0.9.36
+  just_audio: ^0.10.5
   audio_service: ^0.18.11  # Background playback
   audio_session: ^0.1.18    # Audio session management
 
@@ -49,6 +49,9 @@ dependencies:
   # Code Generation
   build_runner: ^2.4.7
   isar_generator: ^3.1.0+1
+  file_picker: ^10.3.6
+  http: ^1.6.0
+  just_audio_web: ^0.4.16
 
 dev_dependencies:
   flutter_test:
