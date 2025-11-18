@@ -88,8 +88,10 @@ class SongsApi {
         queryParameters: {'limit': limit},
       );
       
-      final songs = (response.data['data'] as List)
-          .map((json) => SongModel.fromJson(json))
+      // Backend returns data.songs array, not data array directly
+      final songsData = response.data['data']['songs'] as List;
+      final songs = songsData
+          .map((json) => SongModel.fromJson(json as Map<String, dynamic>))
           .toList();
       
       logger.d('Recent songs fetched: ${songs.length} songs');
