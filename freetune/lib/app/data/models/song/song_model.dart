@@ -46,22 +46,26 @@ class SongModel {
 
   factory SongModel.fromJson(Map<String, dynamic> json) {
     return SongModel(
-      songId: json['id'],
-      title: json['title'],
-      artist: json['artist'],
+      songId: json['id'] ?? '',
+      title: json['title'] ?? '',
+      artist: json['artist'] ?? 'Unknown',
       album: json['album'],
       albumArtUrl: json['albumArtUrl'],
-      durationMs: json['durationMs'],
-      r2Key: json['r2Key'],
-      fileSizes: (json['fileSizes'] as Map<String, dynamic>)
-          .entries
-          .map((e) => FileSize()
-            ..quality = e.key
-            ..size = (e.value as num).toInt())
-          .toList(),
-      playCount: json['playCount'] ?? 0,
-      lastUpdated: DateTime.parse(json['lastUpdated']),
-      popularityScore: json['popularityScore']?.toDouble() ?? 0.0,
+      durationMs: (json['durationMs'] as num?)?.toInt() ?? 0,
+      r2Key: json['r2Key'] ?? '',
+      fileSizes: json['fileSizes'] != null
+          ? (json['fileSizes'] as Map<String, dynamic>)
+              .entries
+              .map((e) => FileSize()
+                ..quality = e.key
+                ..size = (e.value as num).toInt())
+              .toList()
+          : [],
+      playCount: (json['playCount'] as num?)?.toInt() ?? 0,
+      lastUpdated: json['lastUpdated'] != null 
+          ? DateTime.parse(json['lastUpdated'])
+          : DateTime.now(),
+      popularityScore: (json['popularityScore'] as num?)?.toDouble() ?? 0.0,
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt']) 
           : DateTime.now(),

@@ -50,7 +50,7 @@ class SongsApi {
       logger.e('Failed to get song $id: ${e.message}');
       throw ApiException.fromDioError(e);
     } catch (e) {
-      logger.e('Unexpected error getting song: $e');
+      logger.e('Unexpected error getting songs By ID: $e');
       throw ApiException(message: 'Failed to get song: $e');
     }
   }

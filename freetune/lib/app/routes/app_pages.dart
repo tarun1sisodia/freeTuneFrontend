@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../bindings/home_binding.dart';
 import 'app_routes.dart';
 import '../presentation/screens/auth/login_screen.dart';
 import '../presentation/screens/auth/register_screen.dart';
@@ -46,6 +47,7 @@ class AppPages {
     GetPage(
       name: Routes.HOME,
       page: () => const HomeScreen(),
+      binding: HomeBinding(),
     ),
     GetPage(
       name: Routes.PLAYER,

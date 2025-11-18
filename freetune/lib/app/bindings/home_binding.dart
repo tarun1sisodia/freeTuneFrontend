@@ -5,7 +5,7 @@ import '../presentation/controllers/playlist_controller.dart';
 class HomeBinding implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<SongController>(() => SongController(Get.find()));
+    Get.lazyPut<SongController>(() => SongController(Get.put(Get.find())));
     Get.lazyPut<PlaylistController>(() => PlaylistController(Get.find()));
   }
 }

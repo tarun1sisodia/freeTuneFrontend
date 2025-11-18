@@ -25,7 +25,7 @@ class ApiEndpoints {
   static const String deleteSong = '/songs/{id}';
   static const String searchSongs = '/songs/search';
   static const String popularSongs = '/songs/popular';
-  static const String recentSongs = '/songs/recent';
+  static const String recentSongs = '/songs/recently-played';
   static const String favoriteSongs = '/songs/favorites';
   static const String addFavorite = '/songs/{id}/favorite';
   static const String removeFavorite = '/songs/{id}/favorite';

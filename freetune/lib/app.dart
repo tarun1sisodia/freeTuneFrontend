@@ -27,20 +27,26 @@ class FreeTuneApp extends StatelessWidget {
   }
 }
 
-class AuthWrapper extends GetView<AuthController> {
+class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Obx will automatically rebuild when controller.user or controller.isLoading changes
-    return Obx(() {
-      if (controller.isLoading.value) {
-        return const Scaffold(body: Center(child: CircularProgressIndicator()));
-      } else if (controller.user.value != null) {
-        return const HomeScreen();
-      } else {
-        return const LoginScreen();
-      }
-    });
+    // Use Get.find with fallback to handle initialization
+    try {
+      final AuthController controller = Get.find<AuthController>();
+      // Obx will automatically rebuild when controller.user or controller.isLoading changes
+      return Obx(() {
+        if (controller.isLoading.value) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        } else if (controller.user.value != null) {
+          return const HomeScreen();
+        } else {
+          return const LoginScreen();
+        }
+      });
+    } catch (e) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
   }
 }

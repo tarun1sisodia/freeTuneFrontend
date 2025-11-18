@@ -55,7 +55,7 @@ class AudioPlayerService extends GetxService {
   Timer? _analyticsTimer;
   Duration? _lastTrackedPosition;
 
-  AudioPlayerService(this._songRepository, find);
+  AudioPlayerService(this._songRepository);
 
   @override
   void onInit() {

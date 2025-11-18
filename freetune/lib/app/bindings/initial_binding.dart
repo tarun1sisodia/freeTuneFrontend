@@ -75,7 +75,7 @@ class AppBindings implements Bindings {
     // Services
     Get.put<NetworkService>(NetworkService(), permanent: true);
     Get.put<AnalyticsService>(AnalyticsService(Get.find()), permanent: true);
-    Get.put<AudioPlayerService>(AudioPlayerService(Get.find(),Get.find()), permanent: true);
+    Get.put<AudioPlayerService>(AudioPlayerService(Get.find()), permanent: true);
 
     // Initialize AuthController on app start for splash screen
     Get.put<AuthController>(
