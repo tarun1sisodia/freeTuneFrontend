@@ -10,6 +10,7 @@ import '../presentation/screens/player/player_screen.dart';
 import '../presentation/screens/splash/splash_screen.dart';
 import '../presentation/screens/playlists/playlists_screen.dart';
 import '../presentation/screens/profile/profile_screen.dart';
+import '../presentation/screens/songs/upload_screen.dart';
 
 import '../bindings/auth_binding.dart';
 import '../bindings/initial_binding.dart';
@@ -62,6 +63,10 @@ class AppPages {
     GetPage(
       name: Routes.PROFILE,
       page: () => const ProfileScreen(),
+    ),
+    GetPage(
+      name: Routes.UPLOAD,
+      page: () => const UploadScreen(),
     ),
   ];
 }

@@ -9,4 +9,5 @@ abstract class Routes {
   static const SEARCH = '/search';
   static const PLAYLISTS = '/playlists';
   static const PROFILE = '/profile';
+  static const UPLOAD = '/upload';
 }

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../../core/exceptions/api_exception.dart';
 import '../../core/exceptions/cache_exception.dart';
 import '../../core/utils/logger.dart';
@@ -25,6 +26,7 @@ abstract class SongRepository {
       {String quality = 'medium'});
   Future<void> trackPlay(String songId, {int position = 0});
   Future<void> trackPlayback(String songId, int positionMs, int durationMs);
+  Future<SongEntity> uploadSong(String filePath, String title, String artist);
   Future<void> clearCache();
   Future<void> refreshCache();
 }
@@ -313,6 +315,26 @@ class SongRepositoryImpl implements SongRepository {
     } catch (e) {
       // Don't throw error for analytics - just log it
       logger.w('Failed to track playback: $e');
+    }
+  }
+
+  @override
+  Future<SongEntity> uploadSong(
+      String filePath, String title, String artist) async {
+    try {
+      logger.i('📤 Uploading song: $title by $artist');
+
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(filePath),
+        'title': title,
+        'artist': artist,
+      });
+
+      final songModel = await _songsApi.uploadSong(formData);
+      return SongMapper.fromModel(songModel);
+    } catch (e) {
+      logger.e('Error uploading song: $e');
+      throw ApiException(message: 'Failed to upload song: $e');
     }
   }
 

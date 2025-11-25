@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/utils/logger.dart';
 import '../../domain/entities/song_entity.dart';
@@ -22,6 +23,7 @@ class SongController extends GetxController {
   final isLoadingFavorites = false.obs;
   final isSearching = false.obs;
   final isLoadingMore = false.obs;
+  final isUploading = false.obs;
 
   // Error states
   final error = Rxn<String>();
@@ -68,7 +70,7 @@ class SongController extends GetxController {
       songs.clear();
       error.value = null;
     }
-    
+
     isLoadingSongs.value = true;
     try {
       logger.d('Fetching songs - page: $_currentPage');
@@ -77,7 +79,7 @@ class SongController extends GetxController {
         limit: _limit,
         forceRefresh: refresh,
       );
-      
+
       if (response.isEmpty) {
         _isLastPage = true;
         logger.d('No more songs to load');
@@ -111,7 +113,7 @@ class SongController extends GetxController {
         page: _currentPage,
         limit: _limit,
       );
-      
+
       if (response.isEmpty) {
         _isLastPage = true;
         logger.d('Reached last page');
@@ -193,7 +195,7 @@ class SongController extends GetxController {
     try {
       logger.d('Toggling favorite for song: $songId');
       await _songRepository.toggleFavorite(songId);
-      
+
       // Update local state
       final songIndex = songs.indexWhere((s) => s.songId == songId);
       if (songIndex != -1) {
@@ -202,10 +204,10 @@ class SongController extends GetxController {
         );
         songs.refresh();
       }
-      
+
       // Refresh favorites list
       await fetchFavorites(forceRefresh: true);
-      
+
       Get.snackbar(
         'Success',
         'Favorite updated',
@@ -228,7 +230,7 @@ class SongController extends GetxController {
       searchResults.clear();
       return;
     }
-    
+
     isSearching.value = true;
     try {
       logger.d('Searching songs with query: $query');
@@ -274,5 +276,39 @@ class SongController extends GetxController {
     popularError.value = null;
     recentError.value = null;
     favoritesError.value = null;
+    favoritesError.value = null;
+  }
+
+  /// Upload a new song
+  Future<bool> uploadSong(String filePath, String title, String artist) async {
+    isUploading.value = true;
+    try {
+      logger.i('Uploading song: $title');
+      await _songRepository.uploadSong(filePath, title, artist);
+
+      Get.snackbar(
+        'Success',
+        'Song uploaded successfully!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+
+      // Refresh songs list
+      await fetchSongs(refresh: true);
+      return true;
+    } catch (e) {
+      logger.e('Error uploading song: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to upload song. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    } finally {
+      isUploading.value = false;
+    }
   }
 }
