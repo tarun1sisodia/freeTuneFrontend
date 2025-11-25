@@ -42,4 +42,29 @@ class PreferencesStorage {
   Future<void> remove(String key) async {
     await _prefs.remove(key);
   }
+
+  // User Preferences
+  Future<void> saveTheme(String theme) async {
+    await _prefs.setString(CacheKeys.theme, theme);
+  }
+
+  String getTheme() {
+    return _prefs.getString(CacheKeys.theme) ?? 'dark';
+  }
+
+  Future<void> saveAudioQuality(String quality) async {
+    await _prefs.setString(CacheKeys.audioQuality, quality);
+  }
+
+  String getAudioQuality() {
+    return _prefs.getString(CacheKeys.audioQuality) ?? 'high';
+  }
+
+  Future<void> saveNotificationsEnabled(bool enabled) async {
+    await _prefs.setBool(CacheKeys.notificationsEnabled, enabled);
+  }
+
+  bool getNotificationsEnabled() {
+    return _prefs.getBool(CacheKeys.notificationsEnabled) ?? true;
+  }
 }
