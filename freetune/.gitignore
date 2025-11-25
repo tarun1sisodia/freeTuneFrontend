@@ -32,12 +32,7 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
-/macos/
-/web/
-/ios/
-/test/
-/windows/
-/android/
+
 
 
 # Symbolication related

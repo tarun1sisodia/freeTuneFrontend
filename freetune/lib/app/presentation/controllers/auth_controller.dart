@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:get/get.dart';
 import '../../core/mixins/error_handler_mixin.dart';
 import '../../core/mixins/loading_mixin.dart';
@@ -100,9 +102,9 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
     }
     
     showLoading();
-    final result = await _forgotPasswordUseCase!.call(email);
+    final result = await _forgotPasswordUseCase?.call(email);
     hideLoading();
-    return result.fold(
+    return result!.fold(
       (failure) {
         handleError(failure, title: 'Forgot Password Failed');
         return false;
@@ -118,9 +120,9 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
     }
     
     showLoading();
-    final result = await _changePasswordUseCase!.call(currentPassword, newPassword);
+    final result = await _changePasswordUseCase?.call(currentPassword, newPassword);
     hideLoading();
-    return result.fold(
+    return result!.fold(
       (failure) {
         handleError(failure, title: 'Change Password Failed');
         return false;
