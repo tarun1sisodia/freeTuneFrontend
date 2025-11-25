@@ -322,7 +322,7 @@ class HomeScreen extends StatelessWidget {
                     padding: EdgeInsets.all(16.0),
                     child: SmallLoadingIndicator(),
                   ),
-                if (!controller.isLoadingMore.value && !controller.songs.isEmpty)
+                if (!controller.isLoadingMore.value && controller.songs.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Center(
@@ -544,7 +544,7 @@ class HomeScreen extends StatelessWidget {
       return user.username!;
     }
     if (user?.email != null) {
-      return user!.email!.split('@')[0];
+      return user!.email.split('@')[0];
     }
     return 'Guest';
   }

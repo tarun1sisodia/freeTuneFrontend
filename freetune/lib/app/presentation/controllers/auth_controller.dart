@@ -31,11 +31,6 @@ class AuthController extends GetxController with ErrorHandlerMixin, LoadingMixin
         _forgotPasswordUseCase = forgotPasswordUseCase,
         _changePasswordUseCase = changePasswordUseCase;
 
-  @override
-  void onInit() {
-    super.onInit();
-    // Don't check user automatically - let splash screen call it
-  }
 
   Future<void> checkCurrentUser() async {
     if (isInitialized.value) return;

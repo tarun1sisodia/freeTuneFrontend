@@ -40,7 +40,6 @@ class EmptyState extends StatelessWidget {
             if (onAction != null && actionLabel != null) ...[
               const SizedBox(height: 24),
               ElevatedButton(
-                child: Text(actionLabel!),
                 onPressed: onAction,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -48,6 +47,7 @@ class EmptyState extends StatelessWidget {
                     vertical: 12,
                   ),
                 ),
+                child: Text(actionLabel!),
               ),
             ],
           ],
