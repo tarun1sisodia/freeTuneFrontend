@@ -13,6 +13,7 @@ class ApiClient {
         baseUrl: ApiConfig.baseUrl,
         connectTimeout: const Duration(milliseconds: ApiConfig.connectionTimeout),
         receiveTimeout: const Duration(milliseconds: ApiConfig.receiveTimeout),
+        sendTimeout: const Duration(milliseconds: ApiConfig.sendTimeout),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',

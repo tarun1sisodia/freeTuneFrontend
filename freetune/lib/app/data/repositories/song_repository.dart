@@ -324,13 +324,19 @@ class SongRepositoryImpl implements SongRepository {
     try {
       logger.i('📤 Uploading song: $title by $artist');
 
+      // Send placeholder duration - backend will extract actual duration
+      const int placeholderDuration = 0; // Backend extracts real duration
+
       final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(filePath),
+        'audio': await MultipartFile.fromFile(filePath),
         'title': title,
         'artist': artist,
+        'duration_ms': placeholderDuration.toString(),
       });
 
+      logger.d('Sending upload request - backend will extract duration');
       final songModel = await _songsApi.uploadSong(formData);
+      logger.i('✅ Song uploaded successfully: ${songModel.title}');
       return SongMapper.fromModel(songModel);
     } catch (e) {
       logger.e('Error uploading song: $e');

@@ -270,7 +270,9 @@ class SongsApi {
       );
       
       logger.d('Song uploaded successfully');
-      return SongModel.fromJson(response.data['data']);
+      // Backend returns { data: { song: {...}, upload: {...} } }
+      final responseData = response.data['data'];
+      return SongModel.fromJson(responseData['song']);
     } on DioException catch (e) {
       logger.e('Failed to upload song: ${e.message}');
       throw ApiException.fromDioError(e);
