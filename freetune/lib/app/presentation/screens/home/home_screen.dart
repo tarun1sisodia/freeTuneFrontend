@@ -19,6 +19,11 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.black,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Get.toNamed(Routes.UPLOAD),
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.upload, color: Colors.white),
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () => songController.refreshAll(),
@@ -28,13 +33,13 @@ class HomeScreen extends StatelessWidget {
             slivers: [
               // App Bar
               _buildAppBar(authController),
-              
+
               // Popular Songs Section
               _buildPopularSection(songController),
-              
+
               // Recently Played Section
               _buildRecentlyPlayedSection(songController),
-              
+
               // All Songs Section
               _buildAllSongsSection(songController),
             ],
@@ -311,7 +316,8 @@ class HomeScreen extends StatelessWidget {
                             duration: const Duration(seconds: 2),
                           );
                         },
-                        onFavorite: () => controller.toggleFavorite(song.songId),
+                        onFavorite: () =>
+                            controller.toggleFavorite(song.songId),
                         onMore: () => _showSongOptions(song),
                       ),
                     );
@@ -322,7 +328,8 @@ class HomeScreen extends StatelessWidget {
                     padding: EdgeInsets.all(16.0),
                     child: SmallLoadingIndicator(),
                   ),
-                if (!controller.isLoadingMore.value && controller.songs.isNotEmpty)
+                if (!controller.isLoadingMore.value &&
+                    controller.songs.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Center(
@@ -508,7 +515,8 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 16),
             ListTile(
               leading: const Icon(Icons.playlist_add, color: Colors.white),
-              title: const Text('Add to playlist', style: TextStyle(color: Colors.white)),
+              title: const Text('Add to playlist',
+                  style: TextStyle(color: Colors.white)),
               onTap: () {
                 Get.back();
                 Get.toNamed(Routes.PLAYLISTS);
@@ -524,7 +532,8 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.info_outline, color: Colors.white),
-              title: const Text('Song details', style: TextStyle(color: Colors.white)),
+              title: const Text('Song details',
+                  style: TextStyle(color: Colors.white)),
               onTap: () {
                 Get.back();
                 // TODO: Show song details
