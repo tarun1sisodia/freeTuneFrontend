@@ -12,6 +12,8 @@ import '../presentation/screens/playlists/playlists_screen.dart';
 import '../presentation/screens/profile/profile_screen.dart';
 import '../presentation/screens/songs/upload_screen.dart';
 import '../presentation/screens/search/search_screen.dart';
+import '../presentation/screens/profile/edit_profile_screen.dart';
+import '../presentation/screens/settings/settings_screen.dart';
 
 import '../bindings/auth_binding.dart';
 import '../bindings/initial_binding.dart';
@@ -74,6 +76,14 @@ class AppPages {
       name: Routes.SEARCH,
       page: () => const SearchScreen(),
       binding: SearchBinding(),
+    ),
+    GetPage(
+      name: Routes.EDIT_PROFILE,
+      page: () => const EditProfileScreen(),
+    ),
+    GetPage(
+      name: Routes.SETTINGS,
+      page: () => const SettingsScreen(),
     ),
   ];
 }

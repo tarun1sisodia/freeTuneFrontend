@@ -4,6 +4,7 @@ import '../../controllers/profile_controller.dart';
 import '../../widgets/profile/profile_header.dart';
 import '../../widgets/profile/profile_stat_card.dart';
 import '../../widgets/profile/profile_menu_item.dart';
+import '../../../routes/app_routes.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -34,12 +35,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   username: user.username ?? 'User',
                   email: user.email,
                   onEditPressed: () {
-                    // TODO: Navigate to edit profile
-                    Get.snackbar(
-                      'Coming Soon',
-                      'Profile editing will be available soon',
-                      snackPosition: SnackPosition.BOTTOM,
-                    );
+                    Get.toNamed(Routes.EDIT_PROFILE);
                   },
                 ),
                 const SizedBox(height: 24),
@@ -153,12 +149,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   icon: Icons.lock,
                   title: 'Change Password',
                   onTap: () {
-                    // TODO: Navigate to change password
-                    Get.snackbar(
-                      'Coming Soon',
-                      'Password change will be available soon',
-                      snackPosition: SnackPosition.BOTTOM,
-                    );
+                    Get.toNamed(Routes.CHANGE_PASSWORD);
                   },
                 ),
 
@@ -167,7 +158,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   icon: Icons.privacy_tip,
                   title: 'Privacy Policy',
                   onTap: () {
-                    // TODO: Navigate to privacy policy
+                    Get.toNamed(Routes.SETTINGS);
                   },
                 ),
 
@@ -176,7 +167,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   icon: Icons.description,
                   title: 'Terms of Service',
                   onTap: () {
-                    // TODO: Navigate to terms
+                    Get.toNamed(Routes.SETTINGS);
                   },
                 ),
 
