@@ -5,11 +5,14 @@ import '../mappers/user_mapper.dart';
 
 abstract class AuthRepository {
   Future<UserEntity> login(String email, String password);
-  Future<UserEntity> register(String email, String password, {String? username});
+  Future<UserEntity> register(String email, String password,
+      {String? username});
   Future<UserEntity?> getCurrentUser();
   Future<void> logout();
   Future<void> forgotPassword(String email);
   Future<void> changePassword(String currentPassword, String newPassword);
+  Future<UserEntity> updateProfile(
+      {String? username, String? bio, String? avatarUrl});
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -29,8 +32,10 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserEntity> register(String email, String password, {String? username}) async {
-    final authResponse = await _authApi.register(email, password, username: username);
+  Future<UserEntity> register(String email, String password,
+      {String? username}) async {
+    final authResponse =
+        await _authApi.register(email, password, username: username);
     await _preferencesStorage.saveAuthToken(authResponse.accessToken);
     if (authResponse.refreshToken != null) {
       await _preferencesStorage.saveRefreshToken(authResponse.refreshToken!);
@@ -63,7 +68,20 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> changePassword(String currentPassword, String newPassword) async {
+  Future<void> changePassword(
+      String currentPassword, String newPassword) async {
     await _authApi.changePassword(currentPassword, newPassword);
+  }
+
+  @override
+  Future<UserEntity> updateProfile(
+      {String? username, String? bio, String? avatarUrl}) async {
+    final data = <String, dynamic>{};
+    if (username != null) data['username'] = username;
+    if (bio != null) data['bio'] = bio;
+    if (avatarUrl != null) data['avatarUrl'] = avatarUrl;
+
+    final userModel = await _authApi.updateProfile(data);
+    return UserMapper.fromModel(userModel);
   }
 }

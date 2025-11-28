@@ -8,7 +8,8 @@ class AuthApi {
 
   AuthApi(this._dio);
 
-  Future<AuthResponse> register(String email, String password, {String? username}) async {
+  Future<AuthResponse> register(String email, String password,
+      {String? username}) async {
     final response = await _dio.post(
       ApiEndpoints.register,
       data: {
@@ -42,7 +43,8 @@ class AuthApi {
     );
   }
 
-  Future<void> changePassword(String currentPassword, String newPassword) async {
+  Future<void> changePassword(
+      String currentPassword, String newPassword) async {
     await _dio.post(
       ApiEndpoints.changePassword,
       data: {
@@ -50,5 +52,14 @@ class AuthApi {
         'newPassword': newPassword,
       },
     );
+  }
+
+  Future<UserModel> updateProfile(Map<String, dynamic> data) async {
+    final response = await _dio.put(
+      ApiEndpoints.updateProfile,
+      data: data,
+    );
+    final responseData = response.data['data'] ?? response.data;
+    return UserModel.fromJson(responseData);
   }
 }

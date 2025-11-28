@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/songs_controller.dart';
+import '../../controllers/audio_player_controller.dart';
 import '../../widgets/song/song_tile.dart';
+import '../../widgets/player/mini_player.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/common/error_view.dart';
 import '../../widgets/common/empty_state.dart';
@@ -25,25 +27,38 @@ class HomeScreen extends StatelessWidget {
         child: const Icon(Icons.upload, color: Colors.white),
       ),
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () => songController.refreshAll(),
-          color: Colors.green,
-          backgroundColor: Colors.grey[900],
-          child: CustomScrollView(
-            slivers: [
-              // App Bar
-              _buildAppBar(authController),
+        child: Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: () => songController.refreshAll(),
+              color: Colors.green,
+              backgroundColor: Colors.grey[900],
+              child: CustomScrollView(
+                slivers: [
+                  // App Bar
+                  _buildAppBar(authController),
 
-              // Popular Songs Section
-              _buildPopularSection(songController),
+                  // Popular Songs Section
+                  _buildPopularSection(songController),
 
-              // Recently Played Section
-              _buildRecentlyPlayedSection(songController),
+                  // Recently Played Section
+                  _buildRecentlyPlayedSection(songController),
 
-              // All Songs Section
-              _buildAllSongsSection(songController),
-            ],
-          ),
+                  // All Songs Section
+                  _buildAllSongsSection(songController),
+
+                  // Bottom padding for MiniPlayer
+                  const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                ],
+              ),
+            ),
+            const Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: MiniPlayer(),
+            ),
+          ],
         ),
       ),
     );
@@ -250,6 +265,8 @@ class HomeScreen extends StatelessWidget {
 
   /// Build all songs list section
   Widget _buildAllSongsSection(SongController controller) {
+    final audioPlayerController = Get.find<AudioPlayerController>();
+
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,15 +323,9 @@ class HomeScreen extends StatelessWidget {
                       child: SongTile(
                         song: song,
                         onTap: () {
-                          // TODO: Play song
-                          Get.snackbar(
-                            'Playing',
-                            song.title,
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.grey[900],
-                            colorText: Colors.white,
-                            duration: const Duration(seconds: 2),
-                          );
+                          audioPlayerController.playSong(song,
+                              queue: controller.songs);
+                          Get.toNamed(Routes.PLAYER);
                         },
                         onFavorite: () =>
                             controller.toggleFavorite(song.songId),
@@ -357,6 +368,7 @@ class HomeScreen extends StatelessWidget {
 
   /// Build popular song card (large horizontal card)
   Widget _buildPopularSongCard(dynamic song, SongController controller) {
+    final audioPlayerController = Get.find<AudioPlayerController>();
     return Container(
       width: 160,
       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -364,15 +376,9 @@ class HomeScreen extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // TODO: Play song
-            Get.snackbar(
-              'Playing',
-              song.title,
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.grey[900],
-              colorText: Colors.white,
-              duration: const Duration(seconds: 2),
-            );
+            audioPlayerController.playSong(song,
+                queue: controller.popularSongs);
+            Get.toNamed(Routes.PLAYER);
           },
           borderRadius: BorderRadius.circular(8),
           child: Column(
@@ -423,6 +429,7 @@ class HomeScreen extends StatelessWidget {
 
   /// Build recent song card (smaller horizontal card)
   Widget _buildRecentSongCard(dynamic song, SongController controller) {
+    final audioPlayerController = Get.find<AudioPlayerController>();
     return Container(
       width: 140,
       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -430,7 +437,9 @@ class HomeScreen extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // TODO: Play song
+            audioPlayerController
+                .playSong(song); // No queue for recent single play for now
+            Get.toNamed(Routes.PLAYER);
           },
           borderRadius: BorderRadius.circular(8),
           child: Column(

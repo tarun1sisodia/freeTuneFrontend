@@ -38,16 +38,15 @@ class PlaylistController extends GetxController {
     }
   }
 
-  /*
   Future<void> deletePlaylist(String id) async {
     try {
       await _playlistRepository.deletePlaylist(id);
       fetchPlaylists(); // Refresh the list
+      Get.snackbar('Success', 'Playlist deleted');
     } catch (e) {
       Get.snackbar('Error', 'Could not delete playlist.');
     }
   }
-  */
 
   // Other methods like add/remove song would follow the same pattern
 }

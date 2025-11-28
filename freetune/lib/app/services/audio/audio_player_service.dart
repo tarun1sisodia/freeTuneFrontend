@@ -20,8 +20,7 @@ import 'audio_cache_service.dart';
 class AudioPlayerService extends GetxService {
   // Dependencies
   final SongRepository _songRepository;
-  final AudioCacheService _audioCacheService = Get.find<AudioCacheService>();
-
+  final AudioCacheService _audioCacheService = Get.put(AudioCacheService());
   // Audio player instance
   late final AudioPlayer _player;
 

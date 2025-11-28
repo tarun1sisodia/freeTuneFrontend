@@ -11,10 +11,12 @@ import '../presentation/screens/splash/splash_screen.dart';
 import '../presentation/screens/playlists/playlists_screen.dart';
 import '../presentation/screens/profile/profile_screen.dart';
 import '../presentation/screens/songs/upload_screen.dart';
+import '../presentation/screens/search/search_screen.dart';
 
 import '../bindings/auth_binding.dart';
 import '../bindings/initial_binding.dart';
 import '../bindings/player_binding.dart';
+import '../bindings/search_binding.dart';
 
 class AppPages {
   static const INITIAL = Routes.SPLASH;
@@ -67,6 +69,11 @@ class AppPages {
     GetPage(
       name: Routes.UPLOAD,
       page: () => const UploadScreen(),
+    ),
+    GetPage(
+      name: Routes.SEARCH,
+      page: () => const SearchScreen(),
+      binding: SearchBinding(),
     ),
   ];
 }
