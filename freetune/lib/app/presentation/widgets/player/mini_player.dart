@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
 import '../../controllers/audio_player_controller.dart';
-import '../../../routes/app_pages.dart';
-import '../../../domain/entities/song_entity.dart';
 
 class MiniPlayer extends GetView<AudioPlayerController> {
   const MiniPlayer({super.key});

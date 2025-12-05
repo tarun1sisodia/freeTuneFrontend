@@ -7,7 +7,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppBindings()
       .dependencies(); // Initialize core services before app runs
-
   runApp(const FreeTuneApp());
 }
 

@@ -25,7 +25,7 @@ class SettingsScreen extends GetView<ProfileController> {
           _buildListTile(
             icon: Icons.person,
             title: 'Edit Profile',
-            onTap: () => Get.toNamed(Routes.PROFILE + '/edit'),
+            onTap: () => Get.toNamed('${Routes.PROFILE}/edit'),
           ),
           _buildListTile(
             icon: Icons.lock,
@@ -145,7 +145,7 @@ class SettingsScreen extends GetView<ProfileController> {
           title: Text(title, style: const TextStyle(color: Colors.white)),
           value: controller.notificationsEnabled.value,
           onChanged: onChanged,
-          activeColor: Colors.green,
+          activeThumbColor: Colors.green,
         ));
   }
 
