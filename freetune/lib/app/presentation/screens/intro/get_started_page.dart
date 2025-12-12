@@ -63,7 +63,7 @@ class GetStartedPage extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.toNamed(Routes.LOGIN);
+                      Get.toNamed(Routes.SIGNUP_OR_SIGNIN);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Palette.primaryColor,

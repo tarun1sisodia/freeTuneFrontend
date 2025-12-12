@@ -11,6 +11,9 @@ class AuthBinding implements Bindings {
         registerUserUseCase: Get.find<RegisterUserUseCase>(),
         getCurrentUserUseCase: Get.find<GetCurrentUserUseCase>(),
         logoutUserUseCase: Get.find<LogoutUserUseCase>(),
+        forgotPasswordUseCase: Get.find<ForgotPasswordUseCase>(),
+        changePasswordUseCase: Get.find<ChangePasswordUseCase>(),
+        updateProfileUseCase: Get.find<UpdateProfileUseCase>(),
       ),
     );
   }

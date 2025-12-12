@@ -153,9 +153,11 @@ class LoginScreen extends GetView<AuthController> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.toNamed(Routes.FORGOT_PASSWORD);
+          },
           child: const Text(
-            "Recovery Password",
+            "Forgot Password?",
             style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 16,

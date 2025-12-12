@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (authController.isAuthenticated.value) {
         Get.offAllNamed(Routes.MAIN);
       } else {
-        Get.offNamed(Routes.SIGNUP_OR_SIGNIN);
+        Get.offNamed(Routes.GET_STARTED);
       }
     }
   }
