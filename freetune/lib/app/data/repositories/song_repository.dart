@@ -26,7 +26,8 @@ abstract class SongRepository {
       {String quality = 'medium'});
   Future<void> trackPlay(String songId, {int position = 0});
   Future<void> trackPlayback(String songId, int positionMs, int durationMs);
-  Future<SongEntity> uploadSong(String filePath, String title, String artist);
+  Future<SongEntity> uploadSong(String filePath, String title, String artist,
+      [String? album, String? coverPath]);
   Future<void> clearCache();
   Future<void> refreshCache();
 }
@@ -319,24 +320,38 @@ class SongRepositoryImpl implements SongRepository {
   }
 
   @override
-  Future<SongEntity> uploadSong(
-      String filePath, String title, String artist) async {
+  Future<SongEntity> uploadSong(String filePath, String title, String artist,
+      [String? album, String? coverPath]) async {
     try {
       logger.i('📤 Uploading song: $title by $artist');
 
       // Send placeholder duration - backend will extract actual duration
       const int placeholderDuration = 0; // Backend extracts real duration
 
-      final formData = FormData.fromMap({
+      final map = {
         'audio': await MultipartFile.fromFile(filePath),
         'title': title,
         'artist': artist,
         'duration_ms': placeholderDuration.toString(),
-      });
+      };
+
+      if (album != null && album.isNotEmpty) {
+        map['album'] = album;
+      }
+
+      if (coverPath != null && coverPath.isNotEmpty) {
+        map['image'] = await MultipartFile.fromFile(coverPath);
+      }
+
+      final formData = FormData.fromMap(map);
 
       logger.d('Sending upload request - backend will extract duration');
       final songModel = await _songsApi.uploadSong(formData);
       logger.i('✅ Song uploaded successfully: ${songModel.title}');
+
+      // Invalidate cache to ensure new song appears in lists
+      await clearCache();
+
       return SongMapper.fromModel(songModel);
     } catch (e) {
       logger.e('Error uploading song: $e');

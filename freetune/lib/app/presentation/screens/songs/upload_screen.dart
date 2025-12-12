@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
@@ -16,8 +17,10 @@ class _UploadScreenState extends State<UploadScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _artistController = TextEditingController();
+  final _albumController = TextEditingController();
   String? _selectedFilePath;
   String? _selectedFileName;
+  String? _selectedImagePath;
 
   final SongController _songController = Get.find<SongController>();
 
@@ -25,6 +28,7 @@ class _UploadScreenState extends State<UploadScreen> {
   void dispose() {
     _titleController.dispose();
     _artistController.dispose();
+    _albumController.dispose();
     super.dispose();
   }
 
@@ -38,6 +42,19 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _selectedFilePath = result.files.single.path;
         _selectedFileName = result.files.single.name;
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: false,
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedImagePath = result.files.single.path;
       });
     }
   }
@@ -59,6 +76,8 @@ class _UploadScreenState extends State<UploadScreen> {
         _selectedFilePath!,
         _titleController.text,
         _artistController.text,
+        _albumController.text,
+        _selectedImagePath,
       );
 
       if (success) {
@@ -81,15 +100,64 @@ class _UploadScreenState extends State<UploadScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // File Selection Area
+              // Cover Image Selection
+              Center(
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    height: 180,
+                    width: 180,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: _selectedImagePath != null
+                            ? Colors.green
+                            : Colors.grey[800]!,
+                        width: 2,
+                      ),
+                      image: _selectedImagePath != null
+                          ? DecorationImage(
+                              image: FileImage(File(
+                                  _selectedImagePath!)), // Using dart:io File
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                    ),
+                    child: _selectedImagePath == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.image_outlined,
+                                size: 48,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Add Cover Art',
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Audio File Selection
               GestureDetector(
                 onTap: _pickFile,
                 child: Container(
-                  height: 150,
+                  height: 100,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.grey[900],
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: _selectedFilePath != null
                           ? Colors.green
@@ -97,31 +165,45 @@ class _UploadScreenState extends State<UploadScreen> {
                       width: 2,
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Row(
                     children: [
                       Icon(
                         _selectedFilePath != null
                             ? Icons.audio_file
                             : Icons.cloud_upload_outlined,
-                        size: 48,
+                        size: 40,
                         color: _selectedFilePath != null
                             ? Colors.green
                             : Colors.grey,
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        _selectedFileName ?? 'Tap to select audio file',
-                        style: TextStyle(
-                            color: _selectedFileName != null
-                                ? Colors.white
-                                : Colors.grey[400],
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _selectedFileName ?? 'Select Audio File',
+                              style: TextStyle(
+                                  color: _selectedFileName != null
+                                      ? Colors.white
+                                      : Colors.grey[400],
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (_selectedFileName == null)
+                              Text(
+                                'Tap to choose song',
+                                style: TextStyle(
+                                    color: Colors.grey[600], fontSize: 12),
+                              ),
+                          ],
+                        ),
                       ),
+                      if (_selectedFilePath != null)
+                        const Icon(Icons.check_circle, color: Colors.green),
                     ],
                   ),
                 ),
@@ -186,24 +268,41 @@ class _UploadScreenState extends State<UploadScreen> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16),
+
+              // Album Input (Optional)
+              TextFormField(
+                controller: _albumController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Album Name (Optional)',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.transparent,
+                  contentPadding: const EdgeInsets.all(20),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: const BorderSide(color: Colors.grey),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: const BorderSide(color: Colors.white),
+                  ),
+                  prefixIcon:
+                      const Icon(Icons.album_outlined, color: Colors.grey),
+                ),
+              ),
               const SizedBox(height: 48),
 
               // Upload Button
               Obx(() => BasicAppButton(
-                    onPressed: _songController.isUploading.value
-                        ? () {}
-                        : _upload, // Disable logic handled inside BasicAppButton usually, or pass callback.
-                    // BasicAppButton doesn't support disabled styling transparently if we don't pass null.
-                    // Let's modify logic: if uploading pass null to onPressed?
-                    // BasicAppButton signature: VoidCallback onPressed.
-                    // If I pass a function that does nothing, it's still clickable visually.
-                    // I should probably handle loading state inside BasicAppButton or just use logic here.
-                    // For now, I'll pass logic.
+                    onPressed:
+                        _songController.isUploading.value ? () {} : _upload,
                     title: _songController.isUploading.value
                         ? 'Uploading...'
                         : 'Upload',
-                    // weight: FontWeight.w600,
                   )),
+              const SizedBox(height: 20),
             ],
           ),
         ),

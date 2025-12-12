@@ -280,11 +280,13 @@ class SongController extends GetxController {
   }
 
   /// Upload a new song
-  Future<bool> uploadSong(String filePath, String title, String artist) async {
+  Future<bool> uploadSong(String filePath, String title, String artist,
+      [String? album, String? coverPath]) async {
     isUploading.value = true;
     try {
       logger.i('Uploading song: $title');
-      await _songRepository.uploadSong(filePath, title, artist);
+      await _songRepository.uploadSong(
+          filePath, title, artist, album, coverPath);
 
       Get.snackbar(
         'Success',
