@@ -2,107 +2,195 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/song_search_controller.dart';
 import '../../controllers/audio_player_controller.dart';
-import '../../widgets/song/song_tile.dart';
-import '../../../routes/app_routes.dart';
-import '../../widgets/common/loading_indicator.dart';
-import '../../widgets/common/error_view.dart';
-import '../../widgets/common/empty_state.dart';
+import '../../../routes/app_routes.dart'; // Used for PLAYER route
+import '../../../core/constants/palette.dart';
 
 class SearchScreen extends GetView<SongSearchController> {
-  const SearchScreen({super.key});
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Controller is injected via binding
+    final audioPlayerController = Get.find<AudioPlayerController>();
+
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Get.back(),
-        ),
-        title: TextField(
-          controller: controller.searchController,
-          onChanged: controller.onSearchChanged,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            hintText: 'Search songs, artists...',
-            hintStyle: TextStyle(color: Colors.grey[400]),
-            border: InputBorder.none,
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.clear, color: Colors.grey),
-              onPressed: controller.clearSearch,
-            ),
-          ),
-          autofocus: true,
-          cursorColor: Colors.green,
-        ),
-      ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: LoadingIndicator(message: 'Searching...'));
-        }
-
-        if (controller.error.value != null) {
-          return ErrorView(
-            message: controller.error.value!,
-            onRetry: () => controller.search(controller.searchController.text),
-          );
-        }
-
-        if (controller.searchResults.isEmpty) {
-          if (controller.searchController.text.isEmpty) {
-            return Center(
+      backgroundColor: Palette.secondaryColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Search Header
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              color: Palette.secondaryColor,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.search, size: 64, color: Colors.grey[800]),
-                  const SizedBox(height: 16),
                   const Text(
-                    'Play what you love',
+                    "Search",
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25,
+                      color: Colors.white,
+                      fontFamily: "SpotifyCircularBold",
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Search for songs, artists, and more',
-                    style: TextStyle(color: Colors.grey[600]),
+                  const SizedBox(height: 12),
+                  // Search Bar
+                  Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.white,
+                    ),
+                    child: TextField(
+                      controller: controller.searchController,
+                      onChanged: controller.onSearchChanged,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontFamily: "SpotifyCircularMedium",
+                      ),
+                      decoration: const InputDecoration(
+                        hintText: "What do you want to listen to?",
+                        hintStyle: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "SpotifyCircularMedium",
+                          color: Palette.secondarySwatchColor,
+                        ),
+                        prefixIcon: Icon(Icons.search,
+                            color: Palette.secondaryColor, size: 28),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
                   ),
                 ],
               ),
-            );
-          } else {
-            return const EmptyState(
-              message: 'No results found',
-              icon: Icons.search_off,
-            );
-          }
-        }
+            ),
 
-        return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 80), // For mini player
-          itemCount: controller.searchResults.length,
-          itemBuilder: (context, index) {
-            final song = controller.searchResults[index];
-            return SongTile(
-              song: song,
-              onTap: () {
-                Get.find<AudioPlayerController>()
-                    .playSong(song, queue: controller.searchResults);
-                Get.toNamed(Routes.PLAYER);
-              },
-              onFavorite: () {
-                // TODO: Implement favorite toggle
-              },
-              onMore: () {
-                // TODO: Show options
-              },
-            );
-          },
-        );
-      }),
+            // Search Results or Categories
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(
+                      child: CircularProgressIndicator(color: Colors.white));
+                }
+
+                if (controller.searchController.text.isNotEmpty) {
+                  // Show Search Results
+                  if (controller.searchResults.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "No songs found",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    itemCount: controller.searchResults.length,
+                    itemBuilder: (context, index) {
+                      final song = controller.searchResults[index];
+                      return ListTile(
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: Image.network(
+                            song.albumArtUrl ??
+                                "https://via.placeholder.com/50",
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              width: 50,
+                              height: 50,
+                              color: Colors.grey[800],
+                              child: const Icon(Icons.music_note,
+                                  color: Colors.white54),
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          song.title,
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          song.artist,
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        trailing:
+                            const Icon(Icons.more_vert, color: Colors.grey),
+                        onTap: () {
+                          // Play song
+                          audioPlayerController.playSong(song);
+                          // Optional: Navigate to player
+                          Get.toNamed(Routes.PLAYER);
+                        },
+                      );
+                    },
+                  );
+                } else {
+                  // Show "Browse all" (Static Categories matching Clone)
+                  return CustomScrollView(
+                    slivers: [
+                      const SliverPadding(
+                        padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+                        sliver: SliverToBoxAdapter(
+                          child: Text(
+                            "Browse all",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontFamily: "SpotifyCircularBold",
+                            ),
+                          ),
+                        ),
+                      ),
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        sliver: SliverGrid(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 1.6,
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (BuildContext context, int index) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: Colors
+                                      .accents[index % Colors.accents.length],
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                padding: const EdgeInsets.all(12),
+                                child: Text(
+                                  "Genre ${index + 1}",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                // Note: In a real app, use images and real genres
+                              );
+                            },
+                            childCount: 10,
+                          ),
+                        ),
+                      ),
+                      const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
+                    ],
+                  );
+                }
+              }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

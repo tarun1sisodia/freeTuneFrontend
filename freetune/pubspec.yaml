@@ -50,6 +50,7 @@ dependencies:
   # Code Generation
   build_runner: ^2.4.7
   isar_generator: ^3.1.0+1
+  marquee: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -61,13 +62,28 @@ flutter:
   uses-material-design: true
   
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/
-  #   - assets/
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/songs/arijitSingh/images/
+    - assets/songs/arijitSingh/songs/
+    - assets/songs/iqlipseNova/songs/
+    - assets/songs/iqlipseNova/images/
+    - assets/songs/trs/images/
+    - assets/songs/imagineDragons/images/
 
   # To add custom fonts to your application, add a fonts section here,
   # like this:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: SpotifyCircularBold
+      fonts:
+        - asset: assets/fonts/CircularStd-Bold.otf
+    - family: SpotifyCircularLight
+      fonts:
+        - asset: assets/fonts/CircularStd-Light.otf
+    - family: SpotifyCircularMedium
+      fonts:
+        - asset: assets/fonts/CircularStd-Medium.otf
+    - family: SpotifyCircularBook
+      fonts:
+        - asset: assets/fonts/CircularStd-Book.otf

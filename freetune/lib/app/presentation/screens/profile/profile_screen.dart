@@ -132,6 +132,29 @@ class ProfileScreen extends GetView<ProfileController> {
 
                 const SizedBox(height: 24),
 
+                // Creator Section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'Creator',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Upload Song
+                ProfileMenuItem(
+                  icon: Icons.upload_file,
+                  title: 'Upload Song',
+                  onTap: () {
+                    Get.toNamed(Routes.UPLOAD);
+                  },
+                ),
+
+                const SizedBox(height: 24),
+
                 // Account Section
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),

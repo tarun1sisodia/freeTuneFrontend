@@ -12,4 +12,6 @@ abstract class Routes {
   static const EDIT_PROFILE = '/profile/edit';
   static const SETTINGS = '/settings';
   static const UPLOAD = '/upload';
+  static const MAIN = '/main';
+  static const ARTIST = '/artist';
 }

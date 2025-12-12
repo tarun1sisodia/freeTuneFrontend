@@ -20,20 +20,20 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _initializeApp() async {
     // Wait a bit for the UI to be ready
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     try {
       final authController = Get.find<AuthController>();
-      
+
       // Now check current user
       await authController.checkCurrentUser();
-      
+
       // Wait a bit more to show splash screen
       await Future.delayed(const Duration(seconds: 2));
-      
+
       // Navigate based on auth state
       if (mounted) {
         if (authController.isAuthenticated.value) {
-          Get.offAllNamed(Routes.HOME);
+          Get.offAllNamed(Routes.MAIN);
         } else {
           Get.offAllNamed(Routes.LOGIN);
         }

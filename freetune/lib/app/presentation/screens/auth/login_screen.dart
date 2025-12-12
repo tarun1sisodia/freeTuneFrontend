@@ -20,7 +20,7 @@ class LoginScreen extends GetView<AuthController> {
           passwordController.text,
         );
         if (success) {
-          Get.offAllNamed(Routes.HOME);
+          Get.offAllNamed(Routes.MAIN);
         }
       }
     }
@@ -56,14 +56,15 @@ class LoginScreen extends GetView<AuthController> {
                 ),
                 const SizedBox(height: 24.0),
                 Obx(() => ElevatedButton(
-                  onPressed: controller.isLoading.value ? null : handleLogin,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: controller.isLoading.value
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Login', style: TextStyle(fontSize: 18)),
-                )),
+                      onPressed:
+                          controller.isLoading.value ? null : handleLogin,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      child: controller.isLoading.value
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('Login', style: TextStyle(fontSize: 18)),
+                    )),
                 const SizedBox(height: 16.0),
                 TextButton(
                   onPressed: () => Get.toNamed(Routes.REGISTER),
