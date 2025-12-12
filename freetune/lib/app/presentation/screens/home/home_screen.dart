@@ -36,14 +36,18 @@ class HomeScreen extends GetView<SongController> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 0),
-                        child: Text(_getGreeting(authController),
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25,
-                                color: Colors.white,
-                                fontFamily: "SpotifyCircularBold")),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 0),
+                          child: Text(_getGreeting(authController),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25,
+                                  color: Colors.white,
+                                  fontFamily: "SpotifyCircularBold")),
+                        ),
                       ),
                       Row(children: [
                         IconButton(
@@ -72,33 +76,44 @@ class HomeScreen extends GetView<SongController> {
                             child: CircularProgressIndicator(
                                 color: Colors.green)));
                   }
-                  final items =
-                      controller.popularSongs.take(6).toList(); // Show top 6
-                  return GridView.builder(
-                    padding:
-                        const EdgeInsets.only(left: 15, right: 15, top: 10),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                            childAspectRatio: 3.0), // Adjusted aspect ratio
-                    primary: false,
-                    shrinkWrap: true,
-                    itemCount: items.length,
-                    itemBuilder: (BuildContext context, index) {
-                      final song = items[index];
-                      return RecentPlaylistContainer(
-                        name: song.title,
-                        image: song.albumArtUrl ??
-                            "https://via.placeholder.com/150",
-                        onTap: () {
-                          playerController.playSong(song, queue: items);
-                          Get.toNamed(Routes.PLAYER);
-                        },
-                      );
-                    },
-                  );
+
+                  final items = controller.popularSongs.take(6).toList();
+
+                  return LayoutBuilder(builder: (context, constraints) {
+                    // Responsive Grid Calculation
+                    // Mobile: 2 columns, Tablet: 3-4 columns
+                    final screenWidth = MediaQuery.of(context).size.width;
+                    final crossAxisCount = screenWidth > 600 ? 4 : 2;
+                    final itemWidth = (screenWidth - 40) / crossAxisCount;
+                    final itemHeight =
+                        60.0; // Fixed height for RecentPlaylistContainer
+                    final aspectRatio = itemWidth / itemHeight;
+
+                    return GridView.builder(
+                      padding:
+                          const EdgeInsets.only(left: 15, right: 15, top: 10),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          childAspectRatio: aspectRatio),
+                      primary: false,
+                      shrinkWrap: true,
+                      itemCount: items.length,
+                      itemBuilder: (BuildContext context, index) {
+                        final song = items[index];
+                        return RecentPlaylistContainer(
+                          name: song.title,
+                          image: song.albumArtUrl ??
+                              "https://via.placeholder.com/150",
+                          onTap: () {
+                            playerController.playSong(song, queue: items);
+                            Get.toNamed(Routes.PLAYER);
+                          },
+                        );
+                      },
+                    );
+                  });
                 }),
 
                 // Recently Played Section

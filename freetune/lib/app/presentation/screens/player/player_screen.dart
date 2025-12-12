@@ -69,234 +69,223 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                 ),
               ),
 
-              // Album Art
-              Obx(() {
-                final song = controller.currentSong.value;
-                return Padding(
-                    padding: const EdgeInsets.only(
-                        top: 30, left: 35, right: 35, bottom: 35),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: song?.albumArtUrl != null
-                            ? Image.network(
-                                song!.albumArtUrl!,
-                                fit: BoxFit.cover,
-                              )
-                            : Container(
-                                color: Colors.grey[800],
-                                height: 300,
-                                width: 300,
-                                child: const Icon(Icons.music_note,
-                                    size: 80, color: Colors.white))));
-              }),
-
-              // Song Title (Marquee)
-              Padding(
-                padding: const EdgeInsets.only(left: 35, right: 35),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width - 70,
-                  height: 25,
-                  child: Obx(() => Marquee(
-                        text: controller.currentSong.value?.title ??
-                            "Unknown Song",
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontFamily: "SpotifyCircularBold",
-                            fontSize: 20),
-                        scrollAxis: Axis.horizontal,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        blankSpace: 300,
-                        velocity: 30.0,
-                        startPadding: 5.0,
-                        pauseAfterRound: const Duration(seconds: 2),
-                        startAfter: const Duration(seconds: 2),
-                      )),
-                ),
-              ),
-
-              // Artist Name (Marquee)
-              Padding(
-                padding: const EdgeInsets.only(top: 10, left: 35, right: 35),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width - 70,
-                  height: 25,
-                  child: Obx(() => Marquee(
-                        text: controller.currentSong.value?.artist ??
-                            "Unknown Artist",
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontFamily: "SpotifyCircularBook",
-                            fontWeight: FontWeight.w400,
-                            fontSize: 17),
-                        scrollAxis: Axis.horizontal,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        blankSpace: 300,
-                        velocity: 30.0,
-                        startPadding: 5.0,
-                        pauseAfterRound: const Duration(seconds: 2),
-                        startAfter: const Duration(seconds: 2),
-                      )),
-                ),
-              ),
-
-              // Progress Bar
-              Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-                  child: SliderTheme(
-                      data: SliderThemeData(
-                        activeTrackColor: Colors.white70,
-                        thumbColor: Colors.white,
-                        inactiveTrackColor: Colors.grey[850],
+              // Album Art (Responsive)
+              Expanded(
+                flex: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Obx(() {
+                    final song = controller.currentSong.value;
+                    return AspectRatio(
+                      aspectRatio: 1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.5),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: song?.albumArtUrl != null
+                              ? Image.network(
+                                  song!.albumArtUrl!,
+                                  fit: BoxFit.cover,
+                                )
+                              : Container(
+                                  color: Colors.grey[800],
+                                  child: const Icon(Icons.music_note,
+                                      size: 80, color: Colors.white)),
+                        ),
                       ),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width - 20,
-                        child: Obx(() {
-                          final position =
-                              controller.position.value.inSeconds.toDouble();
-                          final duration =
-                              controller.duration.value?.inSeconds.toDouble() ??
-                                  1.0;
-                          return Slider(
-                            value: position.clamp(0.0, duration),
-                            min: 0,
-                            max: duration,
-                            divisions: duration > 0 ? duration.toInt() : 1,
-                            onChanged: (value) {
-                              controller.seek(Duration(seconds: value.toInt()));
-                            },
-                          );
-                        }),
-                      ))),
+                    );
+                  }),
+                ),
+              ),
 
-              // Time Labels
+              // Song Info
               Padding(
-                padding: const EdgeInsets.only(left: 35, right: 35),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
                   children: [
-                    Obx(() => Text(controller.positionString,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontFamily: "SpotifyCircularBook",
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15))),
-                    Obx(() => Text(controller.durationString,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontFamily: "SpotifyCircularBook",
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15)))
+                    SizedBox(
+                      height: 30,
+                      child: Obx(() => Marquee(
+                            text: controller.currentSong.value?.title ??
+                                "Unknown Song",
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontFamily: "SpotifyCircularBold",
+                                fontSize: 22),
+                            scrollAxis: Axis.horizontal,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            blankSpace: 300,
+                            velocity: 30.0,
+                            startPadding: 0.0,
+                            pauseAfterRound: const Duration(seconds: 2),
+                            startAfter: const Duration(seconds: 2),
+                          )),
+                    ),
+                    const SizedBox(height: 5),
+                    SizedBox(
+                      height: 25,
+                      child: Obx(() => Marquee(
+                            text: controller.currentSong.value?.artist ??
+                                "Unknown Artist",
+                            style: const TextStyle(
+                                color: Colors.white70,
+                                fontFamily: "SpotifyCircularBook",
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16),
+                            scrollAxis: Axis.horizontal,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            blankSpace: 300,
+                            velocity: 30.0,
+                            startPadding: 0.0,
+                            pauseAfterRound: const Duration(seconds: 2),
+                            startAfter: const Duration(seconds: 2),
+                          )),
+                    ),
                   ],
                 ),
               ),
 
-              // Playback Controls
-              Padding(
-                padding: const EdgeInsets.only(left: 0, right: 0, top: 0),
-                child: Row(
+              // Progress & Controls section
+              Expanded(
+                flex: 3,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // Shuffle
-                    IconButton(
-                        onPressed: controller.toggleShuffle,
-                        icon: Obx(() => Icon(Icons.shuffle_sharp,
-                            color: controller.isShuffleEnabled.value
-                                ? Colors.greenAccent.shade400
-                                : Colors.white,
-                            size: 40))),
-
-                    // Previous
-                    IconButton(
-                        onPressed: controller.playPrevious,
-                        icon: const Icon(
-                          Icons.skip_previous_sharp,
-                          color: Colors.white,
-                          size: 40,
-                        )),
-
-                    // Play/Pause
+                    // Slider
                     Padding(
-                      padding: const EdgeInsets.only(right: 50, bottom: 50),
-                      child: IconButton(
-                          onPressed: controller.togglePlayPause,
-                          icon: Obx(() {
-                            if (controller.isLoading.value) {
-                              return const SizedBox(
-                                width: 90,
-                                height: 90,
-                                child: CircularProgressIndicator(
-                                    color: Colors.white),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: SliderTheme(
+                            data: SliderThemeData(
+                              activeTrackColor: Colors.white,
+                              thumbColor: Colors.white,
+                              inactiveTrackColor: Colors.grey[800],
+                              trackHeight: 2,
+                              thumbShape: const RoundSliderThumbShape(
+                                  enabledThumbRadius: 6),
+                            ),
+                            child: Obx(() {
+                              final position = controller
+                                  .position.value.inSeconds
+                                  .toDouble();
+                              final duration = controller
+                                      .duration.value?.inSeconds
+                                      .toDouble() ??
+                                  1.0;
+                              return Slider(
+                                value: position.clamp(0.0, duration),
+                                min: 0,
+                                max: duration > 0 ? duration : 1,
+                                onChanged: (value) {
+                                  controller
+                                      .seek(Duration(seconds: value.toInt()));
+                                },
                               );
-                            }
-                            return Icon(
-                              controller.isPlaying.value
-                                  ? Icons.pause_circle_filled_sharp
-                                  : Icons.play_circle_fill_sharp,
-                              color: Colors.white,
-                              size: 90,
-                            );
-                          })),
+                            }))),
+
+                    // Time Labels
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Obx(() => Text(controller.positionString,
+                              style: const TextStyle(
+                                  color: Colors.white60, fontSize: 12))),
+                          Obx(() => Text(controller.durationString,
+                              style: const TextStyle(
+                                  color: Colors.white60, fontSize: 12))),
+                        ],
+                      ),
                     ),
 
-                    // Next
-                    IconButton(
-                        onPressed: controller.playNext,
-                        icon: const Icon(
-                          Icons.skip_next_sharp,
-                          color: Colors.white,
-                          size: 40,
-                        )),
-
-                    // Repeat
-                    IconButton(
-                        onPressed: controller.toggleRepeatMode,
-                        icon: Obx(() => Icon(
-                            _getRepeatIcon(controller.repeatMode.value),
-                            color: controller.repeatMode.value != RepeatMode.off
-                                ? Colors.greenAccent.shade400
-                                : Colors.white,
-                            size: 40)))
+                    // Controls
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                                onPressed: controller.toggleShuffle,
+                                icon: Obx(() => Icon(Icons.shuffle,
+                                    color: controller.isShuffleEnabled.value
+                                        ? Colors.greenAccent
+                                        : Colors.white,
+                                    size: 28))),
+                            const SizedBox(width: 20),
+                            IconButton(
+                                onPressed: controller.playPrevious,
+                                icon: const Icon(Icons.skip_previous,
+                                    color: Colors.white, size: 36)),
+                            const SizedBox(width: 20),
+                            Container(
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                              child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  onPressed: controller.togglePlayPause,
+                                  icon: Obx(() => Icon(
+                                      controller.isPlaying.value
+                                          ? Icons.pause
+                                          : Icons.play_arrow,
+                                      color: Colors.black,
+                                      size: 50))),
+                            ),
+                            const SizedBox(width: 20),
+                            IconButton(
+                                onPressed: controller.playNext,
+                                icon: const Icon(Icons.skip_next,
+                                    color: Colors.white, size: 36)),
+                            const SizedBox(width: 20),
+                            IconButton(
+                                onPressed: controller.toggleRepeatMode,
+                                icon: Obx(() => Icon(
+                                    _getRepeatIcon(controller.repeatMode.value),
+                                    color: controller.repeatMode.value !=
+                                            RepeatMode.off
+                                        ? Colors.greenAccent
+                                        : Colors.white,
+                                    size: 28))),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
 
-              // Bottom Actions
+              // Bottom Actions (Responsive Row)
               Padding(
-                padding: const EdgeInsets.only(bottom: 15),
-                child: SizedBox(
-                  height: 40,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                          left: 20,
-                          child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.devices,
-                                color: Colors.white,
-                                size: 30,
-                              ))),
-                      Positioned(
-                          right: 10,
-                          child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.horizontal_split_sharp,
-                                color: Colors.white,
-                                size: 30,
-                              ))),
-                      Positioned(
-                          right: 75,
-                          child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.share_sharp,
-                                color: Colors.white,
-                                size: 30,
-                              ))),
-                    ],
-                  ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.devices,
+                            color: Colors.white, size: 24)),
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.share,
+                            color: Colors.white, size: 24)),
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.format_list_bulleted,
+                            color: Colors.white, size: 24)),
+                  ],
                 ),
               )
             ],

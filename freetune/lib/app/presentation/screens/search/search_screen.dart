@@ -152,11 +152,11 @@ class SearchScreen extends GetView<SongSearchController> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         sliver: SliverGrid(
                           gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 200,
                             childAspectRatio: 1.6,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 16,
                           ),
                           delegate: SliverChildBuilderDelegate(
                             (BuildContext context, int index) {
