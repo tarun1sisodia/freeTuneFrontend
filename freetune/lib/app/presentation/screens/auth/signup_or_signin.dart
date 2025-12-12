@@ -91,11 +91,31 @@ class SignupOrSigninScreen extends StatelessWidget {
                           onPressed: () {
                             Get.toNamed(Routes.LOGIN);
                           },
+                          style: ButtonStyle(
+                            overlayColor:
+                                WidgetStateProperty.resolveWith<Color?>(
+                                    (Set<WidgetState> states) {
+                              if (states.contains(WidgetState.hovered) ||
+                                  states.contains(WidgetState.pressed)) {
+                                return Colors.white.withOpacity(0.1);
+                              }
+                              return null; // Defer to the widget's default.
+                            }),
+                            foregroundColor:
+                                WidgetStateProperty.resolveWith<Color?>(
+                                    (Set<WidgetState> states) {
+                              if (states.contains(WidgetState.hovered) ||
+                                  states.contains(WidgetState.pressed)) {
+                                return Colors
+                                    .white; // Keep white on hover/press
+                              }
+                              return Colors.white; // Default text color
+                            }),
+                          ),
                           child: const Text(
                             "Sign In",
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
-                              color: Colors.white,
                               fontSize: 21,
                             ),
                           ),

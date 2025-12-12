@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/profile_controller.dart';
+import '../../widgets/common/basic_app_bar.dart';
+import '../../widgets/common/basic_list_tile.dart';
 import '../../controllers/auth_controller.dart';
 import '../../../routes/app_routes.dart';
 
@@ -11,142 +13,116 @@ class SettingsScreen extends GetView<ProfileController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('Settings', style: TextStyle(color: Colors.white)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Get.back(),
-        ),
+      appBar: const BasicAppBar(
+        title: Text('Settings'),
       ),
-      body: ListView(
-        children: [
-          _buildSectionHeader('Account'),
-          _buildListTile(
-            icon: Icons.person,
-            title: 'Edit Profile',
-            onTap: () => Get.toNamed('${Routes.PROFILE}/edit'),
-          ),
-          _buildListTile(
-            icon: Icons.lock,
-            title: 'Change Password',
-            onTap: () => Get.toNamed(Routes.CHANGE_PASSWORD),
-          ),
-          const Divider(color: Colors.grey, height: 1),
-          _buildSectionHeader('Preferences'),
-          _buildSwitchTile(
-            icon: Icons.notifications,
-            title: 'Notifications',
-            value: controller.notificationsEnabled.value,
-            onChanged: controller.toggleNotifications,
-          ),
-          _buildListTile(
-            icon: Icons.music_note,
-            title: 'Audio Quality',
-            subtitle: controller.audioQuality.value.toUpperCase(),
-            onTap: () => _showAudioQualityDialog(),
-          ),
-          _buildListTile(
-            icon: Icons.palette,
-            title: 'Theme',
-            subtitle: controller.selectedTheme.value.capitalize,
-            onTap: () => _showThemeDialog(),
-          ),
-          const Divider(color: Colors.grey, height: 1),
-          _buildSectionHeader('Storage'),
-          _buildListTile(
-            icon: Icons.delete_sweep,
-            title: 'Clear Cache',
-            subtitle: 'Free up storage space',
-            onTap: () => _confirmClearCache(),
-          ),
-          const Divider(color: Colors.grey, height: 1),
-          _buildSectionHeader('About'),
-          _buildListTile(
-            icon: Icons.privacy_tip,
-            title: 'Privacy Policy',
-            onTap: () {
-              // TODO: Navigate to privacy policy
-              Get.snackbar('Info', 'Privacy Policy coming soon');
-            },
-          ),
-          _buildListTile(
-            icon: Icons.description,
-            title: 'Terms of Service',
-            onTap: () {
-              // TODO: Navigate to terms
-              Get.snackbar('Info', 'Terms of Service coming soon');
-            },
-          ),
-          _buildListTile(
-            icon: Icons.info,
-            title: 'App Version',
-            subtitle: '1.0.0',
-            onTap: null,
-          ),
-          const Divider(color: Colors.grey, height: 1),
-          _buildSectionHeader('Danger Zone'),
-          _buildListTile(
-            icon: Icons.logout,
-            title: 'Logout',
-            iconColor: Colors.red,
-            titleColor: Colors.red,
-            onTap: () => _confirmLogout(),
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildSectionHeader('Account'),
+            BasicListTile(
+              icon: Icons.person_outline,
+              title: 'Edit Profile',
+              onTap: () => Get.toNamed('${Routes.PROFILE}/edit'),
+            ),
+            BasicListTile(
+              icon: Icons.lock_outline,
+              title: 'Change Password',
+              onTap: () => Get.toNamed(Routes.CHANGE_PASSWORD),
+            ),
+            _buildDivider(),
+            _buildSectionHeader('Preferences'),
+            BasicListTile(
+              icon: Icons.notifications_none,
+              title: 'Notifications',
+              trailing: Obx(() => Switch(
+                    value: controller.notificationsEnabled.value,
+                    onChanged: controller.toggleNotifications,
+                    activeColor: Colors.green,
+                    activeTrackColor: Colors.green.withOpacity(0.5),
+                  )),
+            ),
+            Obx(() => BasicListTile(
+                  icon: Icons.graphic_eq,
+                  title: 'Audio Quality',
+                  subtitle: controller.audioQuality.value.toUpperCase(),
+                  onTap: () => _showAudioQualityDialog(),
+                )),
+            Obx(() => BasicListTile(
+                  icon: Icons.palette_outlined,
+                  title: 'Theme',
+                  subtitle: controller.selectedTheme.value.capitalize,
+                  onTap: () => _showThemeDialog(),
+                )),
+            _buildDivider(),
+            _buildSectionHeader('Storage'),
+            BasicListTile(
+              icon: Icons.delete_sweep_outlined,
+              title: 'Clear Cache',
+              subtitle: 'Free up storage space',
+              onTap: () => _confirmClearCache(),
+            ),
+            _buildDivider(),
+            _buildSectionHeader('About'),
+            BasicListTile(
+              icon: Icons.privacy_tip_outlined,
+              title: 'Privacy Policy',
+              onTap: () => Get.snackbar('Info', 'Privacy Policy coming soon',
+                  colorText: Colors.white, backgroundColor: Colors.grey[900]),
+            ),
+            BasicListTile(
+              icon: Icons.description_outlined,
+              title: 'Terms of Service',
+              onTap: () => Get.snackbar('Info', 'Terms of Service coming soon',
+                  colorText: Colors.white, backgroundColor: Colors.grey[900]),
+            ),
+            const BasicListTile(
+              icon: Icons.info_outline,
+              title: 'App Version',
+              subtitle: '1.0.0',
+            ),
+            _buildDivider(),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: TextButton(
+                onPressed: () => _confirmLogout(),
+                child: const Text(
+                  'Log out',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Text(
         title,
-        style: TextStyle(
-          color: Colors.grey[400],
-          fontSize: 14,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
           fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
         ),
       ),
     );
   }
 
-  Widget _buildListTile({
-    required IconData icon,
-    required String title,
-    String? subtitle,
-    VoidCallback? onTap,
-    Color? iconColor,
-    Color? titleColor,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: iconColor ?? Colors.green),
-      title: Text(title, style: TextStyle(color: titleColor ?? Colors.white)),
-      subtitle: subtitle != null
-          ? Text(subtitle, style: TextStyle(color: Colors.grey[600]))
-          : null,
-      trailing: onTap != null
-          ? Icon(Icons.chevron_right, color: Colors.grey[600])
-          : null,
-      onTap: onTap,
+  Widget _buildDivider() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Divider(color: Colors.grey, thickness: 0.5),
     );
-  }
-
-  Widget _buildSwitchTile({
-    required IconData icon,
-    required String title,
-    required bool value,
-    required Function(bool) onChanged,
-  }) {
-    return Obx(() => SwitchListTile(
-          secondary: Icon(icon, color: Colors.green),
-          title: Text(title, style: const TextStyle(color: Colors.white)),
-          value: controller.notificationsEnabled.value,
-          onChanged: onChanged,
-          activeThumbColor: Colors.green,
-        ));
   }
 
   void _showAudioQualityDialog() {

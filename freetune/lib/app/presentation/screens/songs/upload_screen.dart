@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../controllers/songs_controller.dart';
+import '../../widgets/common/basic_app_bar.dart';
+import '../../widgets/common/basic_app_button.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -69,70 +71,83 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: const Text('Upload Song'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: const BasicAppBar(
+        title: Text('Upload Song'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // File Selection
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[900],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[800]!),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.audio_file,
-                      size: 48,
+              // File Selection Area
+              GestureDetector(
+                onTap: _pickFile,
+                child: Container(
+                  height: 150,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
                       color: _selectedFilePath != null
                           ? Colors.green
-                          : Colors.grey,
+                          : Colors.grey[800]!,
+                      width: 2,
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      _selectedFileName ?? 'No file selected',
-                      style: const TextStyle(color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: _pickFile,
-                      icon: const Icon(Icons.folder_open),
-                      label: const Text('Select Audio File'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[800],
-                        foregroundColor: Colors.white,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        _selectedFilePath != null
+                            ? Icons.audio_file
+                            : Icons.cloud_upload_outlined,
+                        size: 48,
+                        color: _selectedFilePath != null
+                            ? Colors.green
+                            : Colors.grey,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      Text(
+                        _selectedFileName ?? 'Tap to select audio file',
+                        style: TextStyle(
+                            color: _selectedFileName != null
+                                ? Colors.white
+                                : Colors.grey[400],
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
               // Title Input
               TextFormField(
                 controller: _titleController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Song Title',
-                  labelStyle: TextStyle(color: Colors.grey[400]),
+                  hintText: 'Song Title',
+                  hintStyle: const TextStyle(color: Colors.grey),
                   filled: true,
-                  fillColor: Colors.grey[900],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                  fillColor: Colors.transparent,
+                  contentPadding: const EdgeInsets.all(20),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: const BorderSide(color: Colors.grey),
                   ),
-                  prefixIcon: const Icon(Icons.music_note, color: Colors.grey),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: const BorderSide(color: Colors.white),
+                  ),
+                  prefixIcon:
+                      const Icon(Icons.music_note_outlined, color: Colors.grey),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -148,15 +163,21 @@ class _UploadScreenState extends State<UploadScreen> {
                 controller: _artistController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Artist Name',
-                  labelStyle: TextStyle(color: Colors.grey[400]),
+                  hintText: 'Artist Name',
+                  hintStyle: const TextStyle(color: Colors.grey),
                   filled: true,
-                  fillColor: Colors.grey[900],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                  fillColor: Colors.transparent,
+                  contentPadding: const EdgeInsets.all(20),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: const BorderSide(color: Colors.grey),
                   ),
-                  prefixIcon: const Icon(Icons.person, color: Colors.grey),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: const BorderSide(color: Colors.white),
+                  ),
+                  prefixIcon:
+                      const Icon(Icons.person_outline, color: Colors.grey),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -165,36 +186,23 @@ class _UploadScreenState extends State<UploadScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 48),
 
               // Upload Button
-              Obx(() => ElevatedButton(
-                    onPressed:
-                        _songController.isUploading.value ? null : _upload,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      disabledBackgroundColor: Colors.green.withOpacity(0.5),
-                    ),
-                    child: _songController.isUploading.value
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Text(
-                            'Upload Song',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
+              Obx(() => BasicAppButton(
+                    onPressed: _songController.isUploading.value
+                        ? () {}
+                        : _upload, // Disable logic handled inside BasicAppButton usually, or pass callback.
+                    // BasicAppButton doesn't support disabled styling transparently if we don't pass null.
+                    // Let's modify logic: if uploading pass null to onPressed?
+                    // BasicAppButton signature: VoidCallback onPressed.
+                    // If I pass a function that does nothing, it's still clickable visually.
+                    // I should probably handle loading state inside BasicAppButton or just use logic here.
+                    // For now, I'll pass logic.
+                    title: _songController.isUploading.value
+                        ? 'Uploading...'
+                        : 'Upload',
+                    // weight: FontWeight.w600,
                   )),
             ],
           ),

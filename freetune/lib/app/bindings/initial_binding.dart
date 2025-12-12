@@ -2,6 +2,9 @@ import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../data/datasources/local/secure_storage.dart';
+
 import '../data/datasources/remote/api_client.dart';
 import '../data/datasources/local/isar_database.dart';
 import '../data/datasources/local/preferences_storage.dart';
@@ -39,6 +42,10 @@ class AppBindings implements Bindings {
     Get.put<PreferencesStorage>(PreferencesStorage(Get.find()),
         permanent: true);
 
+    // Initialize Secure Storage
+    const secureStorage = FlutterSecureStorage();
+    Get.put<SecureStorage>(SecureStorage(secureStorage), permanent: true);
+
     // Core API Client
     Get.lazyPut<ApiClient>(() => ApiClient(), fenix: true);
 
@@ -61,7 +68,7 @@ class AppBindings implements Bindings {
 
     // Repositories
     Get.lazyPut<AuthRepository>(
-        () => AuthRepositoryImpl(Get.find(), Get.find()),
+        () => AuthRepositoryImpl(Get.find(), Get.find(), Get.find()),
         fenix: true);
     Get.lazyPut<SongRepository>(
         () => SongRepositoryImpl(Get.find(), Get.find()),

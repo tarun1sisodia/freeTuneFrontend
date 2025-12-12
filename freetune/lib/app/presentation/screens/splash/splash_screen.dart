@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
 import '../../../core/configs/assets/app_images.dart';
+import '../../controllers/auth_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    redirect();
+    _initializeApp();
   }
 
   @override
@@ -27,11 +28,22 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  Future<void> redirect() async {
+  Future<void> _initializeApp() async {
+    // Check auth status concurrently with splash delay
+    final authController = Get.find<AuthController>();
+
+    // Minimum Splash Duration
     await Future.delayed(const Duration(seconds: 2));
+
+    // Check current user session
+    await authController.checkCurrentUser();
+
     if (mounted) {
-      // Navigate to GetStarted
-      Get.offNamed(Routes.GET_STARTED);
+      if (authController.isAuthenticated.value) {
+        Get.offAllNamed(Routes.MAIN);
+      } else {
+        Get.offNamed(Routes.SIGNUP_OR_SIGNIN);
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 import '../../domain/entities/user_entity.dart';
 import '../datasources/local/preferences_storage.dart';
+import '../datasources/local/secure_storage.dart';
 import '../datasources/remote/auth_api.dart';
 import '../mappers/user_mapper.dart';
 
@@ -18,15 +19,17 @@ abstract class AuthRepository {
 class AuthRepositoryImpl implements AuthRepository {
   final AuthApi _authApi;
   final PreferencesStorage _preferencesStorage;
+  final SecureStorage _secureStorage;
 
-  AuthRepositoryImpl(this._authApi, this._preferencesStorage);
+  AuthRepositoryImpl(
+      this._authApi, this._preferencesStorage, this._secureStorage);
 
   @override
   Future<UserEntity> login(String email, String password) async {
     final authResponse = await _authApi.login(email, password);
-    await _preferencesStorage.saveAuthToken(authResponse.accessToken);
+    await _secureStorage.saveAuthToken(authResponse.accessToken);
     if (authResponse.refreshToken != null) {
-      await _preferencesStorage.saveRefreshToken(authResponse.refreshToken!);
+      await _secureStorage.saveRefreshToken(authResponse.refreshToken!);
     }
     return UserMapper.fromModel(authResponse.user);
   }
@@ -36,30 +39,30 @@ class AuthRepositoryImpl implements AuthRepository {
       {String? username}) async {
     final authResponse =
         await _authApi.register(email, password, username: username);
-    await _preferencesStorage.saveAuthToken(authResponse.accessToken);
+    await _secureStorage.saveAuthToken(authResponse.accessToken);
     if (authResponse.refreshToken != null) {
-      await _preferencesStorage.saveRefreshToken(authResponse.refreshToken!);
+      await _secureStorage.saveRefreshToken(authResponse.refreshToken!);
     }
     return UserMapper.fromModel(authResponse.user);
   }
 
   @override
   Future<UserEntity?> getCurrentUser() async {
-    final token = _preferencesStorage.getAuthToken();
+    final token = await _secureStorage.getAuthToken();
     if (token == null) return null;
     try {
       final userModel = await _authApi.getCurrentUser();
       return UserMapper.fromModel(userModel);
     } catch (e) {
-      await _preferencesStorage.clearAuthToken();
+      await _secureStorage.clearAuthToken();
       return null;
     }
   }
 
   @override
   Future<void> logout() async {
-    await _preferencesStorage.clearAuthToken();
-    await _preferencesStorage.clearRefreshToken();
+    await _secureStorage.clearAuthToken();
+    await _secureStorage.clearRefreshToken();
   }
 
   @override

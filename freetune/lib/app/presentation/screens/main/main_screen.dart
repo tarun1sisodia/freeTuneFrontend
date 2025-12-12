@@ -5,7 +5,7 @@ import '../../controllers/main_controller.dart';
 import '../home/home_screen.dart';
 import '../search/search_screen.dart';
 import '../playlists/playlists_screen.dart';
-// import '../premium/premium_screen.dart'; // Placeholder if needed
+import '../songs/upload_screen.dart';
 
 class MainScreen extends GetView<MainController> {
   const MainScreen({Key? key}) : super(key: key);
@@ -21,9 +21,9 @@ class MainScreen extends GetView<MainController> {
           case 1:
             return const SearchScreen();
           case 2:
-            return const PlaylistsScreen(); // Using Playlists as Library for now
-          // case 3:
-          //   return const PremiumScreen();
+            return const UploadScreen();
+          case 3:
+            return const PlaylistsScreen(); // Library
           default:
             return const HomeScreen();
         }
@@ -65,15 +65,20 @@ class MainScreen extends GetView<MainController> {
                                 : Colors.white54),
                         label: "Search"),
                     BottomNavigationBarItem(
-                        icon: Image.asset("assets/icons/library.png",
-                            height: controller.currentIndex == 2 ? 28 : 24,
-                            width: controller.currentIndex == 2 ? 28 : 24,
+                        icon: Icon(Icons.add_box_outlined,
+                            size: controller.currentIndex == 2 ? 28 : 24,
                             color: controller.currentIndex == 2
                                 ? Colors.white
                                 : Colors.white54),
+                        label: "Upload"),
+                    BottomNavigationBarItem(
+                        icon: Image.asset("assets/icons/library.png",
+                            height: controller.currentIndex == 3 ? 28 : 24,
+                            width: controller.currentIndex == 3 ? 28 : 24,
+                            color: controller.currentIndex == 3
+                                ? Colors.white
+                                : Colors.white54),
                         label: "Your Library"),
-                    // Note: Premium tab omitted for now as freeTune is free :)
-                    // But can be added if needed to match clone exactly.
                   ])),
         ),
       ),
