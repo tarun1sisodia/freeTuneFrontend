@@ -14,4 +14,6 @@ abstract class Routes {
   static const UPLOAD = '/upload';
   static const MAIN = '/main';
   static const ARTIST = '/artist';
+  static const GET_STARTED = '/get-started';
+  static const SIGNUP_OR_SIGNIN = '/signup-or-signin';
 }

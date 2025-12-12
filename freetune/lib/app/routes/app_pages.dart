@@ -16,6 +16,8 @@ import '../presentation/screens/profile/edit_profile_screen.dart';
 import '../presentation/screens/settings/settings_screen.dart';
 import '../presentation/screens/main/main_screen.dart';
 import '../presentation/screens/artist/artist_screen.dart';
+import '../presentation/screens/intro/get_started_page.dart';
+import '../presentation/screens/auth/signup_or_signin.dart';
 
 import '../bindings/auth_binding.dart';
 import '../bindings/initial_binding.dart';
@@ -101,6 +103,14 @@ class AppPages {
         songs: Get.arguments['songs'],
         moreLikeThisItems: Get.arguments['moreLikeThisItems'] ?? [],
       ),
+    ),
+    GetPage(
+      name: Routes.GET_STARTED,
+      page: () => const GetStartedPage(),
+    ),
+    GetPage(
+      name: Routes.SIGNUP_OR_SIGNIN,
+      page: () => const SignupOrSigninScreen(),
     ),
   ];
 }
