@@ -345,7 +345,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
                   child: CircleAvatar(
                     radius: 25,
                     backgroundColor: showTopBar
-                        ? Colors.black38.withOpacity(0)
+                        ? Colors.black38.withAlpha((0.1 * 255).round())
                         : Colors.black38,
                     child: IconButton(
                         icon: const Icon(
