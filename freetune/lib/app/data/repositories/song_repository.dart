@@ -28,6 +28,8 @@ abstract class SongRepository {
   Future<void> trackPlayback(String songId, int positionMs, int durationMs);
   Future<SongEntity> uploadSong(String filePath, String title, String artist,
       [String? album, String? coverPath]);
+  Future<List<SongEntity>> getUploadedSongs({int page = 1, int limit = 20});
+  Future<void> deleteSong(String songId);
   Future<void> clearCache();
   Future<void> refreshCache();
 }
@@ -356,6 +358,39 @@ class SongRepositoryImpl implements SongRepository {
     } catch (e) {
       logger.e('Error uploading song: $e');
       throw ApiException(message: 'Failed to upload song: $e');
+    }
+  }
+
+  @override
+  Future<List<SongEntity>> getUploadedSongs(
+      {int page = 1, int limit = 20}) async {
+    try {
+      logger.i('🌐 Fetching uploaded songs');
+      final paginatedResponse =
+          await _songsApi.getUploadedSongs(page: page, limit: limit);
+
+      return paginatedResponse.data
+          .map((model) => SongMapper.fromModel(model))
+          .toList();
+    } catch (e) {
+      logger.e('Error getting uploaded songs: $e');
+      throw ApiException(message: 'Failed to get uploaded songs: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteSong(String songId) async {
+    try {
+      logger.i('Deleting song: $songId');
+      await _songsApi.deleteSong(songId);
+
+      // Invalidate relevant caches
+      await _cacheManager.clearSongsCache();
+
+      logger.d('Song deleted successfully from repository');
+    } catch (e) {
+      logger.e('Error deleting song: $e');
+      throw ApiException(message: 'Failed to delete song: $e');
     }
   }
 

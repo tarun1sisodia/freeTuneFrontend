@@ -6,6 +6,7 @@ class HomeBinding implements Bindings {
   @override
   void dependencies() {
     Get.lazyPut<SongController>(() => SongController(Get.find()));
-    Get.lazyPut<PlaylistController>(() => PlaylistController(Get.find()));
+    Get.lazyPut<PlaylistController>(
+        () => PlaylistController(Get.find(), Get.find()));
   }
 }

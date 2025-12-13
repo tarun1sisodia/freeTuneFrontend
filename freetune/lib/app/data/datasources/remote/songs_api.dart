@@ -6,7 +6,6 @@ import '../../models/common/paginated_response.dart';
 import '../../models/song/song_model.dart';
 import '../../models/song/stream_url_response.dart';
 
-
 /// Production-grade Songs API client with comprehensive error handling
 class SongsApi {
   final Dio _dio;
@@ -24,8 +23,9 @@ class SongsApi {
         ApiEndpoints.songs,
         queryParameters: {'page': page, 'limit': limit},
       );
-      
-      logger.d('Songs fetched successfully: ${response.data['pagination']['total']} total');
+
+      logger.d(
+          'Songs fetched successfully: ${response.data['pagination']['total']} total');
       return PaginatedResponse.fromJson(response.data, SongModel.fromJson);
     } on DioException catch (e) {
       logger.e('Failed to get songs: ${e.message}');
@@ -43,7 +43,7 @@ class SongsApi {
       final response = await _dio.get(
         ApiEndpoints.getSong.replaceFirst('{id}', id),
       );
-      
+
       logger.d('Song fetched successfully: ${response.data['data']['title']}');
       return SongModel.fromJson(response.data['data']);
     } on DioException catch (e) {
@@ -63,11 +63,11 @@ class SongsApi {
         ApiEndpoints.popularSongs,
         queryParameters: {'limit': limit},
       );
-      
+
       final songs = (response.data['data'] as List)
           .map((json) => SongModel.fromJson(json))
           .toList();
-      
+
       logger.d('Popular songs fetched: ${songs.length} songs');
       return songs;
     } on DioException catch (e) {
@@ -87,13 +87,13 @@ class SongsApi {
         ApiEndpoints.recentSongs,
         queryParameters: {'limit': limit},
       );
-      
+
       // Backend returns data.songs array, not data array directly
       final songsData = response.data['data']['songs'] as List;
       final songs = songsData
           .map((json) => SongModel.fromJson(json as Map<String, dynamic>))
           .toList();
-      
+
       logger.d('Recent songs fetched: ${songs.length} songs');
       return songs;
     } on DioException catch (e) {
@@ -110,11 +110,11 @@ class SongsApi {
     try {
       logger.i('Fetching favorite songs');
       final response = await _dio.get(ApiEndpoints.favoriteSongs);
-      
+
       final songs = (response.data['data'] as List)
           .map((json) => SongModel.fromJson(json))
           .toList();
-      
+
       logger.d('Favorites fetched: ${songs.length} songs');
       return songs;
     } on DioException catch (e) {
@@ -159,7 +159,7 @@ class SongsApi {
           'limit': limit,
         },
       );
-      
+
       logger.d('Search results: ${response.data['pagination']['total']} songs');
       return PaginatedResponse.fromJson(response.data, SongModel.fromJson);
     } on DioException catch (e) {
@@ -182,7 +182,7 @@ class SongsApi {
         ApiEndpoints.streamUrl.replaceFirst('{id}', songId),
         queryParameters: {'quality': quality},
       );
-      
+
       logger.d('Stream URL obtained successfully');
       return StreamUrlResponse.fromJson(response.data);
     } on DioException catch (e) {
@@ -234,18 +234,19 @@ class SongsApi {
   }
 
   /// Get similar songs (recommendations)
-  Future<List<SongModel>> getSimilarSongs(String songId, {int limit = 10}) async {
+  Future<List<SongModel>> getSimilarSongs(String songId,
+      {int limit = 10}) async {
     try {
       logger.i('Fetching similar songs for: $songId');
       final response = await _dio.get(
         ApiEndpoints.similarSongs.replaceFirst('{songId}', songId),
         queryParameters: {'limit': limit},
       );
-      
+
       final songs = (response.data['data'] as List)
           .map((json) => SongModel.fromJson(json))
           .toList();
-      
+
       logger.d('Similar songs fetched: ${songs.length} songs');
       return songs;
     } on DioException catch (e) {
@@ -268,7 +269,7 @@ class SongsApi {
           headers: {'Content-Type': 'multipart/form-data'},
         ),
       );
-      
+
       logger.d('Song uploaded successfully');
       // Backend returns { data: { song: {...}, upload: {...} } }
       final responseData = response.data['data'];
@@ -282,6 +283,30 @@ class SongsApi {
     }
   }
 
+  /// Get songs uploaded by the current user
+  Future<PaginatedResponse<SongModel>> getUploadedSongs({
+    int page = 1,
+    int limit = 20,
+  }) async {
+    try {
+      logger.i('Fetching uploaded songs - page: $page, limit: $limit');
+      final response = await _dio.get(
+        ApiEndpoints.userSongs,
+        queryParameters: {'page': page, 'limit': limit},
+      );
+
+      logger.d(
+          'Uploaded songs fetched: ${response.data['pagination']['total']} songs');
+      return PaginatedResponse.fromJson(response.data, SongModel.fromJson);
+    } on DioException catch (e) {
+      logger.e('Failed to get uploaded songs: ${e.message}');
+      throw ApiException.fromDioError(e);
+    } catch (e) {
+      logger.e('Unexpected error getting uploaded songs: $e');
+      throw ApiException(message: 'Failed to get uploaded songs: $e');
+    }
+  }
+
   /// Update song metadata
   Future<SongModel> updateSong(String songId, Map<String, dynamic> data) async {
     try {
@@ -290,7 +315,7 @@ class SongsApi {
         ApiEndpoints.updateSong.replaceFirst('{id}', songId),
         data: data,
       );
-      
+
       logger.d('Song updated successfully');
       return SongModel.fromJson(response.data['data']);
     } on DioException catch (e) {

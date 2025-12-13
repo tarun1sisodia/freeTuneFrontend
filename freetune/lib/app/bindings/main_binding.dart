@@ -25,7 +25,8 @@ class MainBinding extends Bindings {
         () => SongSearchController(Get.find<SongRepository>()),
         fenix: true);
     Get.lazyPut<PlaylistController>(
-        () => PlaylistController(Get.find<PlaylistRepository>()),
+        () => PlaylistController(
+            Get.find<PlaylistRepository>(), Get.find<SongRepository>()),
         fenix: true);
   }
 }
