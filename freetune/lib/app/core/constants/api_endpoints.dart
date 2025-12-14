@@ -30,7 +30,7 @@ class ApiEndpoints {
   static const String favoriteSongs = '/songs/favorites';
   static const String addFavorite = '/songs/{id}/favorite';
   static const String removeFavorite = '/songs/{id}/favorite';
-  static const String streamUrl = '/songs/{id}/stream';
+  static const String streamUrl = '/songs/{id}/stream-url';
   static const String trackPlay = '/songs/{id}/play';
   static const String trackPlayback = '/songs/{id}/playback';
 

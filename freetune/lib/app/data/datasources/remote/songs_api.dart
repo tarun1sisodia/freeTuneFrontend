@@ -181,9 +181,15 @@ class SongsApi {
       final response = await _dio.get(
         ApiEndpoints.streamUrl.replaceFirst('{id}', songId),
         queryParameters: {'quality': quality},
+        options: Options(
+          responseType: ResponseType.json,
+          followRedirects: false,
+        ),
       );
 
       logger.d('Stream URL obtained successfully');
+      logger.d('Response data type: ${response.data.runtimeType}');
+      logger.d('Response data: ${response.data}');
       return StreamUrlResponse.fromJson(response.data);
     } on DioException catch (e) {
       logger.e('Failed to get stream URL: ${e.message}');
