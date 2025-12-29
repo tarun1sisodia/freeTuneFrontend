@@ -6,7 +6,7 @@ import '../../../routes/app_routes.dart'; // Used for PLAYER route
 import '../../../core/constants/palette.dart';
 
 class SearchScreen extends GetView<SongSearchController> {
-  const SearchScreen({Key? key}) : super(key: key);
+  const SearchScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

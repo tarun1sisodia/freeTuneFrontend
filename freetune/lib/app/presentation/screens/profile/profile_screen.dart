@@ -92,7 +92,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   trailing: Switch(
                     value: controller.notificationsEnabled.value,
                     onChanged: controller.toggleNotifications,
-                    activeColor: Colors.green,
+                    activeThumbColor: Colors.green,
                   ),
                 ),
 

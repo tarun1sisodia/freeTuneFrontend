@@ -38,7 +38,7 @@ class SettingsScreen extends GetView<ProfileController> {
               trailing: Obx(() => Switch(
                     value: controller.notificationsEnabled.value,
                     onChanged: controller.toggleNotifications,
-                    activeColor: Colors.green,
+                    activeThumbColor: Colors.green,
                     activeTrackColor: Colors.green.withOpacity(0.5),
                   )),
             ),

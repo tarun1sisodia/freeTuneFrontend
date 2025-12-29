@@ -9,11 +9,11 @@ class RecentPlaylistContainer extends StatelessWidget {
   final VoidCallback? onTap;
 
   const RecentPlaylistContainer({
-    Key? key,
+    super.key,
     required this.name,
     required this.image,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class RecentPlaylistContainer extends StatelessWidget {
                       height: 55,
                       width: 55,
                       color: Colors.grey[800],
-                      child: Icon(Icons.music_note, color: Colors.white)),
+                      child: const Icon(Icons.music_note, color: Colors.white)),
                 )),
             Expanded(
                 child: Padding(

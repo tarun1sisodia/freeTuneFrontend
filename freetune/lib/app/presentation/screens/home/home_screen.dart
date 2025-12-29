@@ -10,7 +10,7 @@ import '../../widgets/player/mini_player.dart'; // Keep existing MiniPlayer for 
 // Or use the one from code. Let's use the layout from code but bound to controller.
 
 class HomeScreen extends GetView<SongController> {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +85,7 @@ class HomeScreen extends GetView<SongController> {
                     final screenWidth = MediaQuery.of(context).size.width;
                     final crossAxisCount = screenWidth > 600 ? 4 : 2;
                     final itemWidth = (screenWidth - 40) / crossAxisCount;
-                    final itemHeight =
+                    const itemHeight =
                         60.0; // Fixed height for RecentPlaylistContainer
                     final aspectRatio = itemWidth / itemHeight;
 

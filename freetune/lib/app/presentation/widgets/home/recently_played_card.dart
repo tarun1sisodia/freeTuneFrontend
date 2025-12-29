@@ -7,12 +7,12 @@ class RecentlyPlayedCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const RecentlyPlayedCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.image,
     required this.borderRadius,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class RecentlyPlayedCard extends StatelessWidget {
                     height: 120,
                     width: 120,
                     color: Colors.grey[800],
-                    child: Icon(Icons.music_note, color: Colors.white)),
+                    child: const Icon(Icons.music_note, color: Colors.white)),
               ),
             ),
             Container(

@@ -8,7 +8,7 @@ import '../playlists/playlists_screen.dart';
 import '../songs/upload_screen.dart';
 
 class MainScreen extends GetView<MainController> {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

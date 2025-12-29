@@ -34,7 +34,7 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                   children: [
                     IconButton(
                         onPressed: () {
-                          Get.put(HomeScreen());
+                          Get.put(const HomeScreen());
                         },
                         icon: const Icon(
                           Icons.arrow_back_ios,
