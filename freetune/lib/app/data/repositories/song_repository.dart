@@ -20,7 +20,7 @@ abstract class SongRepository {
   Future<List<SongEntity>> getFavorites({bool forceRefresh = false});
   Future<void> toggleFavorite(String songId);
   Future<List<SongEntity>> searchSongs(String query,
-      {int page = 1, int limit = 20});
+      {int page = 1, int limit = 20, CancelToken? cancelToken});
   Future<List<SongEntity>> getSimilarSongs(String songId, {int limit = 10});
   Future<StreamUrlResponse> getStreamUrl(String songId,
       {String quality = 'medium'});
@@ -250,6 +250,7 @@ class SongRepositoryImpl implements SongRepository {
     String query, {
     int page = 1,
     int limit = 20,
+    CancelToken? cancelToken,
   }) async {
     try {
       if (query.isEmpty) {
@@ -261,6 +262,7 @@ class SongRepositoryImpl implements SongRepository {
         query,
         page: page,
         limit: limit,
+        cancelToken: cancelToken,
       );
 
       return paginatedResponse.data

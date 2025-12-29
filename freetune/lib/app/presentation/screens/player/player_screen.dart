@@ -6,7 +6,7 @@ import '../../controllers/audio_player_controller.dart';
 import '../../../services/audio/audio_player_service.dart';
 
 class PlayerScreen extends GetView<AudioPlayerController> {
-  const PlayerScreen({Key? key}) : super(key: key);
+  const PlayerScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

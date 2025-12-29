@@ -148,6 +148,7 @@ class SongsApi {
     String query, {
     int page = 1,
     int limit = 20,
+    CancelToken? cancelToken,
   }) async {
     try {
       logger.i('Searching songs - query: "$query", page: $page');
@@ -158,6 +159,7 @@ class SongsApi {
           'page': page,
           'limit': limit,
         },
+        cancelToken: cancelToken,
       );
 
       logger.d('Search results: ${response.data['pagination']['total']} songs');
