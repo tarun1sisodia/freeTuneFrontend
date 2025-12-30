@@ -105,9 +105,9 @@ class AuthController extends GetxController
     }
 
     showLoading();
-    final result = await _forgotPasswordUseCase?.call(email);
+    final result = await _forgotPasswordUseCase!.call(email);
     hideLoading();
-    return result!.fold(
+    return result.fold(
       (failure) {
         handleError(failure, title: 'Forgot Password Failed');
         return false;
@@ -125,9 +125,9 @@ class AuthController extends GetxController
 
     showLoading();
     final result =
-        await _changePasswordUseCase?.call(currentPassword, newPassword);
+        await _changePasswordUseCase!.call(currentPassword, newPassword);
     hideLoading();
-    return result!.fold(
+    return result.fold(
       (failure) {
         handleError(failure, title: 'Change Password Failed');
         return false;
@@ -144,13 +144,13 @@ class AuthController extends GetxController
     }
 
     showLoading();
-    final result = await _updateProfileUseCase?.call(
+    final result = await _updateProfileUseCase!.call(
       username: username,
       bio: bio,
       avatarUrl: avatarUrl,
     );
     hideLoading();
-    return result!.fold(
+    return result.fold(
       (failure) {
         handleError(failure, title: 'Update Profile Failed');
         return false;
