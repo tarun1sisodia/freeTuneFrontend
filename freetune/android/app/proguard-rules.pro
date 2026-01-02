@@ -22,3 +22,7 @@
 # Retrofit/Dio (if used with reflection, though Dio usually doesn't need much)
 -keep class dio.** { *; }
 -dontwarn dio.**
+
+# Play Core
+-keep class com.google.android.play.core.** { *; }
+-dontwarn com.google.android.play.core.**

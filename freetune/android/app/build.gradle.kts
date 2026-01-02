@@ -51,8 +51,9 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
-            // shrinking/minification is disabled by default in new flutter create project usually, 
-            // but we can be explicit if needed. For now trusting default.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 }
