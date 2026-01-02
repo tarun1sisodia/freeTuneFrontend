@@ -24,13 +24,19 @@ class NetworkService extends GetxService {
     }
   }
 
-  void _updateConnectivityStatus(ConnectivityResult result) {
-    isConnected.value = result != ConnectivityResult.none;
-    connectivityType.value = result;
+  void _updateConnectivityStatus(List<ConnectivityResult> result) {
+    if (result.contains(ConnectivityResult.none)) {
+      isConnected.value = false;
+      connectivityType.value = ConnectivityResult.none;
+    } else {
+      isConnected.value = true;
+      connectivityType.value =
+          result.isNotEmpty ? result.first : ConnectivityResult.none;
+    }
   }
 
   Future<bool> checkConnection() async {
     final result = await _connectivity.checkConnectivity();
-    return result != ConnectivityResult.none;
+    return !result.contains(ConnectivityResult.none);
   }
 }
