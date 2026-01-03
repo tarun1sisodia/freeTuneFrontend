@@ -72,12 +72,12 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - assets/songs/arijitSingh/images/
-    - assets/songs/arijitSingh/songs/
-    - assets/songs/iqlipseNova/songs/
-    - assets/songs/iqlipseNova/images/
-    - assets/songs/trs/images/
-    - assets/songs/imagineDragons/images/
+    # - assets/songs/arijitSingh/images/
+    # - assets/songs/arijitSingh/songs/
+    # - assets/songs/iqlipseNova/songs/
+    # - assets/songs/iqlipseNova/images/
+    # - assets/songs/trs/images/
+    # - assets/songs/imagineDragons/images/
 
   # To add custom fonts to your application, add a fonts section here,
   # like this:
