@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freetune/app/presentation/screens/home/home_screen.dart';
+
 import 'package:get/get.dart';
 import 'package:marquee/marquee.dart';
 import '../../controllers/audio_player_controller.dart';
@@ -34,7 +34,7 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                   children: [
                     IconButton(
                         onPressed: () {
-                          Get.put(const HomeScreen());
+                          Get.back();
                         },
                         icon: const Icon(
                           Icons.arrow_back_ios,
@@ -291,66 +291,6 @@ class PlayerScreen extends GetView<AudioPlayerController> {
               )
             ],
           )),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.black87,
-              Colors.deepPurple.shade900.withOpacity(0.8)
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.transparent,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: 1, // Player screen is at index 1
-          selectedItemColor: Colors.greenAccent,
-          unselectedItemColor: Colors.white60,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          elevation: 0,
-          onTap: (index) {
-            switch (index) {
-              case 0:
-                Get.back(); // Go to home
-                break;
-              case 1:
-                // Already on player screen
-                break;
-              case 2:
-                // Navigate to search (implement when ready)
-                Get.snackbar('Search', 'Search feature coming soon!',
-                    snackPosition: SnackPosition.BOTTOM);
-                break;
-              case 3:
-                // Navigate to library (implement when ready)
-                Get.snackbar('Library', 'Library feature coming soon!',
-                    snackPosition: SnackPosition.BOTTOM);
-                break;
-            }
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.play_circle_filled),
-              label: 'Player',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.library_music),
-              label: 'Library',
-            ),
-          ],
-        ),
-      ),
     );
   }
 

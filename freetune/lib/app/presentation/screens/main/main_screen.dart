@@ -6,6 +6,7 @@ import '../home/home_screen.dart';
 import '../search/search_screen.dart';
 import '../playlists/playlists_screen.dart';
 import '../songs/upload_screen.dart';
+import '../../widgets/player/mini_player.dart';
 
 class MainScreen extends GetView<MainController> {
   const MainScreen({super.key});
@@ -14,20 +15,31 @@ class MainScreen extends GetView<MainController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Palette.secondaryColor,
-      body: Obx(() {
-        switch (controller.currentIndex) {
-          case 0:
-            return const HomeScreen();
-          case 1:
-            return const SearchScreen();
-          case 2:
-            return const UploadScreen();
-          case 3:
-            return const PlaylistsScreen(); // Library
-          default:
-            return const HomeScreen();
-        }
-      }),
+      body: Stack(
+        children: [
+          Obx(() {
+            switch (controller.currentIndex) {
+              case 0:
+                return const HomeScreen();
+              case 1:
+                return const SearchScreen();
+              case 2:
+                return const UploadScreen();
+              case 3:
+                return const PlaylistsScreen(); // Library
+              default:
+                return const HomeScreen();
+            }
+          }),
+          // Persistent MiniPlayer
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: MiniPlayer(),
+          ),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
