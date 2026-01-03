@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,25 +15,29 @@ typedef SetLocaleDart = Pointer<Utf8> Function(
     int category, Pointer<Utf8> locale);
 
 void main() async {
-  try {
-    // libmpv/ffmpeg requirements on Linux often need LC_NUMERIC to be "C"
-    final dylib = DynamicLibrary.open('libc.so.6');
-    final setLocale =
-        dylib.lookupFunction<SetLocaleC, SetLocaleDart>('setlocale');
+  // Initialize FFI for Linux locale if needed
+  if (Platform.isLinux) {
+    try {
+      // libmpv/ffmpeg requirements on Linux often need LC_NUMERIC to be "C"
+      final dylib = DynamicLibrary.open('libc.so.6');
+      final setLocale =
+          dylib.lookupFunction<SetLocaleC, SetLocaleDart>('setlocale');
 
-    // LC_NUMERIC = 1 on Linux
-    setLocale(1, 'C'.toNativeUtf8());
-    debugPrint('Locale set to C for LC_NUMERIC');
-  } catch (e) {
-    debugPrint('Failed to set locale: $e');
+      // LC_NUMERIC = 1 on Linux
+      setLocale(1, 'C'.toNativeUtf8());
+      debugPrint('Locale set to C for LC_NUMERIC');
+    } catch (e) {
+      debugPrint('Failed to set locale: $e');
+    }
+
+    try {
+      MediaKit.ensureInitialized(libmpv: '/usr/lib/x86_64-linux-gnu/libmpv.so');
+    } catch (e) {
+      debugPrint('MediaKit initialization warning: $e');
+    }
+    JustAudioMediaKit.ensureInitialized();
   }
 
-  try {
-    MediaKit.ensureInitialized(libmpv: '/usr/lib/x86_64-linux-gnu/libmpv.so');
-  } catch (e) {
-    debugPrint('MediaKit initialization warning: $e');
-  }
-  JustAudioMediaKit.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   await AppBindings()
       .dependencies(); // Initialize core services before app runs
