@@ -11,10 +11,19 @@ import '../presentation/screens/splash/splash_screen.dart';
 import '../presentation/screens/playlists/playlists_screen.dart';
 import '../presentation/screens/profile/profile_screen.dart';
 import '../presentation/screens/songs/upload_screen.dart';
+import '../presentation/screens/search/search_screen.dart';
+import '../presentation/screens/profile/edit_profile_screen.dart';
+import '../presentation/screens/settings/settings_screen.dart';
+import '../presentation/screens/main/main_screen.dart';
+import '../presentation/screens/artist/artist_screen.dart';
+import '../presentation/screens/intro/get_started_page.dart';
+import '../presentation/screens/auth/signup_or_signin.dart';
 
 import '../bindings/auth_binding.dart';
 import '../bindings/initial_binding.dart';
 import '../bindings/player_binding.dart';
+import '../bindings/search_binding.dart';
+import '../bindings/main_binding.dart';
 
 class AppPages {
   static const INITIAL = Routes.SPLASH;
@@ -67,6 +76,41 @@ class AppPages {
     GetPage(
       name: Routes.UPLOAD,
       page: () => const UploadScreen(),
+    ),
+    GetPage(
+      name: Routes.SEARCH,
+      page: () => const SearchScreen(),
+      binding: SearchBinding(),
+    ),
+    GetPage(
+      name: Routes.EDIT_PROFILE,
+      page: () => const EditProfileScreen(),
+    ),
+    GetPage(
+      name: Routes.SETTINGS,
+      page: () => const SettingsScreen(),
+    ),
+    GetPage(
+      name: Routes.MAIN,
+      page: () => const MainScreen(),
+      binding: MainBinding(),
+    ),
+    GetPage(
+      name: Routes.ARTIST,
+      page: () => ArtistScreen(
+        name: Get.arguments['name'],
+        image: Get.arguments['image'],
+        songs: Get.arguments['songs'],
+        moreLikeThisItems: Get.arguments['moreLikeThisItems'] ?? [],
+      ),
+    ),
+    GetPage(
+      name: Routes.GET_STARTED,
+      page: () => const GetStartedPage(),
+    ),
+    GetPage(
+      name: Routes.SIGNUP_OR_SIGNIN,
+      page: () => const SignupOrSigninScreen(),
     ),
   ];
 }

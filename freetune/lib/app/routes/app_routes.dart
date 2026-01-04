@@ -9,5 +9,11 @@ abstract class Routes {
   static const SEARCH = '/search';
   static const PLAYLISTS = '/playlists';
   static const PROFILE = '/profile';
+  static const EDIT_PROFILE = '/profile/edit';
+  static const SETTINGS = '/settings';
   static const UPLOAD = '/upload';
+  static const MAIN = '/main';
+  static const ARTIST = '/artist';
+  static const GET_STARTED = '/get-started';
+  static const SIGNUP_OR_SIGNIN = '/signup-or-signin';
 }

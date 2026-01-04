@@ -17,9 +17,9 @@ dependencies:
   isar_flutter_libs: ^3.1.0+1
 
   # Audio Player
-  just_audio: ^0.9.36
+  just_audio: ^0.10.5
   audio_service: ^0.18.11  # Background playback
-  audio_session: ^0.1.18    # Audio session management
+  audio_session: ^0.2.2    # Audio session management
 
   # HTTP Client
   dio: ^5.4.0
@@ -33,16 +33,16 @@ dependencies:
   shared_preferences: ^2.2.2
 
   # Network Detection
-  connectivity_plus: ^5.0.2
-  network_info_plus: ^4.0.2
+  connectivity_plus: ^7.0.0
+  network_info_plus: ^7.0.0
 
   # UI Components
   cached_network_image: ^3.3.0
   shimmer: ^3.0.0
-  file_picker: ^6.1.1
+  file_picker: ^10.3.8
 
   # Utils
-  intl: ^0.18.1
+  intl: ^0.20.2
   equatable: ^2.0.5
   logger: ^2.0.2
   dartz: ^0.10.1
@@ -50,8 +50,47 @@ dependencies:
   # Code Generation
   build_runner: ^2.4.7
   isar_generator: ^3.1.0+1
+  marquee: ^2.3.0
+  flutter_secure_storage: ^10.0.0
+  just_audio_media_kit: ^2.1.0
+  media_kit: ^1.2.6
+  ffi: ^2.1.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+  flutter_lints: ^6.0.0
+
+dependency_overrides:
+  sqflite_android: 2.4.1
+
+# Flutter configuration
+flutter:
+  uses-material-design: true
+  
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/
+    - assets/icons/
+    # - assets/songs/arijitSingh/images/
+    # - assets/songs/arijitSingh/songs/
+    # - assets/songs/iqlipseNova/songs/
+    # - assets/songs/iqlipseNova/images/
+    # - assets/songs/trs/images/
+    # - assets/songs/imagineDragons/images/
+
+  # To add custom fonts to your application, add a fonts section here,
+  # like this:
+  fonts:
+    - family: SpotifyCircularBold
+      fonts:
+        - asset: assets/fonts/CircularStd-Bold.otf
+    - family: SpotifyCircularLight
+      fonts:
+        - asset: assets/fonts/CircularStd-Light.otf
+    - family: SpotifyCircularMedium
+      fonts:
+        - asset: assets/fonts/CircularStd-Medium.otf
+    - family: SpotifyCircularBook
+      fonts:
+        - asset: assets/fonts/CircularStd-Book.otf

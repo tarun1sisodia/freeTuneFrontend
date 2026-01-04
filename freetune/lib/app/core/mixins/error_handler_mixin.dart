@@ -47,14 +47,14 @@ mixin ErrorHandlerMixin on GetxController {
         title,
         message,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.9),
+        backgroundColor: Colors.red.withAlpha((0.5 * 255).round()),
         colorText: Colors.white,
         duration: const Duration(seconds: 4),
         margin: const EdgeInsets.all(16),
       );
     } else {
       // Fallback: just print to console
-      print('ERROR: $title - $message');
+      // print('ERROR: $title - $message');
     }
   }
 }

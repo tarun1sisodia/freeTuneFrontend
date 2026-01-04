@@ -29,11 +29,11 @@ class AppLogger {
   }
 
   void v(dynamic message, [dynamic error, StackTrace? stackTrace]) {
-    _logger.v(message, error: error, stackTrace: stackTrace);
+    _logger.t(message, error: error, stackTrace: stackTrace);
   }
 
   void wtf(dynamic message, [dynamic error, StackTrace? stackTrace]) {
-    _logger.wtf(message, error: error, stackTrace: stackTrace);
+    _logger.f(message, error: error, stackTrace: stackTrace);
   }
 }
 

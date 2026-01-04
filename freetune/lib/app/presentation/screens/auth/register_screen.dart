@@ -2,130 +2,202 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
 import '../../controllers/auth_controller.dart';
-import '../../../core/utils/validators.dart';
+import '../../widgets/common/basic_app_bar.dart';
+import '../../widgets/common/basic_app_button.dart';
+import '../../../core/configs/assets/app_images.dart';
+import 'app_colors.dart';
 
 class RegisterScreen extends GetView<AuthController> {
   const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController fullNameController = TextEditingController();
     final TextEditingController emailController = TextEditingController();
-    final TextEditingController usernameController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
-    final TextEditingController confirmPasswordController = TextEditingController();
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-    Future<void> handleRegister() async {
-      if (formKey.currentState?.validate() ?? false) {
-        if (passwordController.text != confirmPasswordController.text) {
-          Get.snackbar(
-            'Error',
-            'Passwords do not match',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red.withOpacity(0.7),
-            colorText: Colors.white,
-          );
-          return;
-        }
-        
-        final success = await controller.register(
-          emailController.text.trim(),
-          passwordController.text,
-          username: usernameController.text.trim().isEmpty ? null : usernameController.text.trim(),
-        );
-        
-        if (success) {
-          Get.offAllNamed(Routes.HOME);
-        }
-      }
-    }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
+      backgroundColor: Colors.black,
+      appBar: BasicAppBar(
+        title: Image.asset(
+          AppImages.logo,
+          height: 40,
+          width: 40,
         ),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Create Account',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 32.0),
-                TextFormField(
-                  controller: emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: Validators.validateEmail,
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Username (Optional)',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
-                  ),
-                  obscureText: true,
-                  validator: Validators.validatePassword,
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: confirmPasswordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock_outline),
-                  ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24.0),
-                Obx(() => ElevatedButton(
-                  onPressed: controller.isLoading.value ? null : handleRegister,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: controller.isLoading.value
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Register', style: TextStyle(fontSize: 18)),
+      bottomNavigationBar: _signinText(context),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 30,
+          vertical: 50,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _registerText(),
+            const SizedBox(height: 25),
+            _supportText(),
+            const SizedBox(height: 25),
+            _fullNameField(context, fullNameController),
+            const SizedBox(height: 20),
+            _emailField(context, emailController),
+            const SizedBox(height: 20),
+            _passwordField(context, passwordController),
+            const SizedBox(height: 30),
+            Obx(() => BasicAppButton(
+                  onPressed: controller.isLoading.value
+                      ? () {}
+                      : () async {
+                          final success = await controller.register(
+                            emailController.text.trim(),
+                            passwordController.text,
+                            username: fullNameController.text.trim(),
+                          );
+                          if (success) {
+                            Get.offAllNamed(Routes.MAIN);
+                          }
+                        },
+                  title: controller.isLoading.value
+                      ? "Creating..."
+                      : "Create Account",
+                  textSize: 22,
+                  weight: FontWeight.w500,
                 )),
-                const SizedBox(height: 16.0),
-                TextButton(
-                  onPressed: () => Get.back(),
-                  child: const Text('Already have an account? Login'),
-                ),
-              ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _registerText() {
+    return const Text(
+      'Register',
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 32,
+        color: Colors.white,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _supportText() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Text(
+          "If You Need Any Support ",
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+            color: Colors.grey,
+          ),
+        ),
+        TextButton(
+          onPressed: () {},
+          child: const Text(
+            "Click here",
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+              color: AppColors.primary,
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _fullNameField(
+      BuildContext context, TextEditingController controller) {
+    return TextField(
+      controller: controller,
+      style: const TextStyle(color: Colors.white),
+      decoration: const InputDecoration(
+        hintText: "Full Name",
+        hintStyle: TextStyle(color: Colors.grey),
+        enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.all(Radius.circular(30))),
+        focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.all(Radius.circular(30))),
+        contentPadding: EdgeInsets.all(25),
+      ),
+    );
+  }
+
+  Widget _emailField(BuildContext context, TextEditingController controller) {
+    return TextField(
+      controller: controller,
+      style: const TextStyle(color: Colors.white),
+      decoration: const InputDecoration(
+        hintText: "Enter Email",
+        hintStyle: TextStyle(color: Colors.grey),
+        enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.all(Radius.circular(30))),
+        focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.all(Radius.circular(30))),
+        contentPadding: EdgeInsets.all(25),
+      ),
+    );
+  }
+
+  Widget _passwordField(
+      BuildContext context, TextEditingController controller) {
+    return TextField(
+      controller: controller,
+      obscureText: true,
+      style: const TextStyle(color: Colors.white),
+      decoration: const InputDecoration(
+        hintText: "Password",
+        hintStyle: TextStyle(color: Colors.grey),
+        enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.all(Radius.circular(30))),
+        focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.all(Radius.circular(30))),
+        contentPadding: EdgeInsets.all(25),
+      ),
+    );
+  }
+
+  Widget _signinText(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 40,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Text(
+            "Do You Have An Account?",
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.offNamed(Routes.LOGIN);
+            },
+            child: const Text(
+              "Sign In",
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: AppColors.blue,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

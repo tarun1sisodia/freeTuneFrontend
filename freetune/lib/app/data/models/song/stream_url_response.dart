@@ -12,10 +12,12 @@ class StreamUrlResponse extends Equatable {
   });
 
   factory StreamUrlResponse.fromJson(Map<String, dynamic> json) {
+    // Backend wraps response in 'data' object
+    final data = json['data'] ?? json;
     return StreamUrlResponse(
-      url: json['url'],
-      quality: json['quality'],
-      expiresIn: Duration(seconds: json['expiresIn']),
+      url: data['streamUrl'] ?? data['url'],
+      quality: data['quality'] ?? 'medium',
+      expiresIn: Duration(seconds: data['expiresIn'] ?? 1800),
     );
   }
 

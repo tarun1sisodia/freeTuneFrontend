@@ -108,3 +108,22 @@ class ChangePasswordUseCase {
     }
   }
 }
+
+class UpdateProfileUseCase {
+  final AuthRepository _authRepository;
+
+  UpdateProfileUseCase(this._authRepository);
+
+  Future<Either<ApiException, UserEntity>> call(
+      {String? username, String? bio, String? avatarUrl}) async {
+    try {
+      final user = await _authRepository.updateProfile(
+          username: username, bio: bio, avatarUrl: avatarUrl);
+      return Right(user);
+    } on ApiException catch (e) {
+      return Left(e);
+    } catch (e) {
+      return Left(ApiException(message: e.toString()));
+    }
+  }
+}

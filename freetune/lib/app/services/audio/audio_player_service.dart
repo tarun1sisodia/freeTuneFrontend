@@ -5,9 +5,10 @@ import 'package:audio_session/audio_session.dart';
 import '../../core/utils/logger.dart';
 import '../../data/repositories/song_repository.dart';
 import '../../domain/entities/song_entity.dart';
+import 'audio_cache_service.dart';
 
 /// Production-grade Audio Player Service with comprehensive features
-/// 
+///
 /// Features:
 /// - Queue management with shuffle & repeat modes
 /// - Adaptive quality selection
@@ -19,10 +20,10 @@ import '../../domain/entities/song_entity.dart';
 class AudioPlayerService extends GetxService {
   // Dependencies
   final SongRepository _songRepository;
-  
+  final AudioCacheService _audioCacheService = Get.put(AudioCacheService());
   // Audio player instance
   late final AudioPlayer _player;
-  
+
   // Playback state
   final Rx<SongEntity?> currentSong = Rx<SongEntity?>(null);
   final RxBool isPlaying = false.obs;
@@ -32,25 +33,25 @@ class AudioPlayerService extends GetxService {
   final Rx<Duration?> duration = Rx<Duration?>(null);
   final RxDouble bufferedPosition = 0.0.obs;
   final RxString errorMessage = ''.obs;
-  
+
   // Queue management
   final RxList<SongEntity> queue = <SongEntity>[].obs;
   final RxInt currentIndex = 0.obs;
   final RxBool isShuffleEnabled = false.obs;
   final Rx<RepeatMode> repeatMode = RepeatMode.off.obs;
-  
+
   // Original queue (for shuffle/unshuffle)
   List<SongEntity> _originalQueue = [];
-  
+
   // Quality settings
   final Rx<AudioQuality> audioQuality = AudioQuality.high.obs;
-  
+
   // Stream subscriptions
   StreamSubscription<PlayerState>? _playerStateSubscription;
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration>? _bufferedPositionSubscription;
-  
+
   // Analytics batching
   Timer? _analyticsTimer;
   Duration? _lastTrackedPosition;
@@ -90,13 +91,14 @@ class AudioPlayerService extends GetxService {
       isPlaying.value = state.playing;
       isBuffering.value = state.processingState == ProcessingState.buffering ||
           state.processingState == ProcessingState.loading;
-      
+
       // Handle playback completion
       if (state.processingState == ProcessingState.completed) {
         _handlePlaybackCompleted();
       }
-      
-      logger.d('Player state: ${state.processingState}, playing: ${state.playing}');
+
+      logger.d(
+          'Player state: ${state.processingState}, playing: ${state.playing}');
     }, onError: (error) {
       logger.e('Player state error: $error');
       _handlePlaybackError(error);
@@ -115,7 +117,7 @@ class AudioPlayerService extends GetxService {
     // Buffered position updates
     _bufferedPositionSubscription = _player.bufferedPositionStream.listen((bp) {
       if (duration.value != null && duration.value!.inMilliseconds > 0) {
-        bufferedPosition.value = 
+        bufferedPosition.value =
             bp.inMilliseconds / duration.value!.inMilliseconds;
       }
     });
@@ -134,7 +136,7 @@ class AudioPlayerService extends GetxService {
     try {
       isLoading.value = true;
       errorMessage.value = '';
-      
+
       logger.i('Playing song: ${song.title} by ${song.artist}');
 
       // Update queue if provided
@@ -151,15 +153,28 @@ class AudioPlayerService extends GetxService {
         quality: _getQualityString(),
       );
 
+      // Check cache first
+      String? playUrl =
+          await _audioCacheService.getCachedAudioPath(streamUrlResponse.url);
+
+      if (playUrl != null) {
+        logger.i('Playing from cache');
+      } else {
+        logger.i('Playing from network');
+        playUrl = streamUrlResponse.url;
+        // Cache in background
+        _audioCacheService.cacheAudio(streamUrlResponse.url);
+      }
+
       // Set audio source
-      await _player.setUrl(streamUrlResponse.url);
-      
+      await _player.setUrl(playUrl);
+
       // Start playback
       await _player.play();
-      
+
       // Track analytics
       await _trackPlay(song.id);
-      
+
       logger.d('Song started playing successfully');
     } catch (e) {
       logger.e('Error playing song: $e');
@@ -233,13 +248,13 @@ class AudioPlayerService extends GetxService {
         await seek(Duration.zero);
         await resume();
         break;
-        
+
       case RepeatMode.all:
         // Move to next song, loop to start if at end
         final nextIndex = (currentIndex.value + 1) % queue.length;
         await _playAtIndex(nextIndex);
         break;
-        
+
       case RepeatMode.off:
         // Move to next song if available
         if (currentIndex.value < queue.length - 1) {
@@ -311,12 +326,12 @@ class AudioPlayerService extends GetxService {
       final song = queue[index];
       queue.removeAt(index);
       _originalQueue.remove(song);
-      
+
       // Adjust current index if needed
       if (index < currentIndex.value) {
         currentIndex.value--;
       }
-      
+
       logger.d('Removed from queue: ${song.title}');
     }
   }
@@ -332,13 +347,13 @@ class AudioPlayerService extends GetxService {
   /// Toggle shuffle mode
   void toggleShuffle() {
     isShuffleEnabled.value = !isShuffleEnabled.value;
-    
+
     if (isShuffleEnabled.value) {
       _enableShuffle();
     } else {
       _disableShuffle();
     }
-    
+
     logger.d('Shuffle ${isShuffleEnabled.value ? "enabled" : "disabled"}');
   }
 
@@ -355,7 +370,7 @@ class AudioPlayerService extends GetxService {
         repeatMode.value = RepeatMode.off;
         break;
     }
-    
+
     logger.d('Repeat mode: ${repeatMode.value}');
   }
 
@@ -392,27 +407,27 @@ class AudioPlayerService extends GetxService {
   /// Enable shuffle
   void _enableShuffle() {
     final currentSongEntity = currentSong.value;
-    
+
     // Shuffle queue but keep current song at current position
     final shuffledQueue = List<SongEntity>.from(queue);
     shuffledQueue.shuffle();
-    
+
     // Move current song to front if exists
     if (currentSongEntity != null) {
       shuffledQueue.remove(currentSongEntity);
       shuffledQueue.insert(currentIndex.value, currentSongEntity);
     }
-    
+
     queue.value = shuffledQueue;
   }
 
   /// Disable shuffle
   void _disableShuffle() {
     final currentSongEntity = currentSong.value;
-    
+
     // Restore original queue
     queue.value = List.from(_originalQueue);
-    
+
     // Find current song in original queue
     if (currentSongEntity != null) {
       _findAndSetCurrentIndex(currentSongEntity);
@@ -422,12 +437,12 @@ class AudioPlayerService extends GetxService {
   /// Handle playback completion
   void _handlePlaybackCompleted() {
     logger.d('Playback completed');
-    
+
     // Track completion analytics
     if (currentSong.value != null) {
       _trackComplete(currentSong.value!.id);
     }
-    
+
     // Play next song
     playNext();
   }
@@ -437,7 +452,7 @@ class AudioPlayerService extends GetxService {
     final errorMsg = 'Playback error: ${error.toString()}';
     errorMessage.value = errorMsg;
     logger.e(errorMsg);
-    
+
     Get.snackbar(
       'Playback Error',
       'Could not play song. Please try again.',
@@ -474,17 +489,18 @@ class AudioPlayerService extends GetxService {
   void _trackPlaybackProgress() {
     if (currentSong.value == null || duration.value == null) return;
     if (!isPlaying.value) return;
-    
+
     final currentPos = position.value;
-    
+
     // Only track if position changed significantly (> 5 seconds)
     if (_lastTrackedPosition != null) {
-      final diff = (currentPos.inSeconds - _lastTrackedPosition!.inSeconds).abs();
+      final diff =
+          (currentPos.inSeconds - _lastTrackedPosition!.inSeconds).abs();
       if (diff < 5) return;
     }
-    
+
     _lastTrackedPosition = currentPos;
-    
+
     try {
       _songRepository.trackPlayback(
         currentSong.value!.id,
@@ -499,7 +515,8 @@ class AudioPlayerService extends GetxService {
   /// Track song completion
   Future<void> _trackComplete(String songId) async {
     try {
-      await _songRepository.trackPlay(songId, position: position.value.inSeconds);
+      await _songRepository.trackPlay(songId,
+          position: position.value.inSeconds);
     } catch (e) {
       logger.w('Failed to track completion: $e');
     }
@@ -510,17 +527,17 @@ class AudioPlayerService extends GetxService {
   @override
   void onClose() {
     logger.i('Disposing AudioPlayerService');
-    
+
     // Cancel subscriptions
     _playerStateSubscription?.cancel();
     _positionSubscription?.cancel();
     _durationSubscription?.cancel();
     _bufferedPositionSubscription?.cancel();
     _analyticsTimer?.cancel();
-    
+
     // Dispose player
     _player.dispose();
-    
+
     super.onClose();
   }
 }

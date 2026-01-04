@@ -67,6 +67,28 @@ class CacheManager {
     }
   }
 
+  /// Search within cached songs
+  Future<List<SongModel>> searchCachedSongs(String query) async {
+    try {
+      if (query.isEmpty) return [];
+
+      final songs = await _isar.songModels
+          .filter()
+          .titleContains(query, caseSensitive: false)
+          .or()
+          .artistContains(query, caseSensitive: false)
+          .or()
+          .albumContains(query, caseSensitive: false)
+          .findAll();
+
+      logger.d('📦 Found ${songs.length} cached songs matching "$query"');
+      return songs;
+    } catch (e) {
+      logger.e('Failed to search cached songs: $e');
+      return [];
+    }
+  }
+
   /// Get song by ID
   Future<SongModel?> getSongById(String songId) async {
     try {
@@ -128,7 +150,8 @@ class CacheManager {
       await _isar.writeTxn(() async {
         // Clear old popular songs
         final allSongs = await _isar.songModels.where().findAll();
-        final oldPopular = allSongs.where((song) => song.isPopular == true).toList();
+        final oldPopular =
+            allSongs.where((song) => song.isPopular == true).toList();
 
         for (var song in oldPopular) {
           song.isPopular = false;
@@ -201,7 +224,8 @@ class CacheManager {
     try {
       await _isar.writeTxn(() async {
         final allSongs = await _isar.songModels.where().findAll();
-        final favorites = allSongs.where((song) => song.isFavorite == true).toList();
+        final favorites =
+            allSongs.where((song) => song.isFavorite == true).toList();
 
         for (var song in favorites) {
           song.isFavorite = false;

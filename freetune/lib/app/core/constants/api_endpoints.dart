@@ -1,5 +1,6 @@
 class ApiEndpoints {
-  static const String baseUrl = 'http://localhost:3000/api/v1';
+  static const String baseUrl =
+      'https://freetunebackend-production.up.railway.app/api/v1';
 
   // Healthcheck
   static const String healthcheck = '/healthcheck';
@@ -16,6 +17,7 @@ class ApiEndpoints {
   static const String me = '/auth/me';
   static const String updateProfile = '/auth/profile';
   static const String changePassword = '/auth/change-password';
+  static const String userSongs = '/user/songs';
 
   // Songs
   static const String songs = '/songs';
@@ -29,7 +31,7 @@ class ApiEndpoints {
   static const String favoriteSongs = '/songs/favorites';
   static const String addFavorite = '/songs/{id}/favorite';
   static const String removeFavorite = '/songs/{id}/favorite';
-  static const String streamUrl = '/songs/{id}/stream';
+  static const String streamUrl = '/songs/{id}/stream-url';
   static const String trackPlay = '/songs/{id}/play';
   static const String trackPlayback = '/songs/{id}/playback';
 

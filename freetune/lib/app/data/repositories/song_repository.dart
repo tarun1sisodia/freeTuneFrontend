@@ -20,13 +20,16 @@ abstract class SongRepository {
   Future<List<SongEntity>> getFavorites({bool forceRefresh = false});
   Future<void> toggleFavorite(String songId);
   Future<List<SongEntity>> searchSongs(String query,
-      {int page = 1, int limit = 20});
+      {int page = 1, int limit = 20, CancelToken? cancelToken});
   Future<List<SongEntity>> getSimilarSongs(String songId, {int limit = 10});
   Future<StreamUrlResponse> getStreamUrl(String songId,
       {String quality = 'medium'});
   Future<void> trackPlay(String songId, {int position = 0});
   Future<void> trackPlayback(String songId, int positionMs, int durationMs);
-  Future<SongEntity> uploadSong(String filePath, String title, String artist);
+  Future<SongEntity> uploadSong(String filePath, String title, String artist,
+      [String? album, String? coverPath]);
+  Future<List<SongEntity>> getUploadedSongs({int page = 1, int limit = 20});
+  Future<void> deleteSong(String songId);
   Future<void> clearCache();
   Future<void> refreshCache();
 }
@@ -247,6 +250,7 @@ class SongRepositoryImpl implements SongRepository {
     String query, {
     int page = 1,
     int limit = 20,
+    CancelToken? cancelToken,
   }) async {
     try {
       if (query.isEmpty) {
@@ -258,6 +262,7 @@ class SongRepositoryImpl implements SongRepository {
         query,
         page: page,
         limit: limit,
+        cancelToken: cancelToken,
       );
 
       return paginatedResponse.data
@@ -319,22 +324,75 @@ class SongRepositoryImpl implements SongRepository {
   }
 
   @override
-  Future<SongEntity> uploadSong(
-      String filePath, String title, String artist) async {
+  Future<SongEntity> uploadSong(String filePath, String title, String artist,
+      [String? album, String? coverPath]) async {
     try {
       logger.i('📤 Uploading song: $title by $artist');
 
-      final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(filePath),
+      // Send placeholder duration - backend will extract actual duration
+      const int placeholderDuration = 0; // Backend extracts real duration
+
+      final map = {
+        'audio': await MultipartFile.fromFile(filePath),
         'title': title,
         'artist': artist,
-      });
+        'duration_ms': placeholderDuration.toString(),
+      };
 
+      if (album != null && album.isNotEmpty) {
+        map['album'] = album;
+      }
+
+      if (coverPath != null && coverPath.isNotEmpty) {
+        map['image'] = await MultipartFile.fromFile(coverPath);
+      }
+
+      final formData = FormData.fromMap(map);
+
+      logger.d('Sending upload request - backend will extract duration');
       final songModel = await _songsApi.uploadSong(formData);
+      logger.i('✅ Song uploaded successfully: ${songModel.title}');
+
+      // Invalidate cache to ensure new song appears in lists
+      await clearCache();
+
       return SongMapper.fromModel(songModel);
     } catch (e) {
       logger.e('Error uploading song: $e');
       throw ApiException(message: 'Failed to upload song: $e');
+    }
+  }
+
+  @override
+  Future<List<SongEntity>> getUploadedSongs(
+      {int page = 1, int limit = 20}) async {
+    try {
+      logger.i('🌐 Fetching uploaded songs');
+      final paginatedResponse =
+          await _songsApi.getUploadedSongs(page: page, limit: limit);
+
+      return paginatedResponse.data
+          .map((model) => SongMapper.fromModel(model))
+          .toList();
+    } catch (e) {
+      logger.e('Error getting uploaded songs: $e');
+      throw ApiException(message: 'Failed to get uploaded songs: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteSong(String songId) async {
+    try {
+      logger.i('Deleting song: $songId');
+      await _songsApi.deleteSong(songId);
+
+      // Invalidate relevant caches
+      await _cacheManager.clearSongsCache();
+
+      logger.d('Song deleted successfully from repository');
+    } catch (e) {
+      logger.e('Error deleting song: $e');
+      throw ApiException(message: 'Failed to delete song: $e');
     }
   }
 
