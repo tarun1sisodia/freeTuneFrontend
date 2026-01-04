@@ -1,5 +1,6 @@
 class ApiEndpoints {
-  static const String baseUrl = 'http://localhost:3000/api/v1';
+  static const String baseUrl =
+      'https://freetunebackend-production.up.railway.app/api/v1';
 
   // Healthcheck
   static const String healthcheck = '/healthcheck';

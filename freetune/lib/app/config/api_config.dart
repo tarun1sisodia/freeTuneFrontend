@@ -1,5 +1,6 @@
 class ApiConfig {
-  static const String baseUrl = 'http://localhost:3000/api/v1';
+  static const String baseUrl =
+      'https://freetunebackend-production.up.railway.app/api/v1';
   static const int receiveTimeout = 120000; // 120 seconds for file uploads
   static const int connectionTimeout = 30000; // 30 seconds
   static const int sendTimeout = 120000; // 120 seconds for file uploads
@@ -42,7 +43,8 @@ class ApiConfig {
   static const String updatePlaylist = '/playlists/{id}';
   static const String deletePlaylist = '/playlists/{id}';
   static const String addSongToPlaylist = '/playlists/{id}/songs';
-  static const String removeSongFromPlaylist = '/playlists/{playlistId}/songs/{songId}';
+  static const String removeSongFromPlaylist =
+      '/playlists/{playlistId}/songs/{songId}';
 
   // Recommendation Endpoints
   static const String recommendations = '/recommendations';
