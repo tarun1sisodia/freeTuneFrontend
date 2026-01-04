@@ -30,6 +30,7 @@ abstract class SongRepository {
       [String? album, String? coverPath]);
   Future<List<SongEntity>> getUploadedSongs({int page = 1, int limit = 20});
   Future<void> deleteSong(String songId);
+  Future<void> requestSongImport(String query);
   Future<void> clearCache();
   Future<void> refreshCache();
 }
@@ -393,6 +394,18 @@ class SongRepositoryImpl implements SongRepository {
     } catch (e) {
       logger.e('Error deleting song: $e');
       throw ApiException(message: 'Failed to delete song: $e');
+    }
+  }
+
+  @override
+  Future<void> requestSongImport(String query) async {
+    try {
+      logger.i('Requesting song import for: "$query"');
+      await _songsApi.importSong(query: query);
+      logger.d('Song import requested successfully via repository');
+    } catch (e) {
+      logger.e('Error requesting song import: $e');
+      throw ApiException(message: 'Failed to request song import: $e');
     }
   }
 

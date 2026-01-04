@@ -22,6 +22,7 @@ class ApiEndpoints {
   // Songs
   static const String songs = '/songs';
   static const String uploadSong = '/songs/upload';
+  static const String importSong = '/songs/import';
   static const String getSong = '/songs/{id}';
   static const String updateSong = '/songs/{id}';
   static const String deleteSong = '/songs/{id}';

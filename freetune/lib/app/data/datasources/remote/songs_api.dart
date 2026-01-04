@@ -291,6 +291,27 @@ class SongsApi {
     }
   }
 
+  /// Request song import from YouTube
+  Future<void> importSong({String? query, String? url}) async {
+    try {
+      logger.i('Requesting song import - query: "$query", url: "$url"');
+      await _dio.post(
+        ApiEndpoints.importSong,
+        data: {
+          if (query != null) 'query': query,
+          if (url != null) 'url': url,
+        },
+      );
+      logger.d('Song import requested successfully');
+    } on DioException catch (e) {
+      logger.e('Failed to request song import: ${e.message}');
+      throw ApiException.fromDioError(e);
+    } catch (e) {
+      logger.e('Unexpected error requesting song import: $e');
+      throw ApiException(message: 'Failed to request song import: $e');
+    }
+  }
+
   /// Get songs uploaded by the current user
   Future<PaginatedResponse<SongModel>> getUploadedSongs({
     int page = 1,

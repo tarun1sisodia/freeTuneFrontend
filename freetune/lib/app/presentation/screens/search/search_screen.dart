@@ -79,10 +79,41 @@ class SearchScreen extends GetView<SongSearchController> {
                 if (controller.searchController.text.isNotEmpty) {
                   // Show Search Results
                   if (controller.searchResults.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        "No songs found",
-                        style: TextStyle(color: Colors.white),
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "No songs found",
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          const SizedBox(height: 16),
+                          Obx(() => controller.isImporting.value
+                              ? const CircularProgressIndicator(
+                                  color: Palette.primaryColor)
+                              : ElevatedButton.icon(
+                                  onPressed: () {
+                                    controller.requestDownload(
+                                        controller.searchController.text);
+                                  },
+                                  icon: const Icon(Icons.cloud_download),
+                                  label: Text(
+                                      "Request '${controller.searchController.text}'"),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Palette.primaryColor,
+                                    foregroundColor: Colors.black,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24, vertical: 12),
+                                    textStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "We'll download it for you!",
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
                       ),
                     );
                   }
