@@ -16,6 +16,7 @@ class SongSearchController extends GetxController {
   final searchResults = <SongEntity>[].obs;
   final isLoading = false.obs;
   final error = Rxn<String>();
+  final isImporting = false.obs;
   Timer? _debounce;
   CancelToken? _cancelToken;
 
@@ -103,6 +104,33 @@ class SongSearchController extends GetxController {
       logger.e('Local fallback failed: $e');
       error.value = errorMessage;
       searchResults.clear();
+    }
+  }
+
+  Future<void> requestDownload(String query) async {
+    if (query.trim().isEmpty) return;
+
+    isImporting.value = true;
+    try {
+      await _songRepository.requestSongImport(query);
+      Get.snackbar(
+        'Request Sent',
+        'We are searching and downloading "$query". This may take a few minutes.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 4),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Request Failed',
+        'Could not request download. Please try again later.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isImporting.value = false;
     }
   }
 

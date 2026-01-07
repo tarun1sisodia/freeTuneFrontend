@@ -69,8 +69,22 @@ class AudioPlayerService extends GetxService {
 
   /// Initialize the audio player
   void _initializePlayer() {
-    _player = AudioPlayer();
-    logger.i('AudioPlayerService initialized');
+    _player = AudioPlayer(
+      audioLoadConfiguration: const AudioLoadConfiguration(
+        androidLoadControl: AndroidLoadControl(
+          minBufferDuration: Duration(seconds: 15),
+          maxBufferDuration: Duration(seconds: 50),
+          bufferForPlaybackDuration:
+              Duration(seconds: 2), // Start playing after 2s
+          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 5),
+        ),
+        darwinLoadControl: DarwinLoadControl(
+          preferredForwardBufferDuration: Duration(seconds: 15),
+          automaticallyWaitsToMinimizeStalling: true,
+        ),
+      ),
+    );
+    logger.i('AudioPlayerService initialized with optimized buffering');
   }
 
   /// Configure audio session for music playback
@@ -153,17 +167,26 @@ class AudioPlayerService extends GetxService {
         quality: _getQualityString(),
       );
 
-      // Check cache first
-      String? playUrl =
-          await _audioCacheService.getCachedAudioPath(streamUrlResponse.url);
+      // Check cache first ONLY if not HLS
+      // HLS (.m3u8) cannot be simply cached as a single file because it depends on segments
+      bool isHls = streamUrlResponse.url.contains('.m3u8');
+      String? playUrl;
+
+      if (!isHls) {
+        playUrl =
+            await _audioCacheService.getCachedAudioPath(streamUrlResponse.url);
+      }
 
       if (playUrl != null) {
         logger.i('Playing from cache');
       } else {
         logger.i('Playing from network');
         playUrl = streamUrlResponse.url;
-        // Cache in background
-        _audioCacheService.cacheAudio(streamUrlResponse.url);
+
+        // Cache in background only if not HLS
+        if (!isHls) {
+          _audioCacheService.cacheAudio(streamUrlResponse.url);
+        }
       }
 
       // Set audio source
