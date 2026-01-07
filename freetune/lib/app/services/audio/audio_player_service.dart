@@ -70,6 +70,7 @@ class AudioPlayerService extends GetxService {
   /// Initialize the audio player
   void _initializePlayer() {
     _player = AudioPlayer(
+      // Making the Audio Player ready for Songs.
       audioLoadConfiguration: const AudioLoadConfiguration(
         androidLoadControl: AndroidLoadControl(
           minBufferDuration: Duration(seconds: 15),
