@@ -69,8 +69,22 @@ class AudioPlayerService extends GetxService {
 
   /// Initialize the audio player
   void _initializePlayer() {
-    _player = AudioPlayer();
-    logger.i('AudioPlayerService initialized');
+    _player = AudioPlayer(
+      audioLoadConfiguration: const AudioLoadConfiguration(
+        androidLoadControl: AndroidLoadControl(
+          minBufferDuration: Duration(seconds: 15),
+          maxBufferDuration: Duration(seconds: 50),
+          bufferForPlaybackDuration:
+              Duration(seconds: 2), // Start playing after 2s
+          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 5),
+        ),
+        darwinLoadControl: DarwinLoadControl(
+          preferredForwardBufferDuration: Duration(seconds: 15),
+          automaticallyWaitsToMinimizeStalling: true,
+        ),
+      ),
+    );
+    logger.i('AudioPlayerService initialized with optimized buffering');
   }
 
   /// Configure audio session for music playback
