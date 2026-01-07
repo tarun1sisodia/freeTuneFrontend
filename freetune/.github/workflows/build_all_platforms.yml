@@ -1,0 +1,164 @@
+name: Multi-Platform Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  # -----------------------------------------------------------------
+  # ANDROID BUILD (APK & AppBundle)
+  # -----------------------------------------------------------------
+  build_android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # Decode Keystore (Requires Secrets)
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+
+      - run: flutter pub get
+      - run: flutter build apk --release
+      # - run: flutter build appbundle --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  # -----------------------------------------------------------------
+  # IOS BUILD (Requires Apple Developer Secrets) - DISABLED
+  # -----------------------------------------------------------------
+  # build_ios:
+  #   name: Build iOS
+  #   runs-on: macos-latest
+  #   continue-on-error: true # Allow flow to finish even if iOS fails (likely due to missing secrets at first)
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         channel: 'stable'
+  #
+  #     # NOTE: Implementing iOS signing in CI is complex.
+  #     # 1. You need an "Apple Distribution" certificate exported as .p12
+  #     # 2. You need a "Provisioning Profile" (.mobileprovision)
+  #     # 3. Add them as secrets: BUILD_CERTIFICATE_BASE64, P12_PASSWORD, BUILD_PROVISION_PROFILE_BASE64, KEYCHAIN_PASSWORD
+  #
+  #     - name: Install Apple Certificate
+  #       if: ${{ secrets.BUILD_CERTIFICATE_BASE64 != '' }}
+  #       env:
+  #         BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+  #         P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+  #         KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+  #       run: |
+  #         # create variables
+  #         CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+  #         KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+  #
+  #         # import certificate AND provisioning profile from secrets
+  #         echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode > $CERTIFICATE_PATH
+  #
+  #         # create temporary keychain
+  #         security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+  #         security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+  #         security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+  #
+  #         # import certificate to keychain
+  #         security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+  #         security list-keychain -d user -s $KEYCHAIN_PATH
+  #
+  #     - run: flutter pub get
+  #     - run: cd ios && pod install && cd ..
+  #     
+  #     # Will fail without valid provisioning profile setup
+  #     - name: Build IPA
+  #       run: flutter build ipa --release --export-options-plist=ios/Runner/ExportOptions.plist
+  #       continue-on-error: true
+  #
+  #     - name: Upload IPA
+  #       uses: actions/upload-artifact@v4
+  #       if: success()
+  #       with:
+  #         name: app-release-ipa
+  #         path: build/ios/ipa/*.ipa
+
+  # -----------------------------------------------------------------
+  # WEB BUILD
+  # -----------------------------------------------------------------
+  build_web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter build web --release
+      - name: Upload Web
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+
+  # -----------------------------------------------------------------
+  # DESKTOP BUILD (Linux, Windows, macOS)
+  # -----------------------------------------------------------------
+  build_desktop:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest] # Mac commented out: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # Linux-specific dependencies (for media_kit/just_audio)
+      - name: Install Linux Dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev mpv libmpv-dev
+
+      - run: flutter pub get
+
+      # Build Command tailored to OS
+      - name: Build Desktop Application
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            flutter build linux --release
+          elif [ "$RUNNER_OS" == "Windows" ]; then
+            flutter build windows --release
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            flutter build macos --release
+          fi
+        shell: bash
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-build
+          path: build/${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'windows-latest' && 'windows' || 'macos' }}/runner/release/bundle
