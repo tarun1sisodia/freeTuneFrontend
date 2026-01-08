@@ -16,8 +16,10 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.example.freetune"
-    compileSdk = 36
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
+
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

@@ -55,6 +55,12 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
 
+      - name: Fix Isar Incompatibility (AGP 8+)
+        run: |
+          # Find isar_flutter_libs in pub-cache and remove the 'package' attribute from AndroidManifest.xml
+          find ~/.pub-cache/hosted/pub.dev/isar_flutter_libs-*/android/src/main -name AndroidManifest.xml -exec sed -i 's/package="dev.isar.isar_flutter_libs"//g' {} +
+          echo "Patched Isar Manifest(s)"
+
       - name: Create key.properties
         run: |
           echo "storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}" > android/key.properties

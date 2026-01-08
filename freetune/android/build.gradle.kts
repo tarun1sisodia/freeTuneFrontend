@@ -11,7 +11,12 @@ subprojects {
             compileSdkVersion(35)
             // Fix for AGP 8.0+ requiring namespace
             if (namespace == null) {
-                namespace = "com.example.${project.name.replace("-", "_")}"
+                 val defaultPackage = "com.example.${project.name.replace("-", "_")}"
+                 namespace = when (project.name) {
+                     "isar_flutter_libs" -> "dev.isar.isar_flutter_libs"
+                     "flutter_secure_storage" -> "com.it_nomads.fluttersecurestorage"
+                     else -> defaultPackage
+                 }
             }
         }
     }
