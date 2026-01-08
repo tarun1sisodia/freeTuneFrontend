@@ -43,18 +43,18 @@ dependencies:
 
   # Utils
   intl: ^0.20.2
-  equatable: ^2.0.5
+  equatable: ^2.0.8
   logger: ^2.0.2
   dartz: ^0.10.1
 
   # Code Generation
-  build_runner: ^2.4.7
+  build_runner: ^2.4.13
   isar_generator: ^3.1.0+1
   marquee: ^2.3.0
   flutter_secure_storage: ^10.0.0
   just_audio_media_kit: ^2.1.0
   media_kit: ^1.2.6
-  ffi: ^2.1.4
+  ffi: ^2.1.5
 
 dev_dependencies:
   flutter_test:
