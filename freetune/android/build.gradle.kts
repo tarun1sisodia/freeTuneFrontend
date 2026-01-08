@@ -9,6 +9,10 @@ subprojects {
     afterEvaluate {
         project.extensions.findByType(com.android.build.gradle.BaseExtension::class)?.apply {
             compileSdkVersion(35)
+            // Fix for AGP 8.0+ requiring namespace
+            if (namespace == null) {
+                namespace = "com.example.${project.name.replace("-", "_")}"
+            }
         }
     }
 }
