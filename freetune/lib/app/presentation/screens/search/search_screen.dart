@@ -4,6 +4,7 @@ import '../../controllers/song_search_controller.dart';
 import '../../controllers/audio_player_controller.dart';
 import '../../../routes/app_routes.dart'; // Used for PLAYER route
 import '../../../core/constants/palette.dart';
+import '../../../core/utils/app_sizes.dart';
 
 class SearchScreen extends GetView<SongSearchController> {
   const SearchScreen({super.key});
@@ -20,47 +21,50 @@ class SearchScreen extends GetView<SongSearchController> {
           children: [
             // Search Header
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(
+                  horizontal: AppSizes.padding, vertical: AppSizes.h(12)),
               color: Palette.secondaryColor,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Search",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 25,
+                      fontSize: AppSizes.sp(25),
                       color: Colors.white,
                       fontFamily: "SpotifyCircularBold",
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: AppSizes.h(12)),
                   // Search Bar
                   Container(
-                    height: 50,
+                    height: AppSizes.h(50),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppSizes.radius),
                       color: Colors.white,
                     ),
                     child: TextField(
                       controller: controller.searchController,
                       onChanged: controller.onSearchChanged,
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: AppSizes.sp(16),
                         color: Colors.black,
                         fontFamily: "SpotifyCircularMedium",
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: "What do you want to listen to?",
                         hintStyle: TextStyle(
-                          fontSize: 16,
+                          fontSize: AppSizes.sp(16),
                           fontFamily: "SpotifyCircularMedium",
                           color: Palette.secondarySwatchColor,
                         ),
                         prefixIcon: Icon(Icons.search,
-                            color: Palette.secondaryColor, size: 28),
+                            color: Palette.secondaryColor,
+                            size: AppSizes.w(28)),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 12),
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: AppSizes.h(12)),
                       ),
                     ),
                   ),
@@ -83,11 +87,12 @@ class SearchScreen extends GetView<SongSearchController> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             "No songs found",
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            style: TextStyle(
+                                color: Colors.white, fontSize: AppSizes.sp(16)),
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: AppSizes.h(16)),
                           Obx(() => controller.isImporting.value
                               ? const CircularProgressIndicator(
                                   color: Palette.primaryColor)
@@ -102,16 +107,18 @@ class SearchScreen extends GetView<SongSearchController> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Palette.primaryColor,
                                     foregroundColor: Colors.black,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 24, vertical: 12),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: AppSizes.w(24),
+                                        vertical: AppSizes.h(12)),
                                     textStyle: const TextStyle(
                                         fontWeight: FontWeight.bold),
                                   ),
                                 )),
-                          const SizedBox(height: 8),
-                          const Text(
+                          SizedBox(height: AppSizes.h(8)),
+                          Text(
                             "We'll download it for you!",
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                            style: TextStyle(
+                                color: Colors.grey, fontSize: AppSizes.sp(12)),
                           ),
                         ],
                       ),
@@ -119,22 +126,27 @@ class SearchScreen extends GetView<SongSearchController> {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 20),
+                    padding: EdgeInsets.only(bottom: AppSizes.h(20)),
                     itemCount: controller.searchResults.length,
                     itemBuilder: (context, index) {
                       final song = controller.searchResults[index];
+                      // Calculate duration string
+                      final duration = Duration(milliseconds: song.durationMs);
+                      final durationStr =
+                          '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
+
                       return ListTile(
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(4),
                           child: Image.network(
                             song.albumArtUrl ??
                                 "https://via.placeholder.com/50",
-                            width: 50,
-                            height: 50,
+                            width: AppSizes.w(50),
+                            height: AppSizes.w(50), // Square
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => Container(
-                              width: 50,
-                              height: 50,
+                              width: AppSizes.w(50),
+                              height: AppSizes.w(50),
                               color: Colors.grey[800],
                               child: const Icon(Icons.music_note,
                                   color: Colors.white54),
@@ -143,15 +155,22 @@ class SearchScreen extends GetView<SongSearchController> {
                         ),
                         title: Text(
                           song.title,
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: AppSizes.sp(14)),
                         ),
                         subtitle: Text(
-                          song.artist,
-                          style: const TextStyle(color: Colors.grey),
+                          "${song.artist} • $durationStr",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: Colors.grey, fontSize: AppSizes.sp(12)),
                         ),
-                        trailing:
-                            const Icon(Icons.more_vert, color: Colors.grey),
+                        trailing: Icon(Icons.play_circle_fill,
+                            color: Palette.primaryColor,
+                            size: AppSizes.w(
+                                28)), // Changed to Play icon for clear intent
                         onTap: () {
                           // Play song
                           audioPlayerController.playSong(song);
@@ -165,14 +184,18 @@ class SearchScreen extends GetView<SongSearchController> {
                   // Show "Browse all" (Static Categories matching Clone)
                   return CustomScrollView(
                     slivers: [
-                      const SliverPadding(
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+                      SliverPadding(
+                        padding: EdgeInsets.fromLTRB(
+                            AppSizes.padding,
+                            AppSizes.padding,
+                            AppSizes.padding,
+                            AppSizes.padding),
                         sliver: SliverToBoxAdapter(
                           child: Text(
                             "Browse all",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                              fontSize: AppSizes.sp(18),
                               color: Colors.white,
                               fontFamily: "SpotifyCircularBold",
                             ),
@@ -180,14 +203,15 @@ class SearchScreen extends GetView<SongSearchController> {
                         ),
                       ),
                       SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: AppSizes.padding),
                         sliver: SliverGrid(
                           gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: AppSizes.w(200),
                             childAspectRatio: 1.6,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 16,
+                            mainAxisSpacing: AppSizes.h(16),
+                            crossAxisSpacing: AppSizes.w(16),
                           ),
                           delegate: SliverChildBuilderDelegate(
                             (BuildContext context, int index) {
@@ -197,12 +221,12 @@ class SearchScreen extends GetView<SongSearchController> {
                                       .accents[index % Colors.accents.length],
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                padding: const EdgeInsets.all(12),
+                                padding: EdgeInsets.all(AppSizes.w(12)),
                                 child: Text(
                                   "Genre ${index + 1}",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 16,
+                                    fontSize: AppSizes.sp(16),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -213,7 +237,8 @@ class SearchScreen extends GetView<SongSearchController> {
                           ),
                         ),
                       ),
-                      const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
+                      SliverPadding(
+                          padding: EdgeInsets.only(bottom: AppSizes.h(20))),
                     ],
                   );
                 }

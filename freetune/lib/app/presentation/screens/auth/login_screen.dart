@@ -6,6 +6,7 @@ import '../../widgets/common/basic_app_bar.dart';
 import '../../widgets/common/basic_app_button.dart';
 import '../../../core/configs/assets/app_images.dart';
 import 'app_colors.dart';
+import '../../../core/utils/app_sizes.dart';
 
 class LoginScreen extends GetView<AuthController> {
   const LoginScreen({super.key});
@@ -21,30 +22,30 @@ class LoginScreen extends GetView<AuthController> {
         hideBack: true, // or false if you want back button
         title: Image.asset(
           AppImages.logo,
-          height: 40,
-          width: 40,
+          height: AppSizes.h(40),
+          width: AppSizes.w(40),
         ),
       ),
       bottomNavigationBar: _registerText(context),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 30,
-          vertical: 50,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSizes.w(30),
+          vertical: AppSizes.h(50),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _signinText(),
-            const SizedBox(height: 25),
+            SizedBox(height: AppSizes.h(25)),
             _supportText(),
-            const SizedBox(height: 25),
+            SizedBox(height: AppSizes.h(25)),
             _usernameOrEmailField(context, emailController),
-            const SizedBox(height: 20),
+            SizedBox(height: AppSizes.h(20)),
             _passwordField(context, passwordController),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSizes.h(16)),
             _recoveryPasswordText(),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSizes.h(16)),
             Obx(() => BasicAppButton(
                   title:
                       controller.isLoading.value ? 'Signin In...' : 'Sign in',
@@ -59,7 +60,7 @@ class LoginScreen extends GetView<AuthController> {
                             Get.offAllNamed(Routes.MAIN);
                           }
                         },
-                  textSize: 22,
+                  textSize: AppSizes.sp(22),
                   weight: FontWeight.w500,
                 )),
           ],
@@ -69,11 +70,11 @@ class LoginScreen extends GetView<AuthController> {
   }
 
   Widget _signinText() {
-    return const Text(
+    return Text(
       'Sign In',
       style: TextStyle(
         fontWeight: FontWeight.bold,
-        fontSize: 32,
+        fontSize: AppSizes.sp(32),
         color: Colors.white,
       ),
       textAlign: TextAlign.center,
@@ -85,21 +86,21 @@ class LoginScreen extends GetView<AuthController> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           "If You Need Any Support ",
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            fontSize: 16,
+            fontSize: AppSizes.sp(16),
             color: Colors.grey,
           ),
         ),
         TextButton(
           onPressed: () {},
-          child: const Text(
+          child: Text(
             "Click here",
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: 16,
+              fontSize: AppSizes.sp(16),
               color: AppColors.primary,
             ),
           ),
@@ -113,16 +114,16 @@ class LoginScreen extends GetView<AuthController> {
     return TextField(
       controller: controller,
       style: const TextStyle(color: Colors.white),
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         hintText: "Enter Username Or Email",
-        hintStyle: TextStyle(color: Colors.grey),
-        enabledBorder: OutlineInputBorder(
+        hintStyle: const TextStyle(color: Colors.grey),
+        enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey),
             borderRadius: BorderRadius.all(Radius.circular(30))),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.all(Radius.circular(30))),
-        contentPadding: EdgeInsets.all(25),
+        contentPadding: EdgeInsets.all(AppSizes.w(25)),
       ),
     );
   }
@@ -133,16 +134,16 @@ class LoginScreen extends GetView<AuthController> {
       controller: controller,
       obscureText: true,
       style: const TextStyle(color: Colors.white),
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         hintText: "Password",
-        hintStyle: TextStyle(color: Colors.grey),
-        enabledBorder: OutlineInputBorder(
+        hintStyle: const TextStyle(color: Colors.grey),
+        enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey),
             borderRadius: BorderRadius.all(Radius.circular(30))),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.all(Radius.circular(30))),
-        contentPadding: EdgeInsets.all(25),
+        contentPadding: EdgeInsets.all(AppSizes.w(25)),
       ),
     );
   }
@@ -156,11 +157,11 @@ class LoginScreen extends GetView<AuthController> {
           onPressed: () {
             Get.toNamed(Routes.FORGOT_PASSWORD);
           },
-          child: const Text(
+          child: Text(
             "Forgot Password?",
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: 16,
+              fontSize: AppSizes.sp(16),
               color: Colors.grey,
             ),
           ),
@@ -171,18 +172,18 @@ class LoginScreen extends GetView<AuthController> {
 
   Widget _registerText(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 40,
+      padding: EdgeInsets.symmetric(
+        vertical: AppSizes.h(40),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             "Not A Member ? ",
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: 16,
+              fontSize: AppSizes.sp(16),
               color: Colors.white,
             ),
           ),
@@ -190,11 +191,11 @@ class LoginScreen extends GetView<AuthController> {
             onPressed: () {
               Get.offNamed(Routes.REGISTER);
             },
-            child: const Text(
+            child: Text(
               "Register Now",
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                fontSize: 16,
+                fontSize: AppSizes.sp(16),
                 color: AppColors.blue,
               ),
             ),

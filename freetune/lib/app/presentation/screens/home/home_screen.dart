@@ -6,6 +6,7 @@ import '../../controllers/songs_controller.dart';
 import '../../controllers/audio_player_controller.dart';
 import '../../widgets/home/recent_playlist_container.dart';
 import '../../widgets/home/recently_played_card.dart';
+import '../../../core/utils/app_sizes.dart';
 
 class HomeScreen extends GetView<SongController> {
   const HomeScreen({super.key});
@@ -24,10 +25,10 @@ class HomeScreen extends GetView<SongController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 35),
+            SizedBox(height: AppSizes.h(35)),
             // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.padding),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -38,9 +39,9 @@ class HomeScreen extends GetView<SongController> {
                       child: Text(_getGreeting(authController),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 25,
+                              fontSize: AppSizes.sp(25),
                               color: Colors.white,
                               fontFamily: "SpotifyCircularBold")),
                     ),
@@ -48,16 +49,16 @@ class HomeScreen extends GetView<SongController> {
                   Row(children: [
                     IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.notifications_none_sharp,
-                            color: Colors.white)),
+                        icon: Icon(Icons.notifications_none_sharp,
+                            color: Colors.white, size: AppSizes.iconSize)),
                     IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.access_time_sharp,
-                            color: Colors.white)),
+                        icon: Icon(Icons.access_time_sharp,
+                            color: Colors.white, size: AppSizes.iconSize)),
                     IconButton(
                         onPressed: () => Get.toNamed(Routes.PROFILE),
-                        icon: const Icon(Icons.settings_outlined,
-                            color: Colors.white))
+                        icon: Icon(Icons.settings_outlined,
+                            color: Colors.white, size: AppSizes.iconSize))
                   ])
                 ],
               ),
@@ -66,9 +67,9 @@ class HomeScreen extends GetView<SongController> {
             // Grid View (Mapped to Popular Songs for now)
             Obx(() {
               if (controller.isLoadingPopular.value) {
-                return const SizedBox(
-                    height: 100,
-                    child: Center(
+                return SizedBox(
+                    height: AppSizes.h(100),
+                    child: const Center(
                         child: CircularProgressIndicator(color: Colors.green)));
               }
 
@@ -77,19 +78,25 @@ class HomeScreen extends GetView<SongController> {
               return LayoutBuilder(builder: (context, constraints) {
                 // Responsive Grid Calculation
                 // Mobile: 2 columns, Tablet: 3-4 columns
-                final screenWidth = MediaQuery.of(context).size.width;
+                final screenWidth = AppSizes.width;
                 final crossAxisCount = screenWidth > 600 ? 4 : 2;
-                final itemWidth = (screenWidth - 40) / crossAxisCount;
-                const itemHeight =
-                    60.0; // Fixed height for RecentPlaylistContainer
+                // Calculate item width based on available space and padding
+                final availableWidth = screenWidth -
+                    (AppSizes.padding * 2) -
+                    AppSizes.w(10); // horizontal padding + spacing
+                final itemWidth = availableWidth / crossAxisCount;
+                final itemHeight = AppSizes.h(60);
                 final aspectRatio = itemWidth / itemHeight;
 
                 return GridView.builder(
-                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                  padding: EdgeInsets.only(
+                      left: AppSizes.padding,
+                      right: AppSizes.padding,
+                      top: AppSizes.h(10)),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
+                      mainAxisSpacing: AppSizes.h(10),
+                      crossAxisSpacing: AppSizes.w(10),
                       childAspectRatio: aspectRatio),
                   primary: false,
                   shrinkWrap: true,
@@ -111,14 +118,15 @@ class HomeScreen extends GetView<SongController> {
             }),
 
             // Recently Played Section
-            const Padding(
-                padding: EdgeInsets.fromLTRB(15, 30, 15, 15),
+            Padding(
+                padding: EdgeInsets.fromLTRB(AppSizes.padding, AppSizes.h(30),
+                    AppSizes.padding, AppSizes.h(15)),
                 child: SizedBox(
                   width: double.infinity,
                   child: Text("Recently played",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 25,
+                          fontSize: AppSizes.sp(25),
                           color: Colors.white,
                           fontFamily: "SpotifyCircularBold"),
                       textAlign: TextAlign.left),
@@ -126,9 +134,9 @@ class HomeScreen extends GetView<SongController> {
 
             Obx(() {
               if (controller.isLoadingRecent.value) {
-                return const SizedBox(
-                    height: 100,
-                    child: Center(
+                return SizedBox(
+                    height: AppSizes.h(100),
+                    child: const Center(
                         child: CircularProgressIndicator(color: Colors.green)));
               }
               final recents = controller.recentlyPlayed;
@@ -136,19 +144,21 @@ class HomeScreen extends GetView<SongController> {
 
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: AppSizes.w(10)),
                 child: Row(
                   children: recents
-                      .map((song) => RecentlyPlayedCard(
-                            name: song.title,
-                            image: song.albumArtUrl ??
-                                "https://via.placeholder.com/150",
-                            borderRadius:
-                                50, // Circular profile style or square? Code said border_radius param.
-                            onTap: () {
-                              playerController.playSong(song);
-                              Get.toNamed(Routes.PLAYER);
-                            },
+                      .map((song) => Padding(
+                            padding: EdgeInsets.only(right: AppSizes.w(10)),
+                            child: RecentlyPlayedCard(
+                              name: song.title,
+                              image: song.albumArtUrl ??
+                                  "https://via.placeholder.com/150",
+                              borderRadius: 50, // Circular profile style
+                              onTap: () {
+                                playerController.playSong(song);
+                                Get.toNamed(Routes.PLAYER);
+                              },
+                            ),
                           ))
                       .toList(),
                 ),
@@ -156,15 +166,16 @@ class HomeScreen extends GetView<SongController> {
             }),
 
             // "All Songs" Section (Mapped from Artists/Podcasters in clone)
-            const Padding(
-                padding: EdgeInsets.fromLTRB(15, 30, 15, 15),
+            Padding(
+                padding: EdgeInsets.fromLTRB(AppSizes.padding, AppSizes.h(30),
+                    AppSizes.padding, AppSizes.h(15)),
                 child: SizedBox(
                   width: double.infinity,
                   child: Text(
                     "Made For You",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 25,
+                        fontSize: AppSizes.sp(25),
                         color: Colors.white,
                         fontFamily: "SpotifyCircularBold"),
                     textAlign: TextAlign.left,
@@ -172,33 +183,36 @@ class HomeScreen extends GetView<SongController> {
                 )),
             Obx(() {
               if (controller.isLoadingSongs.value) {
-                return const SizedBox(
-                    height: 100,
-                    child: Center(
+                return SizedBox(
+                    height: AppSizes.h(100),
+                    child: const Center(
                         child: CircularProgressIndicator(color: Colors.green)));
               }
               final songs = controller.songs;
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: AppSizes.w(10)),
                 child: Row(
                   children: songs
-                      .map((song) => RecentlyPlayedCard(
-                            name: song.title,
-                            image: song.albumArtUrl ??
-                                "https://via.placeholder.com/150",
-                            borderRadius: 5, // Square for albums
-                            onTap: () {
-                              playerController.playSong(song, queue: songs);
-                              Get.toNamed(Routes.PLAYER);
-                            },
+                      .map((song) => Padding(
+                            padding: EdgeInsets.only(right: AppSizes.w(10)),
+                            child: RecentlyPlayedCard(
+                              name: song.title,
+                              image: song.albumArtUrl ??
+                                  "https://via.placeholder.com/150",
+                              borderRadius: 5, // Square for albums
+                              onTap: () {
+                                playerController.playSong(song, queue: songs);
+                                Get.toNamed(Routes.PLAYER);
+                              },
+                            ),
                           ))
                       .toList(),
                 ),
               );
             }),
 
-            const SizedBox(height: 140), // Spacing for MiniPlayer
+            SizedBox(height: AppSizes.h(140)), // Spacing for MiniPlayer
           ],
         ),
       ),

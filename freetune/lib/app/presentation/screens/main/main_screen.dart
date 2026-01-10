@@ -7,6 +7,7 @@ import '../search/search_screen.dart';
 import '../playlists/playlists_screen.dart';
 import '../songs/upload_screen.dart';
 import '../../widgets/player/mini_player.dart';
+import '../../../core/utils/app_sizes.dart';
 
 class MainScreen extends GetView<MainController> {
   const MainScreen({super.key});
@@ -47,7 +48,7 @@ class MainScreen extends GetView<MainController> {
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter),
         ),
-        height: 80, // Slightly taller for better touch area
+        height: AppSizes.h(80), // Slightly taller for better touch area
         child: Theme(
           data: Theme.of(context).copyWith(
               splashColor: Colors.white24, highlightColor: Colors.transparent),
@@ -58,35 +59,45 @@ class MainScreen extends GetView<MainController> {
                   backgroundColor: Colors.transparent,
                   selectedItemColor: Colors.white,
                   unselectedItemColor: Colors.white54,
-                  selectedFontSize: 12,
-                  unselectedFontSize: 12,
+                  selectedFontSize: AppSizes.sp(12),
+                  unselectedFontSize: AppSizes.sp(12),
                   elevation: 0,
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
                         icon: Icon(Icons.home_filled,
-                            size: controller.currentIndex == 0 ? 28 : 24,
+                            size: controller.currentIndex == 0
+                                ? AppSizes.w(28)
+                                : AppSizes.w(24),
                             color: controller.currentIndex == 0
                                 ? Colors.white
                                 : Colors.white54),
                         label: "Home"),
                     BottomNavigationBarItem(
                         icon: Icon(Icons.search,
-                            size: controller.currentIndex == 1 ? 28 : 24,
+                            size: controller.currentIndex == 1
+                                ? AppSizes.w(28)
+                                : AppSizes.w(24),
                             color: controller.currentIndex == 1
                                 ? Colors.white
                                 : Colors.white54),
                         label: "Search"),
                     BottomNavigationBarItem(
                         icon: Icon(Icons.add_box_outlined,
-                            size: controller.currentIndex == 2 ? 28 : 24,
+                            size: controller.currentIndex == 2
+                                ? AppSizes.w(28)
+                                : AppSizes.w(24),
                             color: controller.currentIndex == 2
                                 ? Colors.white
                                 : Colors.white54),
                         label: "Upload"),
                     BottomNavigationBarItem(
                         icon: Image.asset("assets/icons/library.png",
-                            height: controller.currentIndex == 3 ? 28 : 24,
-                            width: controller.currentIndex == 3 ? 28 : 24,
+                            height: controller.currentIndex == 3
+                                ? AppSizes.w(28)
+                                : AppSizes.w(24),
+                            width: controller.currentIndex == 3
+                                ? AppSizes.w(28)
+                                : AppSizes.w(24),
                             color: controller.currentIndex == 3
                                 ? Colors.white
                                 : Colors.white54),

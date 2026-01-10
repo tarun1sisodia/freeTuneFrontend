@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:marquee/marquee.dart';
 import '../../controllers/audio_player_controller.dart';
 import '../../../services/audio/audio_player_service.dart';
+import '../../../core/utils/app_sizes.dart';
 
 class PlayerScreen extends GetView<AudioPlayerController> {
   const PlayerScreen({super.key});
@@ -27,7 +28,10 @@ class PlayerScreen extends GetView<AudioPlayerController> {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.only(top: 30, left: 15, right: 15),
+                padding: EdgeInsets.only(
+                    top: AppSizes.h(30),
+                    left: AppSizes.padding,
+                    right: AppSizes.padding),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -36,35 +40,37 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                         onPressed: () {
                           Get.back();
                         },
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.arrow_back_ios,
                           color: Colors.white,
+                          size: AppSizes.iconSize,
                         )),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text("PLAYING FROM ARTIST",
+                        Text("PLAYING FROM ARTIST",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: "SpotifyCircularBook",
                                 fontWeight: FontWeight.w600,
-                                fontSize: 12)),
+                                fontSize: AppSizes.sp(12))),
                         Obx(() => Text(
                             controller.currentSong.value?.artist ??
                                 "Unknown Artist",
-                            style: const TextStyle(
+                            style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: "SpotifyCircularBook",
                                 fontWeight: FontWeight.w600,
-                                fontSize: 15))),
+                                fontSize: AppSizes.sp(15)))),
                       ],
                     ),
                     IconButton(
                         onPressed: () {},
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.more_vert_sharp,
                           color: Colors.white,
+                          size: AppSizes.iconSize,
                         )),
                   ],
                 ),
@@ -74,14 +80,15 @@ class PlayerScreen extends GetView<AudioPlayerController> {
               Expanded(
                 flex: 4,
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(AppSizes.w(20)),
                   child: Obx(() {
                     final song = controller.currentSong.value;
                     return AspectRatio(
                       aspectRatio: 1,
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.radius * 2),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.5),
@@ -91,7 +98,8 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.radius * 2),
                           child: song?.albumArtUrl != null
                               ? Image.network(
                                   song!.albumArtUrl!,
@@ -99,8 +107,9 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                                 )
                               : Container(
                                   color: Colors.grey[800],
-                                  child: const Icon(Icons.music_note,
-                                      size: 80, color: Colors.white)),
+                                  child: Icon(Icons.music_note,
+                                      size: AppSizes.w(80),
+                                      color: Colors.white)),
                         ),
                       ),
                     );
@@ -110,18 +119,18 @@ class PlayerScreen extends GetView<AudioPlayerController> {
 
               // Song Info
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
+                padding: EdgeInsets.symmetric(horizontal: AppSizes.h(30)),
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 30,
+                      height: AppSizes.h(30),
                       child: Obx(() => Marquee(
                             text: controller.currentSong.value?.title ??
                                 "Unknown Song",
-                            style: const TextStyle(
+                            style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: "SpotifyCircularBold",
-                                fontSize: 22),
+                                fontSize: AppSizes.sp(22)),
                             scrollAxis: Axis.horizontal,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             blankSpace: 300,
@@ -131,17 +140,17 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                             startAfter: const Duration(seconds: 2),
                           )),
                     ),
-                    const SizedBox(height: 5),
+                    SizedBox(height: AppSizes.h(5)),
                     SizedBox(
-                      height: 25,
+                      height: AppSizes.h(25),
                       child: Obx(() => Marquee(
                             text: controller.currentSong.value?.artist ??
                                 "Unknown Artist",
-                            style: const TextStyle(
+                            style: TextStyle(
                                 color: Colors.white70,
                                 fontFamily: "SpotifyCircularBook",
                                 fontWeight: FontWeight.w400,
-                                fontSize: 16),
+                                fontSize: AppSizes.sp(16)),
                             scrollAxis: Axis.horizontal,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             blankSpace: 300,
@@ -163,7 +172,8 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                   children: [
                     // Slider
                     Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: AppSizes.w(10)),
                         child: SliderTheme(
                             data: SliderThemeData(
                               activeTrackColor: Colors.white,
@@ -194,16 +204,18 @@ class PlayerScreen extends GetView<AudioPlayerController> {
 
                     // Time Labels
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      padding: EdgeInsets.symmetric(horizontal: AppSizes.w(25)),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Obx(() => Text(controller.positionString,
-                              style: const TextStyle(
-                                  color: Colors.white60, fontSize: 12))),
+                              style: TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: AppSizes.sp(12)))),
                           Obx(() => Text(controller.durationString,
-                              style: const TextStyle(
-                                  color: Colors.white60, fontSize: 12))),
+                              style: TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: AppSizes.sp(12)))),
                         ],
                       ),
                     ),
@@ -212,7 +224,8 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: AppSizes.w(10)),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -222,13 +235,13 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                                     color: controller.isShuffleEnabled.value
                                         ? Colors.greenAccent
                                         : Colors.white,
-                                    size: 28))),
-                            const SizedBox(width: 20),
+                                    size: AppSizes.w(28)))),
+                            SizedBox(width: AppSizes.w(20)),
                             IconButton(
                                 onPressed: controller.playPrevious,
-                                icon: const Icon(Icons.skip_previous,
-                                    color: Colors.white, size: 36)),
-                            const SizedBox(width: 20),
+                                icon: Icon(Icons.skip_previous,
+                                    color: Colors.white, size: AppSizes.w(36))),
+                            SizedBox(width: AppSizes.w(20)),
                             Container(
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
@@ -242,14 +255,14 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                                           ? Icons.pause
                                           : Icons.play_arrow,
                                       color: Colors.black,
-                                      size: 50))),
+                                      size: AppSizes.w(50)))),
                             ),
-                            const SizedBox(width: 20),
+                            SizedBox(width: AppSizes.w(20)),
                             IconButton(
                                 onPressed: controller.playNext,
-                                icon: const Icon(Icons.skip_next,
-                                    color: Colors.white, size: 36)),
-                            const SizedBox(width: 20),
+                                icon: Icon(Icons.skip_next,
+                                    color: Colors.white, size: AppSizes.w(36))),
+                            SizedBox(width: AppSizes.w(20)),
                             IconButton(
                                 onPressed: controller.toggleRepeatMode,
                                 icon: Obx(() => Icon(
@@ -258,7 +271,7 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                                             RepeatMode.off
                                         ? Colors.greenAccent
                                         : Colors.white,
-                                    size: 28))),
+                                    size: AppSizes.w(28)))),
                           ],
                         ),
                       ),
@@ -269,23 +282,23 @@ class PlayerScreen extends GetView<AudioPlayerController> {
 
               // Bottom Actions (Responsive Row)
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                padding: EdgeInsets.symmetric(
+                    horizontal: AppSizes.w(30), vertical: AppSizes.h(20)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.devices,
-                            color: Colors.white, size: 24)),
+                        icon: Icon(Icons.devices,
+                            color: Colors.white, size: AppSizes.iconSize)),
                     IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.share,
-                            color: Colors.white, size: 24)),
+                        icon: Icon(Icons.share,
+                            color: Colors.white, size: AppSizes.iconSize)),
                     IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.format_list_bulleted,
-                            color: Colors.white, size: 24)),
+                        icon: Icon(Icons.format_list_bulleted,
+                            color: Colors.white, size: AppSizes.iconSize)),
                   ],
                 ),
               )

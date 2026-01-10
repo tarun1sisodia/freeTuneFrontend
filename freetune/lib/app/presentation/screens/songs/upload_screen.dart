@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../controllers/songs_controller.dart';
 import '../../widgets/common/basic_app_bar.dart';
 import '../../widgets/common/basic_app_button.dart';
+import '../../../core/utils/app_sizes.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -94,7 +95,7 @@ class _UploadScreenState extends State<UploadScreen> {
         title: Text('Upload Song'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(AppSizes.w(20.0)),
         child: Form(
           key: _formKey,
           child: Column(
@@ -105,11 +106,12 @@ class _UploadScreenState extends State<UploadScreen> {
                 child: GestureDetector(
                   onTap: _pickImage,
                   child: Container(
-                    height: 180,
-                    width: 180,
+                    height: AppSizes.w(180),
+                    width: AppSizes.w(180),
                     decoration: BoxDecoration(
                       color: Colors.grey[900],
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(AppSizes.radius *
+                          2), // Larger radius for image placeholder
                       border: Border.all(
                         color: _selectedImagePath != null
                             ? Colors.green
@@ -130,15 +132,15 @@ class _UploadScreenState extends State<UploadScreen> {
                             children: [
                               Icon(
                                 Icons.image_outlined,
-                                size: 48,
+                                size: AppSizes.w(48),
                                 color: Colors.grey[600],
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: AppSizes.h(8)),
                               Text(
                                 'Add Cover Art',
                                 style: TextStyle(
                                   color: Colors.grey[400],
-                                  fontSize: 14,
+                                  fontSize: AppSizes.sp(14),
                                 ),
                               ),
                             ],
@@ -147,17 +149,17 @@ class _UploadScreenState extends State<UploadScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: AppSizes.h(32)),
 
               // Audio File Selection
               GestureDetector(
                 onTap: _pickFile,
                 child: Container(
-                  height: 100,
-                  padding: const EdgeInsets.all(16),
+                  height: AppSizes.h(100),
+                  padding: EdgeInsets.all(AppSizes.w(16)),
                   decoration: BoxDecoration(
                     color: Colors.grey[900],
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(AppSizes.radius * 2),
                     border: Border.all(
                       color: _selectedFilePath != null
                           ? Colors.green
@@ -171,12 +173,12 @@ class _UploadScreenState extends State<UploadScreen> {
                         _selectedFilePath != null
                             ? Icons.audio_file
                             : Icons.cloud_upload_outlined,
-                        size: 40,
+                        size: AppSizes.w(40),
                         color: _selectedFilePath != null
                             ? Colors.green
                             : Colors.grey,
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: AppSizes.w(16)),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +190,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                   color: _selectedFileName != null
                                       ? Colors.white
                                       : Colors.grey[400],
-                                  fontSize: 16,
+                                  fontSize: AppSizes.sp(16),
                                   fontWeight: FontWeight.w500),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -197,7 +199,8 @@ class _UploadScreenState extends State<UploadScreen> {
                               Text(
                                 'Tap to choose song',
                                 style: TextStyle(
-                                    color: Colors.grey[600], fontSize: 12),
+                                    color: Colors.grey[600],
+                                    fontSize: AppSizes.sp(12)),
                               ),
                           ],
                         ),
@@ -208,7 +211,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: AppSizes.h(32)),
 
               // Title Input
               TextFormField(
@@ -219,13 +222,13 @@ class _UploadScreenState extends State<UploadScreen> {
                   hintStyle: const TextStyle(color: Colors.grey),
                   filled: true,
                   fillColor: Colors.transparent,
-                  contentPadding: const EdgeInsets.all(20),
+                  contentPadding: EdgeInsets.all(AppSizes.w(20)),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(AppSizes.radius * 2),
                     borderSide: const BorderSide(color: Colors.grey),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(AppSizes.radius * 2),
                     borderSide: const BorderSide(color: Colors.white),
                   ),
                   prefixIcon:
@@ -238,7 +241,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: AppSizes.h(16)),
 
               // Artist Input
               TextFormField(
@@ -249,13 +252,13 @@ class _UploadScreenState extends State<UploadScreen> {
                   hintStyle: const TextStyle(color: Colors.grey),
                   filled: true,
                   fillColor: Colors.transparent,
-                  contentPadding: const EdgeInsets.all(20),
+                  contentPadding: EdgeInsets.all(AppSizes.w(20)),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(AppSizes.radius * 2),
                     borderSide: const BorderSide(color: Colors.grey),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(AppSizes.radius * 2),
                     borderSide: const BorderSide(color: Colors.white),
                   ),
                   prefixIcon:
@@ -268,7 +271,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: AppSizes.h(16)),
 
               // Album Input (Optional)
               TextFormField(
@@ -279,20 +282,20 @@ class _UploadScreenState extends State<UploadScreen> {
                   hintStyle: const TextStyle(color: Colors.grey),
                   filled: true,
                   fillColor: Colors.transparent,
-                  contentPadding: const EdgeInsets.all(20),
+                  contentPadding: EdgeInsets.all(AppSizes.w(20)),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(AppSizes.radius * 2),
                     borderSide: const BorderSide(color: Colors.grey),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(AppSizes.radius * 2),
                     borderSide: const BorderSide(color: Colors.white),
                   ),
                   prefixIcon:
                       const Icon(Icons.album_outlined, color: Colors.grey),
                 ),
               ),
-              const SizedBox(height: 48),
+              SizedBox(height: AppSizes.h(48)),
 
               // Upload Button
               Obx(() => BasicAppButton(
@@ -302,7 +305,7 @@ class _UploadScreenState extends State<UploadScreen> {
                         ? 'Uploading...'
                         : 'Upload',
                   )),
-              const SizedBox(height: 20),
+              SizedBox(height: AppSizes.h(20)),
             ],
           ),
         ),

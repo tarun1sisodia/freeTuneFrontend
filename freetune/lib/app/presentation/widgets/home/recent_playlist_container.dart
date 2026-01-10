@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/palette.dart';
-
+import '../../../core/utils/app_sizes.dart';
 
 class RecentPlaylistContainer extends StatelessWidget {
   final String image;
@@ -24,37 +24,38 @@ class RecentPlaylistContainer extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             color: Palette.secondarySwatchColor,
-            borderRadius: BorderRadius.circular(5)),
+            borderRadius: BorderRadius.circular(
+                AppSizes.radius)), // Small radius ok to be 5->AppSizes.radius
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipRRect(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(AppSizes.radius),
                 child: Image.network(
                   image,
-                  height: 55,
-                  width: 55,
+                  height: AppSizes.h(55),
+                  width: AppSizes.h(55), // Square based on height
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                      height: 55,
-                      width: 55,
+                      height: AppSizes.h(55),
+                      width: AppSizes.h(55),
                       color: Colors.grey[800],
                       child: const Icon(Icons.music_note, color: Colors.white)),
                 )),
             Expanded(
                 child: Padding(
-              padding: const EdgeInsets.only(left: 10),
+              padding: EdgeInsets.only(left: AppSizes.w(10)),
               child: Text(name,
-                  style: const TextStyle(
-                      fontSize: 14,
+                  style: TextStyle(
+                      fontSize: AppSizes.sp(14),
                       fontFamily: "SpotifyCircularBold",
                       color: Colors.white),
                   softWrap: false,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis),
             )),
-            const SizedBox(width: 10)
+            SizedBox(width: AppSizes.w(10))
           ],
         ),
       ),

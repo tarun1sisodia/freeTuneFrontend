@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../core/utils/logger.dart';
 import '../../data/repositories/song_repository.dart';
 import '../../domain/entities/song_entity.dart';
@@ -57,6 +58,10 @@ class AudioPlayerService extends GetxService {
   Timer? _analyticsTimer;
   Duration? _lastTrackedPosition;
 
+  // Network connectivity
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+
   AudioPlayerService(this._songRepository);
 
   @override
@@ -66,6 +71,7 @@ class AudioPlayerService extends GetxService {
     _initAudioSession();
     _initListeners();
     _setupAnalyticsBatching();
+    _initConnectivityListener();
   }
 
   /// Initialize the audio player
@@ -147,6 +153,40 @@ class AudioPlayerService extends GetxService {
     });
   }
 
+  /// Initialize connectivity listener for adaptive quality
+  void _initConnectivityListener() {
+    // Check initial status
+    _connectivity.checkConnectivity().then(_updateQualityBasedOnNetwork);
+
+    // Listen for changes
+    _connectivitySubscription = _connectivity.onConnectivityChanged
+        .listen(_updateQualityBasedOnNetwork);
+  }
+
+  void _updateQualityBasedOnNetwork(List<ConnectivityResult> results) {
+    // If any result is wifi, go high quality
+    if (results.contains(ConnectivityResult.wifi) ||
+        results.contains(ConnectivityResult.ethernet)) {
+      if (audioQuality.value != AudioQuality.high) {
+        logger.i('Network: WiFi/Ethernet detected - Switching to HIGH quality');
+        setAudioQuality(AudioQuality.high);
+      }
+    }
+    // If mobile, go medium (or low if user preference? For now medium)
+    else if (results.contains(ConnectivityResult.mobile)) {
+      if (audioQuality.value != AudioQuality.medium) {
+        logger.i('Network: Mobile Data detected - Switching to MEDIUM quality');
+        setAudioQuality(AudioQuality.medium);
+      }
+    }
+    // Fallback or none
+    else if (results.contains(ConnectivityResult.none)) {
+      logger.w('Network: Offline mode');
+      // Keep current settings or maybe low?
+      // Actually, offline implies we rely on cache.
+    }
+  }
+
   /// Play a song with queue management
   Future<void> playSong(SongEntity song, {List<SongEntity>? newQueue}) async {
     try {
@@ -163,11 +203,16 @@ class AudioPlayerService extends GetxService {
 
       currentSong.value = song;
 
-      // 1. Try playing from MP3 (Download URL) - Preferred for Mobile & Caching
+      // 1. Check if we are offline. If so, we MUST rely on cache.
+      final connectivityResult = await _connectivity.checkConnectivity();
+      final isOffline = connectivityResult.contains(ConnectivityResult.none);
+
+      // Prioritize MP3 (Download URL) for caching/offline
       if (song.downloadUrl != null && song.downloadUrl!.isNotEmpty) {
         logger.i('Playing from optimized MP3 source: ${song.downloadUrl}');
         try {
           // LockCachingAudioSource handles streaming + caching simultaneously
+          // It checks if the file is fully cached. If offline and not cached, it will throw.
           final source = LockCachingAudioSource(
             Uri.parse(song.downloadUrl!),
             tag: MediaItem(
@@ -182,19 +227,39 @@ class AudioPlayerService extends GetxService {
           );
           await _player.setAudioSource(source);
         } catch (e) {
-          logger.w('Failed to play MP3, falling back to stream: $e');
+          logger.w('Failed to play MP3 (Offline/Cache issue?): $e');
+          if (isOffline) {
+            _handlePlaybackError("Offline: Song not cached.");
+            return;
+          }
           await _playFromStream(song);
         }
       } else {
         // 2. Fallback to Stream (HLS or standard)
-        await _playFromStream(song);
+        if (isOffline) {
+          // Check if Legacy Stream Cache has it
+          // Try to construct what the URL would be for HLS or fallback
+          // This is tricky as getStreamUrl requires API call which requires Network.
+          // But if we cached it before, we might have the key?
+          // Without API call in offline, we can't get the stream URL to check cache key.
+          // This implies offline playback ONLY works if song.downloadUrl is present (Entity cached) AND file cached.
+
+          // If we don't have downloadUrl in the Entity, we can't play offline easily unless we cached the Entity with the streamUrl previously.
+          // Assuming song.downloadUrl is the primary offline method.
+          _handlePlaybackError("Offline: No download URL available.");
+          return;
+        } else {
+          await _playFromStream(song);
+        }
       }
 
       // Start playback
       await _player.play();
 
       // Track analytics
-      await _trackPlay(song.id);
+      if (!isOffline) {
+        await _trackPlay(song.id);
+      }
 
       logger.d('Song started playing successfully');
     } catch (e) {
@@ -605,6 +670,7 @@ class AudioPlayerService extends GetxService {
     _durationSubscription?.cancel();
     _bufferedPositionSubscription?.cancel();
     _analyticsTimer?.cancel();
+    _connectivitySubscription?.cancel();
 
     // Dispose player
     _player.dispose();
