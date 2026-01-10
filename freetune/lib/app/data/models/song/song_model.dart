@@ -7,7 +7,7 @@ part 'song_model.g.dart';
 @collection
 class SongModel {
   Id id = Isar.autoIncrement;
-  
+
   final String songId;
   final String title;
   final String artist;
@@ -20,7 +20,7 @@ class SongModel {
   final DateTime lastUpdated;
   final double popularityScore;
   final DateTime createdAt;
-  
+
   // Cache-specific fields
   DateTime? updatedAt;
   bool? isFavorite;
@@ -42,7 +42,10 @@ class SongModel {
     this.updatedAt,
     this.isFavorite,
     this.isPopular,
+    this.downloadUrl,
   });
+
+  final String? downloadUrl;
 
   factory SongModel.fromJson(Map<String, dynamic> json) {
     return SongModel(
@@ -62,18 +65,18 @@ class SongModel {
               .toList()
           : [],
       playCount: (json['playCount'] as num?)?.toInt() ?? 0,
-      lastUpdated: json['lastUpdated'] != null 
+      lastUpdated: json['lastUpdated'] != null
           ? DateTime.parse(json['lastUpdated'])
           : DateTime.now(),
       popularityScore: (json['popularityScore'] as num?)?.toDouble() ?? 0.0,
-      createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
-          ? DateTime.parse(json['updatedAt']) 
-          : null,
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
       isFavorite: json['isFavorite'],
       isPopular: json['isPopular'],
+      downloadUrl: json['downloadUrl'],
     );
   }
 
@@ -94,6 +97,7 @@ class SongModel {
       if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
       if (isFavorite != null) 'isFavorite': isFavorite,
       if (isPopular != null) 'isPopular': isPopular,
+      if (downloadUrl != null) 'downloadUrl': downloadUrl,
     };
   }
 }

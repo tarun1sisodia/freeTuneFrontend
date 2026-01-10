@@ -19,6 +19,7 @@ class SongMapper {
       createdAt: model.createdAt,
       isFavorite: model.isFavorite,
       isPopular: model.isPopular,
+      downloadUrl: model.downloadUrl,
     );
   }
 
@@ -42,6 +43,7 @@ class SongMapper {
       createdAt: entity.createdAt,
       isFavorite: entity.isFavorite,
       isPopular: entity.isPopular,
+      downloadUrl: entity.downloadUrl,
     );
   }
 }

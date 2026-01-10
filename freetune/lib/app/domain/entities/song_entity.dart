@@ -31,7 +31,10 @@ class SongEntity extends Equatable {
     required this.createdAt,
     this.isFavorite,
     this.isPopular,
+    this.downloadUrl,
   });
+
+  final String? downloadUrl;
 
   /// Convenience getter for songId (alias for id)
   String get songId => id;
@@ -52,6 +55,7 @@ class SongEntity extends Equatable {
     DateTime? createdAt,
     bool? isFavorite,
     bool? isPopular,
+    String? downloadUrl,
   }) {
     return SongEntity(
       id: id ?? this.id,
@@ -68,6 +72,7 @@ class SongEntity extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       isFavorite: isFavorite ?? this.isFavorite,
       isPopular: isPopular ?? this.isPopular,
+      downloadUrl: downloadUrl ?? this.downloadUrl,
     );
   }
 
@@ -87,5 +92,6 @@ class SongEntity extends Equatable {
         createdAt,
         isFavorite,
         isPopular,
+        downloadUrl,
       ];
 }

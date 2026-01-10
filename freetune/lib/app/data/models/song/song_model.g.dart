@@ -37,59 +37,64 @@ const SongModelSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'durationMs': PropertySchema(
+    r'downloadUrl': PropertySchema(
       id: 4,
+      name: r'downloadUrl',
+      type: IsarType.string,
+    ),
+    r'durationMs': PropertySchema(
+      id: 5,
       name: r'durationMs',
       type: IsarType.long,
     ),
     r'fileSizes': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'fileSizes',
       type: IsarType.objectList,
       target: r'FileSize',
     ),
     r'isFavorite': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'isFavorite',
       type: IsarType.bool,
     ),
     r'isPopular': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'isPopular',
       type: IsarType.bool,
     ),
     r'lastUpdated': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'lastUpdated',
       type: IsarType.dateTime,
     ),
     r'playCount': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'playCount',
       type: IsarType.long,
     ),
     r'popularityScore': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'popularityScore',
       type: IsarType.double,
     ),
     r'r2Key': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'r2Key',
       type: IsarType.string,
     ),
     r'songId': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'songId',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'title',
       type: IsarType.string,
     ),
     r'updatedAt': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -127,6 +132,12 @@ int _songModelEstimateSize(
     }
   }
   bytesCount += 3 + object.artist.length * 3;
+  {
+    final value = object.downloadUrl;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.fileSizes.length * 3;
   {
     final offsets = allOffsets[FileSize]!;
@@ -151,22 +162,23 @@ void _songModelSerialize(
   writer.writeString(offsets[1], object.albumArtUrl);
   writer.writeString(offsets[2], object.artist);
   writer.writeDateTime(offsets[3], object.createdAt);
-  writer.writeLong(offsets[4], object.durationMs);
+  writer.writeString(offsets[4], object.downloadUrl);
+  writer.writeLong(offsets[5], object.durationMs);
   writer.writeObjectList<FileSize>(
-    offsets[5],
+    offsets[6],
     allOffsets,
     FileSizeSchema.serialize,
     object.fileSizes,
   );
-  writer.writeBool(offsets[6], object.isFavorite);
-  writer.writeBool(offsets[7], object.isPopular);
-  writer.writeDateTime(offsets[8], object.lastUpdated);
-  writer.writeLong(offsets[9], object.playCount);
-  writer.writeDouble(offsets[10], object.popularityScore);
-  writer.writeString(offsets[11], object.r2Key);
-  writer.writeString(offsets[12], object.songId);
-  writer.writeString(offsets[13], object.title);
-  writer.writeDateTime(offsets[14], object.updatedAt);
+  writer.writeBool(offsets[7], object.isFavorite);
+  writer.writeBool(offsets[8], object.isPopular);
+  writer.writeDateTime(offsets[9], object.lastUpdated);
+  writer.writeLong(offsets[10], object.playCount);
+  writer.writeDouble(offsets[11], object.popularityScore);
+  writer.writeString(offsets[12], object.r2Key);
+  writer.writeString(offsets[13], object.songId);
+  writer.writeString(offsets[14], object.title);
+  writer.writeDateTime(offsets[15], object.updatedAt);
 }
 
 SongModel _songModelDeserialize(
@@ -180,23 +192,24 @@ SongModel _songModelDeserialize(
     albumArtUrl: reader.readStringOrNull(offsets[1]),
     artist: reader.readString(offsets[2]),
     createdAt: reader.readDateTime(offsets[3]),
-    durationMs: reader.readLong(offsets[4]),
+    downloadUrl: reader.readStringOrNull(offsets[4]),
+    durationMs: reader.readLong(offsets[5]),
     fileSizes: reader.readObjectList<FileSize>(
-          offsets[5],
+          offsets[6],
           FileSizeSchema.deserialize,
           allOffsets,
           FileSize(),
         ) ??
         [],
-    isFavorite: reader.readBoolOrNull(offsets[6]),
-    isPopular: reader.readBoolOrNull(offsets[7]),
-    lastUpdated: reader.readDateTime(offsets[8]),
-    playCount: reader.readLongOrNull(offsets[9]) ?? 0,
-    popularityScore: reader.readDoubleOrNull(offsets[10]) ?? 0.0,
-    r2Key: reader.readString(offsets[11]),
-    songId: reader.readString(offsets[12]),
-    title: reader.readString(offsets[13]),
-    updatedAt: reader.readDateTimeOrNull(offsets[14]),
+    isFavorite: reader.readBoolOrNull(offsets[7]),
+    isPopular: reader.readBoolOrNull(offsets[8]),
+    lastUpdated: reader.readDateTime(offsets[9]),
+    playCount: reader.readLongOrNull(offsets[10]) ?? 0,
+    popularityScore: reader.readDoubleOrNull(offsets[11]) ?? 0.0,
+    r2Key: reader.readString(offsets[12]),
+    songId: reader.readString(offsets[13]),
+    title: reader.readString(offsets[14]),
+    updatedAt: reader.readDateTimeOrNull(offsets[15]),
   );
   object.id = id;
   return object;
@@ -218,8 +231,10 @@ P _songModelDeserializeProp<P>(
     case 3:
       return (reader.readDateTime(offset)) as P;
     case 4:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 5:
+      return (reader.readLong(offset)) as P;
+    case 6:
       return (reader.readObjectList<FileSize>(
             offset,
             FileSizeSchema.deserialize,
@@ -227,23 +242,23 @@ P _songModelDeserializeProp<P>(
             FileSize(),
           ) ??
           []) as P;
-    case 6:
-      return (reader.readBoolOrNull(offset)) as P;
     case 7:
       return (reader.readBoolOrNull(offset)) as P;
     case 8:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 9:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readDateTime(offset)) as P;
     case 10:
-      return (reader.readDoubleOrNull(offset) ?? 0.0) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 11:
-      return (reader.readString(offset)) as P;
+      return (reader.readDoubleOrNull(offset) ?? 0.0) as P;
     case 12:
       return (reader.readString(offset)) as P;
     case 13:
       return (reader.readString(offset)) as P;
     case 14:
+      return (reader.readString(offset)) as P;
+    case 15:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -819,6 +834,158 @@ extension SongModelQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition>
+      downloadUrlIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'downloadUrl',
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition>
+      downloadUrlIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'downloadUrl',
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> downloadUrlEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'downloadUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition>
+      downloadUrlGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'downloadUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> downloadUrlLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'downloadUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> downloadUrlBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'downloadUrl',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition>
+      downloadUrlStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'downloadUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> downloadUrlEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'downloadUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> downloadUrlContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'downloadUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition> downloadUrlMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'downloadUrl',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition>
+      downloadUrlIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'downloadUrl',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterFilterCondition>
+      downloadUrlIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'downloadUrl',
+        value: '',
       ));
     });
   }
@@ -1770,6 +1937,18 @@ extension SongModelQuerySortBy on QueryBuilder<SongModel, SongModel, QSortBy> {
     });
   }
 
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByDownloadUrl() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'downloadUrl', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByDownloadUrlDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'downloadUrl', Sort.desc);
+    });
+  }
+
   QueryBuilder<SongModel, SongModel, QAfterSortBy> sortByDurationMs() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'durationMs', Sort.asc);
@@ -1941,6 +2120,18 @@ extension SongModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> thenByDownloadUrl() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'downloadUrl', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SongModel, SongModel, QAfterSortBy> thenByDownloadUrlDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'downloadUrl', Sort.desc);
+    });
+  }
+
   QueryBuilder<SongModel, SongModel, QAfterSortBy> thenByDurationMs() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'durationMs', Sort.asc);
@@ -2103,6 +2294,13 @@ extension SongModelQueryWhereDistinct
     });
   }
 
+  QueryBuilder<SongModel, SongModel, QDistinct> distinctByDownloadUrl(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'downloadUrl', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<SongModel, SongModel, QDistinct> distinctByDurationMs() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'durationMs');
@@ -2196,6 +2394,12 @@ extension SongModelQueryProperty
   QueryBuilder<SongModel, DateTime, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
+    });
+  }
+
+  QueryBuilder<SongModel, String?, QQueryOperations> downloadUrlProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'downloadUrl');
     });
   }
 

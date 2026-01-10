@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:audio_service/audio_service.dart';
 import '../../core/utils/logger.dart';
 import '../../data/repositories/song_repository.dart';
 import '../../domain/entities/song_entity.dart';
@@ -162,36 +163,32 @@ class AudioPlayerService extends GetxService {
 
       currentSong.value = song;
 
-      // Get stream URL with quality preference
-      final streamUrlResponse = await _songRepository.getStreamUrl(
-        song.id,
-        quality: _getQualityString(),
-      );
-
-      // Check cache first ONLY if not HLS
-      // HLS (.m3u8) cannot be simply cached as a single file because it depends on segments
-      bool isHls = streamUrlResponse.url.contains('.m3u8');
-      String? playUrl;
-
-      if (!isHls) {
-        playUrl =
-            await _audioCacheService.getCachedAudioPath(streamUrlResponse.url);
-      }
-
-      if (playUrl != null) {
-        logger.i('Playing from cache');
-      } else {
-        logger.i('Playing from network');
-        playUrl = streamUrlResponse.url;
-
-        // Cache in background only if not HLS
-        if (!isHls) {
-          _audioCacheService.cacheAudio(streamUrlResponse.url);
+      // 1. Try playing from MP3 (Download URL) - Preferred for Mobile & Caching
+      if (song.downloadUrl != null && song.downloadUrl!.isNotEmpty) {
+        logger.i('Playing from optimized MP3 source: ${song.downloadUrl}');
+        try {
+          // LockCachingAudioSource handles streaming + caching simultaneously
+          final source = LockCachingAudioSource(
+            Uri.parse(song.downloadUrl!),
+            tag: MediaItem(
+              id: song.id,
+              title: song.title,
+              artist: song.artist,
+              artUri: song.albumArtUrl != null
+                  ? Uri.parse(song.albumArtUrl!)
+                  : null,
+              duration: Duration(milliseconds: song.durationMs),
+            ),
+          );
+          await _player.setAudioSource(source);
+        } catch (e) {
+          logger.w('Failed to play MP3, falling back to stream: $e');
+          await _playFromStream(song);
         }
+      } else {
+        // 2. Fallback to Stream (HLS or standard)
+        await _playFromStream(song);
       }
-
-      // Set audio source
-      await _player.setUrl(playUrl);
 
       // Start playback
       await _player.play();
@@ -495,6 +492,56 @@ class AudioPlayerService extends GetxService {
         return 'medium';
       case AudioQuality.high:
         return 'high';
+    }
+  }
+
+  /// Play from stream (HLS/Fallback)
+  Future<void> _playFromStream(SongEntity song) async {
+    // Get stream URL with quality preference
+    final streamUrlResponse = await _songRepository.getStreamUrl(
+      song.id,
+      quality: _getQualityString(),
+    );
+
+    final isHls = streamUrlResponse.url.contains('.m3u8');
+
+    if (isHls) {
+      // Just Audio HLS support
+      await _player.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(streamUrlResponse.url),
+          tag: MediaItem(
+            id: song.id,
+            title: song.title,
+            artist: song.artist,
+            artUri:
+                song.albumArtUrl != null ? Uri.parse(song.albumArtUrl!) : null,
+            duration: Duration(milliseconds: song.durationMs),
+          ),
+        ),
+      );
+    } else {
+      // Legacy cache fallback for non-HLS streams
+      String playUrl = streamUrlResponse.url;
+      final cachedPath = await _audioCacheService.getCachedAudioPath(playUrl);
+      if (cachedPath != null) {
+        playUrl = cachedPath; // Use local file path
+      } else {
+        _audioCacheService.cacheAudio(playUrl);
+      }
+      await _player.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(playUrl),
+          tag: MediaItem(
+            id: song.id,
+            title: song.title,
+            artist: song.artist,
+            artUri:
+                song.albumArtUrl != null ? Uri.parse(song.albumArtUrl!) : null,
+            duration: Duration(milliseconds: song.durationMs),
+          ),
+        ),
+      );
     }
   }
 
