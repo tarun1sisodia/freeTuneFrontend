@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/audio_player_controller.dart';
+import '../../controllers/songs_controller.dart';
 import '../../widgets/common/sized.dart';
 
 class PlayerScreen extends GetView<AudioPlayerController> {
@@ -62,10 +63,51 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                           fontSize: TSizes.fontSizeLg,
                           fontWeight: FontWeight.w600),
                     ),
-                    IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.more_vert_sharp,
-                            color: Colors.white, size: TSizes.iconMd)),
+                    PopupMenuButton<String>(
+                      icon: Icon(Icons.more_vert_sharp,
+                          color: Colors.white, size: TSizes.iconMd),
+                      onSelected: (value) {
+                        if (value == 'delete') {
+                          final song = controller.currentSong.value;
+                          if (song != null) {
+                            // Confirm delete
+                            Get.defaultDialog(
+                              title: "Delete Song",
+                              middleText:
+                                  "Are you sure you want to delete '${song.title}'? This cannot be undone.",
+                              textConfirm: "Delete",
+                              textCancel: "Cancel",
+                              confirmTextColor: Colors.white,
+                              buttonColor: Colors.red,
+                              onConfirm: () async {
+                                Get.back(); // Close dialog
+                                // Call SongController to delete
+                                final success = await Get.find<SongController>()
+                                    .deleteSong(song.songId);
+                                if (success) {
+                                  Get.back(); // Close player screen
+                                }
+                              },
+                            );
+                          }
+                        }
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return [
+                          const PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete, color: Colors.red),
+                                SizedBox(width: 8),
+                                Text('Delete Song',
+                                    style: TextStyle(color: Colors.red)),
+                              ],
+                            ),
+                          ),
+                        ];
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -81,7 +123,7 @@ class PlayerScreen extends GetView<AudioPlayerController> {
                       height: TSizes.imageCarouselHeight * 1.5,
                       width: TSizes.imageCarouselHeight * 1.5,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle,
+                          // shape: BoxShape.circle, // Removed to allow borderRadius
                           // Let's stick to rounded rect but use TSizes
                           borderRadius:
                               BorderRadius.circular(TSizes.cardRadiusLg),

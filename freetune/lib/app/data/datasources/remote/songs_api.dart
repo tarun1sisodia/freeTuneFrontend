@@ -324,9 +324,17 @@ class SongsApi {
         queryParameters: {'page': page, 'limit': limit},
       );
 
+      final responseData = response.data['data'];
       logger.d(
-          'Uploaded songs fetched: ${response.data['pagination']['total']} songs');
-      return PaginatedResponse.fromJson(response.data, SongModel.fromJson);
+          'Uploaded songs fetched: ${responseData['pagination']['total']} songs');
+
+      return PaginatedResponse(
+        data: List<SongModel>.from(
+            (responseData['songs'] as List).map((x) => SongModel.fromJson(x))),
+        total: responseData['pagination']['total'],
+        page: responseData['pagination']['page'],
+        limit: responseData['pagination']['limit'],
+      );
     } on DioException catch (e) {
       logger.e('Failed to get uploaded songs: ${e.message}');
       throw ApiException.fromDioError(e);

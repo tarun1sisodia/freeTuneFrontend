@@ -279,6 +279,47 @@ class SongController extends GetxController {
     favoritesError.value = null;
   }
 
+  /// Delete a song
+  Future<bool> deleteSong(String songId) async {
+    try {
+      logger.i('Deleting song: $songId');
+      await _songRepository.deleteSong(songId);
+
+      // Remove from local list
+      songs.removeWhere((s) => s.songId == songId);
+
+      // Also remove from other lists if present
+      popularSongs.removeWhere((s) => s.songId == songId);
+      recentlyPlayed.removeWhere((s) => s.songId == songId);
+      favorites.removeWhere((s) => s.songId == songId);
+
+      songs.refresh();
+      popularSongs.refresh();
+      recentlyPlayed.refresh();
+      favorites.refresh();
+
+      Get.snackbar(
+        'Success',
+        'Song deleted successfully!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+
+      return true;
+    } catch (e) {
+      logger.e('Error deleting song: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to delete song. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    }
+  }
+
   /// Upload a new song
   Future<bool> uploadSong(String filePath, String title, String artist,
       [String? album, String? coverPath]) async {

@@ -1,6 +1,6 @@
 class ApiConfig {
-  // static const String baseUrl = 'http://localhost:3000/api/v1';
-  static const String baseUrl = 'https://freetunebackend-production.up.railway.app/api/v1';
+  static const String baseUrl = 'http://localhost:3000/api/v1';
+  // static const String baseUrl = 'https://freetunebackend-production.up.railway.app/api/v1';
   static const int receiveTimeout = 120000; // 120 seconds for file uploads
   static const int connectionTimeout = 30000; // 30 seconds
   static const int sendTimeout = 120000; // 120 seconds for file uploads

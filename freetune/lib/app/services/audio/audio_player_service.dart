@@ -88,8 +88,7 @@ class AudioPlayerService extends GetxService {
         ),
         darwinLoadControl: DarwinLoadControl(
           preferredForwardBufferDuration: Duration(seconds: 15),
-          automaticallyWaitsToMinimizeStalling:
-              false, // Don't wait unnecessarily
+          // automaticallyWaitsToMinimizeStalling: false, // Removed as it caused UnimplementedError
         ),
       ),
     );
@@ -282,6 +281,8 @@ class AudioPlayerService extends GetxService {
       // Track analytics
       if (!isOffline) {
         await _trackPlay(song.id);
+        // SMART PRE-LOAD: Pre-load next song
+        _preloadNextSong();
       }
 
       logger.d('Song started playing successfully');
@@ -315,6 +316,43 @@ class AudioPlayerService extends GetxService {
   Future<bool> isSongCached(SongEntity song) async {
     return await _audioCacheService.isCached(song.downloadUrl ?? "",
         key: song.id);
+  }
+
+  /// Pre-load the next song in queue
+  Future<void> _preloadNextSong() async {
+    try {
+      // Find next song
+      int nextIndex = currentIndex.value + 1;
+
+      // Handle repeat modes
+      if (nextIndex >= queue.length) {
+        if (repeatMode.value == RepeatMode.all) {
+          nextIndex = 0;
+        } else {
+          return; // End of queue, nothing to pre-load
+        }
+      }
+
+      if (queue.isEmpty || nextIndex >= queue.length) return;
+
+      final nextSong = queue[nextIndex];
+
+      // Check if already cached
+      final isCached = await _audioCacheService
+          .isCached(nextSong.downloadUrl ?? "", key: nextSong.id);
+      if (isCached) {
+        logger.d('Next song already cached: ${nextSong.title}');
+        return;
+      }
+
+      // If not cached and has download URL, cache it (download)
+      if (nextSong.downloadUrl != null && nextSong.downloadUrl!.isNotEmpty) {
+        logger.i('Pre-loading next song: ${nextSong.title}');
+        _audioCacheService.cacheAudio(nextSong.downloadUrl!, key: nextSong.id);
+      }
+    } catch (e) {
+      logger.w('Failed to pre-load next song: $e');
+    }
   }
 
   /// Pause playback
