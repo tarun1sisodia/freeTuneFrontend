@@ -3,76 +3,71 @@ import 'package:get/get.dart';
 import '../../core/utils/logger.dart';
 import '../../domain/entities/song_entity.dart';
 import '../../services/audio/audio_player_service.dart';
+import 'songs_controller.dart';
 
 /// Production-grade Audio Player Controller
-/// 
+///
 /// This controller acts as a facade between the UI and AudioPlayerService,
 /// providing a clean interface for audio playback operations.
-/// 
-/// Features:
-/// - Reactive state management with GetX
-/// - Clean separation of concerns
-/// - Error handling with user feedback
-/// - Queue management interface
-/// - Playback controls
 class AudioPlayerController extends GetxController {
   // Service dependency
   late final AudioPlayerService _audioService;
 
   // ==================== GETTERS (Exposed State) ====================
-  
+
   /// Current playing song
   Rx<SongEntity?> get currentSong => _audioService.currentSong;
-  
+
   /// Is currently playing
   RxBool get isPlaying => _audioService.isPlaying;
-  
+
   /// Is loading (buffering/preparing)
   RxBool get isLoading => _audioService.isLoading;
-  
+
   /// Is buffering
   RxBool get isBuffering => _audioService.isBuffering;
-  
+
   /// Current playback position
   Rx<Duration> get position => _audioService.position;
-  
+
   /// Total duration of current song
   Rx<Duration?> get duration => _audioService.duration;
-  
+
   /// Buffered position (0.0 to 1.0)
   RxDouble get bufferedPosition => _audioService.bufferedPosition;
-  
+
   /// Current playback queue
   RxList<SongEntity> get queue => _audioService.queue;
-  
+
   /// Current song index in queue
   RxInt get currentIndex => _audioService.currentIndex;
-  
+
   /// Is shuffle enabled
   RxBool get isShuffleEnabled => _audioService.isShuffleEnabled;
-  
+
   /// Current repeat mode
   Rx<RepeatMode> get repeatMode => _audioService.repeatMode;
-  
+
   /// Current audio quality
   Rx<AudioQuality> get audioQuality => _audioService.audioQuality;
-  
+
   /// Error message
   RxString get errorMessage => _audioService.errorMessage;
 
   // ==================== COMPUTED PROPERTIES ====================
-  
+
   /// Is there a song currently playing or paused
   bool get hasSong => currentSong.value != null;
-  
+
   /// Can play next song
-  bool get canPlayNext => currentIndex.value < queue.length - 1 || 
-                          repeatMode.value == RepeatMode.all;
-  
+  bool get canPlayNext =>
+      currentIndex.value < queue.length - 1 ||
+      repeatMode.value == RepeatMode.all;
+
   /// Can play previous song
-  bool get canPlayPrevious => currentIndex.value > 0 || 
-                               repeatMode.value == RepeatMode.all;
-  
+  bool get canPlayPrevious =>
+      currentIndex.value > 0 || repeatMode.value == RepeatMode.all;
+
   /// Progress percentage (0.0 to 1.0)
   double get progress {
     if (duration.value == null || duration.value!.inMilliseconds == 0) {
@@ -80,13 +75,13 @@ class AudioPlayerController extends GetxController {
     }
     return position.value.inMilliseconds / duration.value!.inMilliseconds;
   }
-  
+
   /// Formatted position string (e.g., "3:45")
   String get positionString => _formatDuration(position.value);
-  
+
   /// Formatted duration string (e.g., "5:23")
   String get durationString => _formatDuration(duration.value ?? Duration.zero);
-  
+
   /// Remaining time string (e.g., "-1:38")
   String get remainingString {
     if (duration.value == null) return '-0:00';
@@ -96,11 +91,17 @@ class AudioPlayerController extends GetxController {
 
   // ==================== LIFECYCLE ====================
 
+  /// Is current song cached for offline
+  final RxBool isCurrentSongCached = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     _audioService = Get.find<AudioPlayerService>();
     logger.i('AudioPlayerController initialized');
+
+    // Monitor current song changes to update cache status
+    ever(currentSong, (_) => _checkCacheStatus());
   }
 
   @override
@@ -109,12 +110,19 @@ class AudioPlayerController extends GetxController {
     super.onClose();
   }
 
+  /// Check cache status for current song
+  Future<void> _checkCacheStatus() async {
+    final song = currentSong.value;
+    if (song == null) {
+      isCurrentSongCached.value = false;
+      return;
+    }
+    isCurrentSongCached.value = await _audioService.isSongCached(song);
+  }
+
   // ==================== PLAYBACK CONTROLS ====================
 
   /// Play a song with optional queue
-  /// 
-  /// If [queue] is provided, it replaces the current queue.
-  /// If not provided, the song is added to the current queue.
   Future<void> playSong(
     SongEntity song, {
     List<SongEntity>? queue,
@@ -122,6 +130,18 @@ class AudioPlayerController extends GetxController {
     try {
       logger.i('Playing song: ${song.title}');
       await _audioService.playSong(song, newQueue: queue);
+
+      // Refresh recently played list
+      try {
+        if (Get.isRegistered<SongController>()) {
+          // Delay slightly to allow backend/service to register the play
+          Future.delayed(const Duration(seconds: 2), () {
+            Get.find<SongController>().fetchRecentlyPlayed();
+          });
+        }
+      } catch (e) {
+        logger.w('Failed to refresh recently played: $e');
+      }
     } catch (e) {
       logger.e('Error in playSong: $e');
       _showError('Failed to play song');
@@ -301,7 +321,7 @@ class AudioPlayerController extends GetxController {
         logger.w('Cannot set empty queue');
         return;
       }
-      
+
       final clampedIndex = startIndex.clamp(0, songs.length - 1);
       _audioService.setQueue(songs, startIndex: clampedIndex);
       playSong(songs[clampedIndex]);
@@ -355,6 +375,29 @@ class AudioPlayerController extends GetxController {
     }
   }
 
+  // ==================== OFFLINE CACHING ====================
+
+  /// Download song for offline playback
+  Future<void> downloadSong(SongEntity song) async {
+    try {
+      final success = await _audioService.downloadSong(song);
+      if (success) {
+        _showSuccess('Song downloaded');
+        await _checkCacheStatus(); // Update status
+      } else {
+        _showError('Failed to download song');
+      }
+    } catch (e) {
+      logger.e('Error downloading song: $e');
+      _showError('Failed to download song');
+    }
+  }
+
+  /// Check if song is downloaded
+  Future<bool> isSongCached(SongEntity song) async {
+    return await _audioService.isSongCached(song);
+  }
+
   // ==================== HELPER METHODS ====================
 
   /// Format duration to MM:SS
@@ -394,7 +437,8 @@ class AudioPlayerController extends GetxController {
       'Success',
       message,
       snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Get.theme.snackBarTheme.backgroundColor ?? Get.theme.primaryColor,
+      backgroundColor:
+          Get.theme.snackBarTheme.backgroundColor ?? Get.theme.primaryColor,
       colorText: Get.theme.snackBarTheme.contentTextStyle?.color,
       duration: const Duration(seconds: 2),
     );

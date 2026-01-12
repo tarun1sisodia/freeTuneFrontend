@@ -83,12 +83,13 @@ class AudioPlayerService extends GetxService {
           minBufferDuration: Duration(seconds: 15),
           maxBufferDuration: Duration(seconds: 50),
           bufferForPlaybackDuration:
-              Duration(seconds: 2), // Start playing after 2s
-          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 5),
+              Duration(milliseconds: 500), // Start playing after 500ms (0.5s)
+          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 2),
         ),
         darwinLoadControl: DarwinLoadControl(
           preferredForwardBufferDuration: Duration(seconds: 15),
-          automaticallyWaitsToMinimizeStalling: true,
+          automaticallyWaitsToMinimizeStalling:
+              false, // Don't wait unnecessarily
         ),
       ),
     );
@@ -203,16 +204,45 @@ class AudioPlayerService extends GetxService {
 
       currentSong.value = song;
 
-      // 1. Check if we are offline. If so, we MUST rely on cache.
+      // 1. Check if explicitly cached (Downloaded for offline)
+      // Use song.id as key if available (cacheAudio uses it)
+      // Note: original implementation of caching might have used URL only.
+      // We will now try to look up by song.id or url
+      String? cachedPath = await _audioCacheService
+          .getFileFromCache(song.downloadUrl ?? "", key: song.id);
+
+      // If not found by ID, try URL if we have one (legacy Support)
+      if (cachedPath == null && song.downloadUrl != null) {
+        cachedPath =
+            await _audioCacheService.getFileFromCache(song.downloadUrl!);
+      }
+
       final connectivityResult = await _connectivity.checkConnectivity();
       final isOffline = connectivityResult.contains(ConnectivityResult.none);
 
-      // Prioritize MP3 (Download URL) for caching/offline
-      if (song.downloadUrl != null && song.downloadUrl!.isNotEmpty) {
+      // A. Explicit Cache Found
+      if (cachedPath != null) {
+        logger.i('Playing from Explicit Offline Cache: $cachedPath');
+        await _player.setAudioSource(
+          AudioSource.uri(
+            Uri.file(cachedPath),
+            tag: MediaItem(
+              id: song.id,
+              title: song.title,
+              artist: song.artist,
+              artUri: song.albumArtUrl != null
+                  ? Uri.parse(song.albumArtUrl!)
+                  : null,
+              duration: Duration(milliseconds: song.durationMs),
+            ),
+          ),
+        );
+      }
+      // B. Online or Transient Cache (LockCaching)
+      else if (song.downloadUrl != null && song.downloadUrl!.isNotEmpty) {
         logger.i('Playing from optimized MP3 source: ${song.downloadUrl}');
         try {
           // LockCachingAudioSource handles streaming + caching simultaneously
-          // It checks if the file is fully cached. If offline and not cached, it will throw.
           final source = LockCachingAudioSource(
             Uri.parse(song.downloadUrl!),
             tag: MediaItem(
@@ -229,23 +259,16 @@ class AudioPlayerService extends GetxService {
         } catch (e) {
           logger.w('Failed to play MP3 (Offline/Cache issue?): $e');
           if (isOffline) {
-            _handlePlaybackError("Offline: Song not cached.");
+            _handlePlaybackError("Offline: Song not available.");
             return;
           }
+          // Fallback to stream only if online
           await _playFromStream(song);
         }
-      } else {
-        // 2. Fallback to Stream (HLS or standard)
+      }
+      // C. Fallback to Stream (HLS)
+      else {
         if (isOffline) {
-          // Check if Legacy Stream Cache has it
-          // Try to construct what the URL would be for HLS or fallback
-          // This is tricky as getStreamUrl requires API call which requires Network.
-          // But if we cached it before, we might have the key?
-          // Without API call in offline, we can't get the stream URL to check cache key.
-          // This implies offline playback ONLY works if song.downloadUrl is present (Entity cached) AND file cached.
-
-          // If we don't have downloadUrl in the Entity, we can't play offline easily unless we cached the Entity with the streamUrl previously.
-          // Assuming song.downloadUrl is the primary offline method.
           _handlePlaybackError("Offline: No download URL available.");
           return;
         } else {
@@ -268,6 +291,30 @@ class AudioPlayerService extends GetxService {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /// Explicitly download song for offline playback
+  Future<bool> downloadSong(SongEntity song) async {
+    if (song.downloadUrl == null || song.downloadUrl!.isEmpty) {
+      logger.w('Cannot download song: No download URL');
+      return false;
+    }
+
+    try {
+      logger.i('Downloading song: ${song.title}');
+      await _audioCacheService.cacheAudio(song.downloadUrl!, key: song.id);
+      logger.i('Song downloaded successfully');
+      return true;
+    } catch (e) {
+      logger.e('Failed to download song: $e');
+      return false;
+    }
+  }
+
+  /// Check if song is explicitly downloaded
+  Future<bool> isSongCached(SongEntity song) async {
+    return await _audioCacheService.isCached(song.downloadUrl ?? "",
+        key: song.id);
   }
 
   /// Pause playback

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
 import '../../controllers/audio_player_controller.dart';
-import '../../../core/utils/app_sizes.dart';
+import '../../widgets/common/sized.dart';
 
 class MiniPlayer extends GetView<AudioPlayerController> {
   const MiniPlayer({super.key});
@@ -16,11 +16,11 @@ class MiniPlayer extends GetView<AudioPlayerController> {
       return GestureDetector(
         onTap: () => Get.toNamed(Routes.PLAYER),
         child: Container(
-          height: AppSizes.h(64),
-          margin: EdgeInsets.all(AppSizes.w(8)),
+          height: 60, // Fixed height close to 64
+          margin: EdgeInsets.all(TSizes.sm),
           decoration: BoxDecoration(
             color: Colors.grey[900],
-            borderRadius: BorderRadius.circular(AppSizes.radius),
+            borderRadius: BorderRadius.circular(TSizes.cardRadiusXs),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.4),
@@ -34,20 +34,20 @@ class MiniPlayer extends GetView<AudioPlayerController> {
               // Album Art
               ClipRRect(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(AppSizes.radius),
-                  bottomLeft: Radius.circular(AppSizes.radius),
+                  topLeft: Radius.circular(TSizes.cardRadiusXs),
+                  bottomLeft: Radius.circular(TSizes.cardRadiusXs),
                 ),
                 child: song.albumArtUrl != null
                     ? Image.network(
                         song.albumArtUrl!,
-                        width: AppSizes.h(64), // Square based on height
-                        height: AppSizes.h(64),
+                        width: 60,
+                        height: 60,
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => _buildPlaceholder(),
                       )
                     : _buildPlaceholder(),
               ),
-              SizedBox(width: AppSizes.w(12)),
+              SizedBox(width: TSizes.spaceBtwItems),
 
               // Title & Artist
               Expanded(
@@ -60,7 +60,7 @@ class MiniPlayer extends GetView<AudioPlayerController> {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
-                        fontSize: AppSizes.sp(14),
+                        fontSize: TSizes.fontSizeSm,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -69,7 +69,7 @@ class MiniPlayer extends GetView<AudioPlayerController> {
                       song.artist,
                       style: TextStyle(
                         color: Colors.grey[400],
-                        fontSize: AppSizes.sp(12),
+                        fontSize: TSizes.fontSizeXs,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -81,14 +81,14 @@ class MiniPlayer extends GetView<AudioPlayerController> {
               // Controls
               IconButton(
                 icon: Icon(Icons.skip_previous,
-                    color: Colors.white, size: AppSizes.iconSize),
+                    color: Colors.white, size: TSizes.iconMd),
                 onPressed: controller.playPrevious,
               ),
               Obx(() => IconButton(
                     icon: controller.isLoading.value
                         ? SizedBox(
-                            width: AppSizes.w(24),
-                            height: AppSizes.w(24),
+                            width: TSizes.iconMd,
+                            height: TSizes.iconMd,
                             child: const CircularProgressIndicator(
                                 strokeWidth: 2, color: Colors.white),
                           )
@@ -97,13 +97,13 @@ class MiniPlayer extends GetView<AudioPlayerController> {
                                 ? Icons.pause
                                 : Icons.play_arrow,
                             color: Colors.white,
-                            size: AppSizes.iconSize,
+                            size: TSizes.iconMd,
                           ),
                     onPressed: controller.togglePlayPause,
                   )),
               IconButton(
                 icon: Icon(Icons.skip_next,
-                    color: Colors.white, size: AppSizes.iconSize),
+                    color: Colors.white, size: TSizes.iconMd),
                 onPressed: controller.playNext,
               ),
             ],
@@ -115,10 +115,10 @@ class MiniPlayer extends GetView<AudioPlayerController> {
 
   Widget _buildPlaceholder() {
     return Container(
-      width: AppSizes.h(64),
-      height: AppSizes.h(64),
+      width: 60,
+      height: 60,
       color: Colors.grey[800],
-      child: Icon(Icons.music_note, color: Colors.grey, size: AppSizes.w(32)),
+      child: Icon(Icons.music_note, color: Colors.grey, size: TSizes.iconLg),
     );
   }
 }

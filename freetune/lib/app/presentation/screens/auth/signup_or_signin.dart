@@ -4,7 +4,7 @@ import '../../widgets/common/basic_app_bar.dart';
 import '../../widgets/common/basic_app_button.dart';
 import '../../../core/configs/assets/app_images.dart';
 import '../../../routes/app_routes.dart';
-import '../../../core/utils/app_sizes.dart';
+import '../../widgets/common/sized.dart';
 
 class SignupOrSigninScreen extends StatelessWidget {
   const SignupOrSigninScreen({super.key});
@@ -19,56 +19,54 @@ class SignupOrSigninScreen extends StatelessWidget {
           Align(
             alignment: Alignment.topRight,
             child: Image.asset(AppImages.logo,
-                height: AppSizes.h(100),
+                height:
+                    100, // Keep some large assets as fixed or use large multiple
                 color:
                     Colors.white.withOpacity(0.1)), // Placeholder for unionTop
           ),
           Align(
             alignment: Alignment.bottomRight,
             child: Image.asset(AppImages.logo,
-                height: AppSizes.h(100),
+                height: 100,
                 color: Colors.white
                     .withOpacity(0.1)), // Placeholder for unionBottom
           ),
-          // Align(
-          //   alignment: Alignment.bottomLeft,
-          //   child: Image.asset(AppImages.chooseAuthBG), // Placeholder or remove if no asset
-          // ),
           Align(
             alignment: Alignment.center,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSizes.w(35)),
+              padding: EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(AppImages.logo, height: AppSizes.h(60)),
+                  Image.asset(AppImages.logo,
+                      height: TSizes.iconXl * 2), // Approx 64
                   SizedBox(
-                    height: AppSizes.h(50),
+                    height: TSizes.spaceBtwSections,
                   ),
                   Text(
                     'Enjoy Listening To Music',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontSize: AppSizes.sp(29),
+                      fontSize: TSizes.fontSizeXxl,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
-                    height: AppSizes.h(20),
+                    height: TSizes.spaceBtwItems,
                   ),
                   Text(
                     'FreeTune is a proprietary audio streaming and media services provider',
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       color: Colors.grey,
-                      fontSize: AppSizes.sp(19),
+                      fontSize: TSizes.fontSizeLg,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
-                    height: AppSizes.h(35),
+                    height: TSizes.spaceBtwSections,
                   ),
                   Row(
                     children: [
@@ -79,12 +77,12 @@ class SignupOrSigninScreen extends StatelessWidget {
                             Get.toNamed(Routes.REGISTER);
                           },
                           title: "Register",
-                          textSize: AppSizes.sp(20),
+                          textSize: TSizes.fontSizeLg,
                           weight: FontWeight.w500,
                         ),
                       ),
                       SizedBox(
-                        width: AppSizes.w(21),
+                        width: TSizes.defaultSpace,
                       ),
                       Expanded(
                         flex: 1,
@@ -117,7 +115,7 @@ class SignupOrSigninScreen extends StatelessWidget {
                             "Sign In",
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
-                              fontSize: AppSizes.sp(21),
+                              fontSize: TSizes.fontSizeLg,
                             ),
                           ),
                         ),
@@ -125,7 +123,7 @@ class SignupOrSigninScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(
-                    height: AppSizes.h(100),
+                    height: TSizes.spaceBtwSections * 2,
                   ),
                 ],
               ),

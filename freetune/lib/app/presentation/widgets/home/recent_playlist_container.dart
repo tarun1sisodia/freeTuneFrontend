@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/palette.dart';
-import '../../../core/utils/app_sizes.dart';
+import '../common/sized.dart';
 
 class RecentPlaylistContainer extends StatelessWidget {
   final String image;
@@ -25,37 +25,37 @@ class RecentPlaylistContainer extends StatelessWidget {
         decoration: BoxDecoration(
             color: Palette.secondarySwatchColor,
             borderRadius: BorderRadius.circular(
-                AppSizes.radius)), // Small radius ok to be 5->AppSizes.radius
+                TSizes.cardRadiusXs)), // Small radius ok to be 5
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipRRect(
-                borderRadius: BorderRadius.circular(AppSizes.radius),
+                borderRadius: BorderRadius.circular(TSizes.cardRadiusXs),
                 child: Image.network(
                   image,
-                  height: AppSizes.h(55),
-                  width: AppSizes.h(55), // Square based on height
+                  height: 56, // Fixed height close to 55
+                  width: 56,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                      height: AppSizes.h(55),
-                      width: AppSizes.h(55),
+                      height: 56,
+                      width: 56,
                       color: Colors.grey[800],
                       child: const Icon(Icons.music_note, color: Colors.white)),
                 )),
             Expanded(
                 child: Padding(
-              padding: EdgeInsets.only(left: AppSizes.w(10)),
+              padding: EdgeInsets.only(left: TSizes.spaceBtwItems),
               child: Text(name,
                   style: TextStyle(
-                      fontSize: AppSizes.sp(14),
+                      fontSize: TSizes.fontSizeSm,
                       fontFamily: "SpotifyCircularBold",
                       color: Colors.white),
                   softWrap: false,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis),
             )),
-            SizedBox(width: AppSizes.w(10))
+            SizedBox(width: TSizes.sm)
           ],
         ),
       ),

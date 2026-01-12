@@ -28,10 +28,11 @@ class AudioCacheService extends GetxService {
   }
 
   /// Get file from cache or download it
-  Future<String?> getCachedAudioPath(String url) async {
+  /// [key] is optional. If provided, it maps the URL to this key (e.g., song ID).
+  Future<String?> getCachedAudioPath(String url, {String? key}) async {
     try {
-      final file = await _cacheManager.getSingleFile(url);
-      logger.d('📦 Retrieved audio from cache: $url');
+      final file = await _cacheManager.getSingleFile(url, key: key);
+      logger.d('📦 Retrieved audio from cache: $url (Key: $key)');
       return file.path;
     } catch (e) {
       logger.e('Failed to get cached audio: $e');
@@ -39,21 +40,46 @@ class AudioCacheService extends GetxService {
     }
   }
 
-  /// Pre-cache audio file
-  Future<void> cacheAudio(String url) async {
+  /// Get file ONLY if it exists in cache (no download)
+  Future<String?> getFileFromCache(String url, {String? key}) async {
     try {
-      await _cacheManager.downloadFile(url);
-      logger.d('💾 Cached audio file: $url');
+      final fileInfo = await _cacheManager.getFileFromCache(key ?? url);
+      if (fileInfo != null) {
+        return fileInfo.file.path;
+      }
+      return null;
+    } catch (e) {
+      logger.e('Error checking cache: $e');
+      return null;
+    }
+  }
+
+  /// Check if file is cached
+  Future<bool> isCached(String url, {String? key}) async {
+    try {
+      final fileInfo = await _cacheManager.getFileFromCache(key ?? url);
+      return fileInfo != null;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Pre-cache audio file
+  Future<void> cacheAudio(String url, {String? key}) async {
+    try {
+      await _cacheManager.downloadFile(url, key: key);
+      logger.d('💾 Cached audio file: $url (Key: $key)');
     } catch (e) {
       logger.e('Failed to cache audio: $e');
+      rethrow; // Allow caller to handle error
     }
   }
 
   /// Remove specific file from cache
-  Future<void> removeFile(String url) async {
+  Future<void> removeFile(String url, {String? key}) async {
     try {
-      await _cacheManager.removeFile(url);
-      logger.d('🗑️ Removed audio from cache: $url');
+      await _cacheManager.removeFile(key ?? url);
+      logger.d('🗑️ Removed audio from cache: $url (Key: $key)');
     } catch (e) {
       logger.e('Failed to remove audio from cache: $e');
     }

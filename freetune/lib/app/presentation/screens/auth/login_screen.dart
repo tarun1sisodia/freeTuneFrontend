@@ -6,7 +6,7 @@ import '../../widgets/common/basic_app_bar.dart';
 import '../../widgets/common/basic_app_button.dart';
 import '../../../core/configs/assets/app_images.dart';
 import 'app_colors.dart';
-import '../../../core/utils/app_sizes.dart';
+import '../../widgets/common/sized.dart';
 
 class LoginScreen extends GetView<AuthController> {
   const LoginScreen({super.key});
@@ -19,33 +19,33 @@ class LoginScreen extends GetView<AuthController> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: BasicAppBar(
-        hideBack: true, // or false if you want back button
+        hideBack: true,
         title: Image.asset(
           AppImages.logo,
-          height: AppSizes.h(40),
-          width: AppSizes.w(40),
+          height: TSizes.iconXl,
+          width: TSizes.iconXl,
         ),
       ),
       bottomNavigationBar: _registerText(context),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
-          horizontal: AppSizes.w(30),
-          vertical: AppSizes.h(50),
+          horizontal: TSizes.defaultSpace,
+          vertical: TSizes.appBarHeight,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _signinText(),
-            SizedBox(height: AppSizes.h(25)),
+            SizedBox(height: TSizes.spaceBtwSections),
             _supportText(),
-            SizedBox(height: AppSizes.h(25)),
+            SizedBox(height: TSizes.spaceBtwSections),
             _usernameOrEmailField(context, emailController),
-            SizedBox(height: AppSizes.h(20)),
+            SizedBox(height: TSizes.spaceBtwInputFields),
             _passwordField(context, passwordController),
-            SizedBox(height: AppSizes.h(16)),
+            SizedBox(height: TSizes.spaceBtwInputFields),
             _recoveryPasswordText(),
-            SizedBox(height: AppSizes.h(16)),
+            SizedBox(height: TSizes.spaceBtwInputFields),
             Obx(() => BasicAppButton(
                   title:
                       controller.isLoading.value ? 'Signin In...' : 'Sign in',
@@ -60,7 +60,7 @@ class LoginScreen extends GetView<AuthController> {
                             Get.offAllNamed(Routes.MAIN);
                           }
                         },
-                  textSize: AppSizes.sp(22),
+                  textSize: TSizes.fontSizeLg,
                   weight: FontWeight.w500,
                 )),
           ],
@@ -74,7 +74,7 @@ class LoginScreen extends GetView<AuthController> {
       'Sign In',
       style: TextStyle(
         fontWeight: FontWeight.bold,
-        fontSize: AppSizes.sp(32),
+        fontSize: TSizes.fontSizeXxl,
         color: Colors.white,
       ),
       textAlign: TextAlign.center,
@@ -90,7 +90,7 @@ class LoginScreen extends GetView<AuthController> {
           "If You Need Any Support ",
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            fontSize: AppSizes.sp(16),
+            fontSize: TSizes.fontSizeMd,
             color: Colors.grey,
           ),
         ),
@@ -100,7 +100,7 @@ class LoginScreen extends GetView<AuthController> {
             "Click here",
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: AppSizes.sp(16),
+              fontSize: TSizes.fontSizeMd,
               color: AppColors.primary,
             ),
           ),
@@ -117,13 +117,14 @@ class LoginScreen extends GetView<AuthController> {
       decoration: InputDecoration(
         hintText: "Enter Username Or Email",
         hintStyle: const TextStyle(color: Colors.grey),
-        enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey),
-            borderRadius: BorderRadius.all(Radius.circular(30))),
+        enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.grey),
+            borderRadius:
+                BorderRadius.all(Radius.circular(TSizes.inputFieldRadius))),
         focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.all(Radius.circular(30))),
-        contentPadding: EdgeInsets.all(AppSizes.w(25)),
+        contentPadding: EdgeInsets.all(TSizes.md),
       ),
     );
   }
@@ -137,13 +138,14 @@ class LoginScreen extends GetView<AuthController> {
       decoration: InputDecoration(
         hintText: "Password",
         hintStyle: const TextStyle(color: Colors.grey),
-        enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey),
-            borderRadius: BorderRadius.all(Radius.circular(30))),
+        enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.grey),
+            borderRadius:
+                BorderRadius.all(Radius.circular(TSizes.inputFieldRadius))),
         focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.all(Radius.circular(30))),
-        contentPadding: EdgeInsets.all(AppSizes.w(25)),
+        contentPadding: EdgeInsets.all(TSizes.md),
       ),
     );
   }
@@ -161,7 +163,7 @@ class LoginScreen extends GetView<AuthController> {
             "Forgot Password?",
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: AppSizes.sp(16),
+              fontSize: TSizes.fontSizeMd,
               color: Colors.grey,
             ),
           ),
@@ -173,7 +175,7 @@ class LoginScreen extends GetView<AuthController> {
   Widget _registerText(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-        vertical: AppSizes.h(40),
+        vertical: TSizes.appBarHeight,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -183,7 +185,7 @@ class LoginScreen extends GetView<AuthController> {
             "Not A Member ? ",
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: AppSizes.sp(16),
+              fontSize: TSizes.fontSizeMd,
               color: Colors.white,
             ),
           ),
@@ -195,7 +197,7 @@ class LoginScreen extends GetView<AuthController> {
               "Register Now",
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                fontSize: AppSizes.sp(16),
+                fontSize: TSizes.fontSizeMd,
                 color: AppColors.blue,
               ),
             ),

@@ -6,7 +6,8 @@ import '../../controllers/songs_controller.dart';
 import '../../controllers/audio_player_controller.dart';
 import '../../widgets/home/recent_playlist_container.dart';
 import '../../widgets/home/recently_played_card.dart';
-import '../../../core/utils/app_sizes.dart';
+import '../../widgets/common/sized.dart';
+import '../../widgets/common/screen_size_calculator.dart';
 
 class HomeScreen extends GetView<SongController> {
   const HomeScreen({super.key});
@@ -25,10 +26,10 @@ class HomeScreen extends GetView<SongController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: AppSizes.h(35)),
+            SizedBox(height: TSizes.spaceBtwSections),
             // Header
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSizes.padding),
+              padding: EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -41,7 +42,7 @@ class HomeScreen extends GetView<SongController> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: AppSizes.sp(25),
+                              fontSize: TSizes.fontSizeXxl,
                               color: Colors.white,
                               fontFamily: "SpotifyCircularBold")),
                     ),
@@ -50,15 +51,15 @@ class HomeScreen extends GetView<SongController> {
                     IconButton(
                         onPressed: () {},
                         icon: Icon(Icons.notifications_none_sharp,
-                            color: Colors.white, size: AppSizes.iconSize)),
+                            color: Colors.white, size: TSizes.iconMd)),
                     IconButton(
                         onPressed: () {},
                         icon: Icon(Icons.access_time_sharp,
-                            color: Colors.white, size: AppSizes.iconSize)),
+                            color: Colors.white, size: TSizes.iconMd)),
                     IconButton(
                         onPressed: () => Get.toNamed(Routes.PROFILE),
                         icon: Icon(Icons.settings_outlined,
-                            color: Colors.white, size: AppSizes.iconSize))
+                            color: Colors.white, size: TSizes.iconMd))
                   ])
                 ],
               ),
@@ -68,7 +69,7 @@ class HomeScreen extends GetView<SongController> {
             Obx(() {
               if (controller.isLoadingPopular.value) {
                 return SizedBox(
-                    height: AppSizes.h(100),
+                    height: 100,
                     child: const Center(
                         child: CircularProgressIndicator(color: Colors.green)));
               }
@@ -78,25 +79,25 @@ class HomeScreen extends GetView<SongController> {
               return LayoutBuilder(builder: (context, constraints) {
                 // Responsive Grid Calculation
                 // Mobile: 2 columns, Tablet: 3-4 columns
-                final screenWidth = AppSizes.width;
+                final screenWidth = TDeviceUtils.screenWidth(context);
                 final crossAxisCount = screenWidth > 600 ? 4 : 2;
                 // Calculate item width based on available space and padding
                 final availableWidth = screenWidth -
-                    (AppSizes.padding * 2) -
-                    AppSizes.w(10); // horizontal padding + spacing
+                    (TSizes.defaultSpace * 2) -
+                    TSizes.spaceBtwItems; // horizontal padding + spacing
                 final itemWidth = availableWidth / crossAxisCount;
-                final itemHeight = AppSizes.h(60);
+                final itemHeight = 60.0;
                 final aspectRatio = itemWidth / itemHeight;
 
                 return GridView.builder(
                   padding: EdgeInsets.only(
-                      left: AppSizes.padding,
-                      right: AppSizes.padding,
-                      top: AppSizes.h(10)),
+                      left: TSizes.defaultSpace,
+                      right: TSizes.defaultSpace,
+                      top: TSizes.sm),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,
-                      mainAxisSpacing: AppSizes.h(10),
-                      crossAxisSpacing: AppSizes.w(10),
+                      mainAxisSpacing: TSizes.sm,
+                      crossAxisSpacing: TSizes.sm,
                       childAspectRatio: aspectRatio),
                   primary: false,
                   shrinkWrap: true,
@@ -119,14 +120,14 @@ class HomeScreen extends GetView<SongController> {
 
             // Recently Played Section
             Padding(
-                padding: EdgeInsets.fromLTRB(AppSizes.padding, AppSizes.h(30),
-                    AppSizes.padding, AppSizes.h(15)),
+                padding: EdgeInsets.fromLTRB(TSizes.defaultSpace,
+                    TSizes.spaceBtwSections, TSizes.defaultSpace, TSizes.md),
                 child: SizedBox(
                   width: double.infinity,
                   child: Text("Recently played",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: AppSizes.sp(25),
+                          fontSize: TSizes.fontSizeXxl,
                           color: Colors.white,
                           fontFamily: "SpotifyCircularBold"),
                       textAlign: TextAlign.left),
@@ -135,7 +136,7 @@ class HomeScreen extends GetView<SongController> {
             Obx(() {
               if (controller.isLoadingRecent.value) {
                 return SizedBox(
-                    height: AppSizes.h(100),
+                    height: 100,
                     child: const Center(
                         child: CircularProgressIndicator(color: Colors.green)));
               }
@@ -144,16 +145,17 @@ class HomeScreen extends GetView<SongController> {
 
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: AppSizes.w(10)),
+                padding: EdgeInsets.symmetric(horizontal: TSizes.sm),
                 child: Row(
                   children: recents
                       .map((song) => Padding(
-                            padding: EdgeInsets.only(right: AppSizes.w(10)),
+                            padding: EdgeInsets.only(right: TSizes.sm),
                             child: RecentlyPlayedCard(
                               name: song.title,
                               image: song.albumArtUrl ??
                                   "https://via.placeholder.com/150",
-                              borderRadius: 50, // Circular profile style
+                              borderRadius: TSizes
+                                  .cardRadiusLg, // Circular profile style approx
                               onTap: () {
                                 playerController.playSong(song);
                                 Get.toNamed(Routes.PLAYER);
@@ -165,17 +167,17 @@ class HomeScreen extends GetView<SongController> {
               );
             }),
 
-            // "All Songs" Section (Mapped from Artists/Podcasters in clone)
+            // "Made For You" Section
             Padding(
-                padding: EdgeInsets.fromLTRB(AppSizes.padding, AppSizes.h(30),
-                    AppSizes.padding, AppSizes.h(15)),
+                padding: EdgeInsets.fromLTRB(TSizes.defaultSpace,
+                    TSizes.spaceBtwSections, TSizes.defaultSpace, TSizes.md),
                 child: SizedBox(
                   width: double.infinity,
                   child: Text(
                     "Made For You",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: AppSizes.sp(25),
+                        fontSize: TSizes.fontSizeXxl,
                         color: Colors.white,
                         fontFamily: "SpotifyCircularBold"),
                     textAlign: TextAlign.left,
@@ -184,23 +186,24 @@ class HomeScreen extends GetView<SongController> {
             Obx(() {
               if (controller.isLoadingSongs.value) {
                 return SizedBox(
-                    height: AppSizes.h(100),
+                    height: 100,
                     child: const Center(
                         child: CircularProgressIndicator(color: Colors.green)));
               }
               final songs = controller.songs;
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: AppSizes.w(10)),
+                padding: EdgeInsets.symmetric(horizontal: TSizes.sm),
                 child: Row(
                   children: songs
                       .map((song) => Padding(
-                            padding: EdgeInsets.only(right: AppSizes.w(10)),
+                            padding: EdgeInsets.only(right: TSizes.sm),
                             child: RecentlyPlayedCard(
                               name: song.title,
                               image: song.albumArtUrl ??
                                   "https://via.placeholder.com/150",
-                              borderRadius: 5, // Square for albums
+                              borderRadius:
+                                  TSizes.cardRadiusLg, // Square for albums
                               onTap: () {
                                 playerController.playSong(song, queue: songs);
                                 Get.toNamed(Routes.PLAYER);
@@ -212,7 +215,9 @@ class HomeScreen extends GetView<SongController> {
               );
             }),
 
-            SizedBox(height: AppSizes.h(140)), // Spacing for MiniPlayer
+            SizedBox(
+                height:
+                    TSizes.bottomNavBarHeight * 2), // Spacing for MiniPlayer
           ],
         ),
       ),

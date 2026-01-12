@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/utils/app_sizes.dart';
+import '../common/sized.dart';
 
 class RecentlyPlayedCard extends StatelessWidget {
   final String image;
@@ -22,7 +22,7 @@ class RecentlyPlayedCard extends StatelessWidget {
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: AppSizes.w(8)),
+        padding: EdgeInsets.symmetric(horizontal: TSizes.sm),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -31,22 +31,22 @@ class RecentlyPlayedCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius),
               child: Image.network(
                 image,
-                height: AppSizes.w(120),
-                width: AppSizes.w(120),
+                height: 120, // Keep specific size
+                width: 120,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
-                    height: AppSizes.w(120),
-                    width: AppSizes.w(120),
+                    height: 120,
+                    width: 120,
                     color: Colors.grey[800],
                     child: const Icon(Icons.music_note, color: Colors.white)),
               ),
             ),
             Container(
-              width: AppSizes.w(120),
-              padding: EdgeInsets.only(top: AppSizes.h(10)),
+              width: 120,
+              padding: EdgeInsets.only(top: TSizes.sm),
               child: Text(name,
                   style: TextStyle(
-                      fontSize: AppSizes.sp(15),
+                      fontSize: TSizes.fontSizeMd,
                       fontFamily: "SpotifyCircularBold",
                       color: Colors.white),
                   textAlign: TextAlign.left,

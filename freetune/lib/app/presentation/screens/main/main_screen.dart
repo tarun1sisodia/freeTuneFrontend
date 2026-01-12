@@ -7,7 +7,7 @@ import '../search/search_screen.dart';
 import '../playlists/playlists_screen.dart';
 import '../songs/upload_screen.dart';
 import '../../widgets/player/mini_player.dart';
-import '../../../core/utils/app_sizes.dart';
+import '../../widgets/common/sized.dart';
 
 class MainScreen extends GetView<MainController> {
   const MainScreen({super.key});
@@ -48,7 +48,7 @@ class MainScreen extends GetView<MainController> {
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter),
         ),
-        height: AppSizes.h(80), // Slightly taller for better touch area
+        height: TSizes.bottomNavBarHeight,
         child: Theme(
           data: Theme.of(context).copyWith(
               splashColor: Colors.white24, highlightColor: Colors.transparent),
@@ -59,15 +59,15 @@ class MainScreen extends GetView<MainController> {
                   backgroundColor: Colors.transparent,
                   selectedItemColor: Colors.white,
                   unselectedItemColor: Colors.white54,
-                  selectedFontSize: AppSizes.sp(12),
-                  unselectedFontSize: AppSizes.sp(12),
+                  selectedFontSize: TSizes.fontSizeXs,
+                  unselectedFontSize: TSizes.fontSizeXs,
                   elevation: 0,
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
                         icon: Icon(Icons.home_filled,
                             size: controller.currentIndex == 0
-                                ? AppSizes.w(28)
-                                : AppSizes.w(24),
+                                ? TSizes.iconLg
+                                : TSizes.iconMd,
                             color: controller.currentIndex == 0
                                 ? Colors.white
                                 : Colors.white54),
@@ -75,8 +75,8 @@ class MainScreen extends GetView<MainController> {
                     BottomNavigationBarItem(
                         icon: Icon(Icons.search,
                             size: controller.currentIndex == 1
-                                ? AppSizes.w(28)
-                                : AppSizes.w(24),
+                                ? TSizes.iconLg
+                                : TSizes.iconMd,
                             color: controller.currentIndex == 1
                                 ? Colors.white
                                 : Colors.white54),
@@ -84,8 +84,8 @@ class MainScreen extends GetView<MainController> {
                     BottomNavigationBarItem(
                         icon: Icon(Icons.add_box_outlined,
                             size: controller.currentIndex == 2
-                                ? AppSizes.w(28)
-                                : AppSizes.w(24),
+                                ? TSizes.iconLg
+                                : TSizes.iconMd,
                             color: controller.currentIndex == 2
                                 ? Colors.white
                                 : Colors.white54),
@@ -93,11 +93,11 @@ class MainScreen extends GetView<MainController> {
                     BottomNavigationBarItem(
                         icon: Image.asset("assets/icons/library.png",
                             height: controller.currentIndex == 3
-                                ? AppSizes.w(28)
-                                : AppSizes.w(24),
+                                ? TSizes.iconLg
+                                : TSizes.iconMd,
                             width: controller.currentIndex == 3
-                                ? AppSizes.w(28)
-                                : AppSizes.w(24),
+                                ? TSizes.iconLg
+                                : TSizes.iconMd,
                             color: controller.currentIndex == 3
                                 ? Colors.white
                                 : Colors.white54),
