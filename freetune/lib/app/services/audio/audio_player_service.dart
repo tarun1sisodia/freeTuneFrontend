@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
@@ -23,6 +25,10 @@ class AudioPlayerService extends GetxService {
   // Dependencies
   final SongRepository _songRepository;
   final AudioCacheService _audioCacheService = Get.put(AudioCacheService());
+  // Method Channel for Native Downloads
+  final _platform = const MethodChannel('com.example.freetune/download');
+
+  // Audio player instance
   // Audio player instance
   late final AudioPlayer _player;
 
@@ -302,9 +308,21 @@ class AudioPlayerService extends GetxService {
     }
 
     try {
-      logger.i('Downloading song: ${song.title}');
-      await _audioCacheService.cacheAudio(song.downloadUrl!, key: song.id);
-      logger.i('Song downloaded successfully');
+      logger.i('Downloading song: ${song.title} from ${song.downloadUrl}');
+
+      if (Platform.isAndroid) {
+        // Use native ExoPlayer downloader for HLS/Dash support
+        await _platform.invokeMethod('download', {
+          'url': song.downloadUrl,
+          'id': song.id,
+        });
+        logger.i('Sent download request to Native Android');
+      } else {
+        // Fallback for iOS/Desktop
+        await _audioCacheService.cacheAudio(song.downloadUrl!, key: song.id);
+      }
+
+      logger.i('Song download initiated successfully');
       return true;
     } catch (e) {
       logger.e('Failed to download song: $e');
