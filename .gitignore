@@ -38,3 +38,4 @@ doc/api/
 
 android/key.properties
 key.properties*
+.env
